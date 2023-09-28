@@ -1,12 +1,23 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import StackNavigation from "./navigation/StackNavigation";
+import { useFonts } from "expo-font";
 
 export default function App() {
-    return (
-        <NavigationContainer>
-            <StackNavigation />
-        </NavigationContainer>
-    );
+   const [fontsLoaded] = useFonts({
+      "Poppins-Regular": require("./assets/fonts/Poppins-Regular.ttf"),
+      "Poppins-Medium": require("./assets/fonts/Poppins-Medium.ttf"),
+      "Poppins-Bold": require("./assets/fonts/Poppins-Bold.ttf"),
+      "Poppins-SemiBold": require("./assets/fonts/Poppins-SemiBold.ttf"),
+   });
+
+   if (!fontsLoaded) {
+      return null;
+   }
+   return (
+      <NavigationContainer>
+         <StatusBar backgroundColor="#57708C" />
+         <StackNavigation />
+      </NavigationContainer>
+   );
 }
