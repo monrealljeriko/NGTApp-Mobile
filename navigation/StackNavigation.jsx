@@ -4,11 +4,8 @@ import {
    Welcome,
    Login,
    Register,
-   Section1,
-   Section2,
-   Section3,
-   Section4,
    SectionHandler,
+   RegisterCompleted,
 } from "../app/index";
 import TabNavigation from "./TabNavigation";
 
@@ -42,6 +39,16 @@ function StackNavigation() {
             }}
          />
          <Stack.Screen name="TabNavigation" component={TabNavigation} />
+         <Stack.Screen
+            name="SectionHandler"
+            component={SectionHandler}
+            options={{
+               headerShown: true,
+               title: "Membership form",
+               headerTintColor: "#57708C",
+            }}
+         />
+         <Stack.Screen name="RegisterCompleted" component={RegisterCompleted} />
       </Stack.Navigator>
    );
 }
