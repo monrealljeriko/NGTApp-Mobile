@@ -22,7 +22,7 @@ function Login({ navigation }) {
       <View style={styles.container}>
          <Image
             source={require("../../assets/images/bg-login.png")}
-            style={{ width: "100%", top: 22 }}
+            style={{ width: "100%" }}
          />
          <View style={styles.contentContainer}>
             <View style={{ marginVertical: 30 }}>

@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
    // global styles
    container: {
       flex: 1,
-      backgroundColor: "transparent",
+      backgroundColor: COLORS.white,
    },
    customTitle: {
       textAlign: "center",
@@ -21,10 +21,11 @@ const styles = StyleSheet.create({
    },
    customText: {
       textAlign: "center",
-      fontSize: 18,
+      fontSize: 16,
       fontFamily: "Poppins-Regular",
    },
    customSubtext: {
+      textAlign: "center",
       fontSize: 14,
       fontFamily: "Poppins-Regular",
    },
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
       fontFamily: "Poppins-Regular",
    },
    buttonContainer: {
-      marginVertical: 50,
+      marginTop: 50,
    },
    contentContainer: {
       flex: 1,
@@ -50,13 +51,11 @@ const styles = StyleSheet.create({
    // Welcome styles
    whiteContainer: {
       paddingHorizontal: 30,
-      position: "absolute",
-      paddingTop: 70,
-      top: 360,
-      width: "100%",
+      paddingTop: 50,
+      bottom: 50,
       backgroundColor: COLORS.white,
-      borderTopLeftRadius: 40,
-      borderTopRightRadius: 40,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
    },
 
    loginButton: {
@@ -65,7 +64,7 @@ const styles = StyleSheet.create({
    },
    registerButton: {
       bottom: "50%",
-      paddingLeft: 145,
+      paddingLeft: "40%",
    },
 
    // Login styles
@@ -257,10 +256,10 @@ const styles = StyleSheet.create({
       fontSize: 14,
       fontFamily: "Poppins-Bold",
    },
-   customSubtext: {
+   /*  customSubtext: {
       fontSize: 14,
       fontFamily: "Poppins-Regular",
-   },
+   }, */
    sectionContainer: {
       flexDirection: "row",
       gap: 20,
