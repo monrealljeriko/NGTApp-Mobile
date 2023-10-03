@@ -1,6 +1,6 @@
 import { View, Text, Image, Pressable } from "react-native";
 import React from "react";
-import styles from "../styles";
+import styles from "./styles";
 import Button from "../component/Button";
 
 function Welcome({ navigation }) {

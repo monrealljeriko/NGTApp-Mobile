@@ -5,7 +5,7 @@ import Section2 from "./Section2";
 import Section3 from "./Section3";
 import Section4 from "./Section4";
 import Section5 from "./Section5";
-import styles from "../../styles";
+import styles from "../styles";
 import Button from "../../component/Button";
 import Modal from "react-native-modal";
 import COLORS from "../../component/Colors";
@@ -25,7 +25,7 @@ export function RegisterCompleted({ navigation }) {
             <Button
                title="Done"
                filled
-               onPress={() => navigation.navigate("Login")}
+               onPress={() => navigation.navigate("Welcome")}
                style={{
                   marginTop: 18,
                   marginBottom: 4,

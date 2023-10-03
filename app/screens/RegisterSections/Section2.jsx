@@ -1,7 +1,7 @@
 import { View, Text, TextInput, Platform } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
-import styles from "../../styles";
+import styles from "../styles";
 import COLORS from "../../component/Colors";
 
 function Section2() {

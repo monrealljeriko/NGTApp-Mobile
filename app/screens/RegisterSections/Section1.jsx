@@ -9,7 +9,7 @@ import {
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import styles from "../../styles";
+import styles from "../styles";
 import COLORS from "../../component/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 

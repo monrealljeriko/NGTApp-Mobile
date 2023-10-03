@@ -4,7 +4,7 @@ import Checkbox from "expo-checkbox";
 import Button from "../component/Button";
 import COLORS from "../component/Colors";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import styles from "../styles";
+import styles from "./styles";
 
 function Register({ navigation }) {
    const [isChecked, setIsChecked] = useState(true);

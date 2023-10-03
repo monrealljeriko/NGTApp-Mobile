@@ -1,7 +1,7 @@
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import styles from "./styles";
-import COLORS from "../component/Colors";
+import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
 
 function Credit({ navigation }) {

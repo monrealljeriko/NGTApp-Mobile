@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import styles from "./styles";
-import COLORS from "../component/Colors";
+import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
 
 function Home({ navigation }) {
@@ -19,7 +19,7 @@ function Home({ navigation }) {
          <View style={styles.headerContainer}>
             <View style={styles.headerProfile}>
                <Image
-                  source={require("../../assets/icons/icon-profile.png")}
+                  source={require("../../../assets/icons/icon-profile.png")}
                   style={styles.headerImage}
                />
                <Text style={styles.headerName}>John Doe</Text>

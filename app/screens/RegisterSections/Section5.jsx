@@ -1,7 +1,6 @@
 import { View, Text, TextInput } from "react-native";
 import React from "react";
-import styles from "../../styles";
-import COLORS from "../../component/Colors";
+import styles from "../styles";
 
 export default function Section5() {
    return (

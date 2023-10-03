@@ -13,7 +13,7 @@ import Checkbox from "expo-checkbox";
 import Button from "../component/Button";
 import COLORS from "../component/Colors";
 import Icon from "react-native-vector-icons/Feather";
-import styles from "../styles";
+import styles from "./styles";
 
 function Login({ navigation }) {
    const [isPasswordShown, setIsPasswordShown] = useState(true);
