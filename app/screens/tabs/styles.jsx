@@ -143,9 +143,16 @@ const styles = StyleSheet.create({
       alignItems: "center",
    },
    cardLine: {
-      borderBottomWidth: 2,
+      borderBottomWidth: 1,
       borderColor: COLORS.gray2,
       opacity: 0.5,
+      marginVertical: 10,
+   },
+
+   dividerLine: {
+      borderBottomWidth: 1,
+      borderColor: COLORS.gray2,
+      opacity: 0.2,
       marginVertical: 10,
    },
 
@@ -266,7 +273,7 @@ const styles = StyleSheet.create({
       justifyContent: "space-around",
       backgroundColor: COLORS.white,
       paddingVertical: 10,
-      marginBottom: 5,
+      marginBottom: 10,
    },
    historyList: {
       flexDirection: "row",

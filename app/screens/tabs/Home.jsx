@@ -185,6 +185,8 @@ function Home({ navigation }) {
                         color="lightgreen"
                      />
                   </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <Text style={styles.detailsItem}>02</Text>
                      <Text style={[styles.detailsItem, { right: 15 }]}>
@@ -199,6 +201,8 @@ function Home({ navigation }) {
                         color={COLORS.gray2}
                      />
                   </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <Text style={styles.detailsItem}>03</Text>
                      <Text style={[styles.detailsItem, { right: 15 }]}>
@@ -213,6 +217,104 @@ function Home({ navigation }) {
                         color={COLORS.gray2}
                      />
                   </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <Text style={styles.detailsItem}>90</Text>
+                     <Text style={[styles.detailsItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
+                     <Text style={[styles.detailsItem, { right: 20 }]}>
+                        155
+                     </Text>
+                     <Ionicons
+                        name="checkmark-circle"
+                        size={18}
+                        color={COLORS.gray2}
+                     />
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <Text style={styles.detailsItem}>90</Text>
+                     <Text style={[styles.detailsItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
+                     <Text style={[styles.detailsItem, { right: 20 }]}>
+                        155
+                     </Text>
+                     <Ionicons
+                        name="checkmark-circle"
+                        size={18}
+                        color={COLORS.gray2}
+                     />
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <Text style={styles.detailsItem}>90</Text>
+                     <Text style={[styles.detailsItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
+                     <Text style={[styles.detailsItem, { right: 20 }]}>
+                        155
+                     </Text>
+                     <Ionicons
+                        name="checkmark-circle"
+                        size={18}
+                        color={COLORS.gray2}
+                     />
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <Text style={styles.detailsItem}>90</Text>
+                     <Text style={[styles.detailsItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
+                     <Text style={[styles.detailsItem, { right: 20 }]}>
+                        155
+                     </Text>
+                     <Ionicons
+                        name="checkmark-circle"
+                        size={18}
+                        color={COLORS.gray2}
+                     />
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <Text style={styles.detailsItem}>90</Text>
+                     <Text style={[styles.detailsItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
+                     <Text style={[styles.detailsItem, { right: 20 }]}>
+                        155
+                     </Text>
+                     <Ionicons
+                        name="checkmark-circle"
+                        size={18}
+                        color={COLORS.gray2}
+                     />
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <Text style={styles.detailsItem}>90</Text>
+                     <Text style={[styles.detailsItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
+                     <Text style={[styles.detailsItem, { right: 20 }]}>
+                        155
+                     </Text>
+                     <Ionicons
+                        name="checkmark-circle"
+                        size={18}
+                        color={COLORS.gray2}
+                     />
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <Text style={styles.detailsItem}>90</Text>
                      <Text style={[styles.detailsItem, { right: 15 }]}>

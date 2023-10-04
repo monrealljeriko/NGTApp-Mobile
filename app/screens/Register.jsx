@@ -134,8 +134,7 @@ function Register({ navigation }) {
                            title="Proceed"
                            filled
                            style={{
-                              marginTop: 18,
-                              marginBottom: 4,
+                              marginVertical: 20,
                            }}
                         />
 

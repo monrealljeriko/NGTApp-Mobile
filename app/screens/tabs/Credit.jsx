@@ -72,8 +72,9 @@ function Credit({ navigation }) {
                </View>
                <View style={styles.detailsHeaderLabel}>
                   <Text style={styles.detailsLabel}>Summary</Text>
-                  <Text style={[styles.detailsLabel, { right: 20 }]}>Date</Text>
+                  <Text style={[styles.detailsLabel, { right: 15 }]}>Date</Text>
                </View>
+
                <ScrollView>
                   <View style={styles.detailsList}>
                      <View style={{ flexDirection: "row" }}>
@@ -87,6 +88,8 @@ function Credit({ navigation }) {
                      </View>
                      <Text style={[styles.detailsItem]}>01/10/23</Text>
                   </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <View style={{ flexDirection: "row" }}>
                         <Ionicons
@@ -99,6 +102,8 @@ function Credit({ navigation }) {
                      </View>
                      <Text style={[styles.detailsItem]}>01/10/23</Text>
                   </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <View style={{ flexDirection: "row" }}>
                         <Ionicons
@@ -111,6 +116,8 @@ function Credit({ navigation }) {
                      </View>
                      <Text style={[styles.detailsItem]}>01/10/23</Text>
                   </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <View style={{ flexDirection: "row" }}>
                         <Ionicons
@@ -123,6 +130,79 @@ function Credit({ navigation }) {
                      </View>
                      <Text style={[styles.detailsItem]}>01/10/23</Text>
                   </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-down"
+                           size={18}
+                           color="red"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>499</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-down"
+                           size={18}
+                           color="red"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>499</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-down"
+                           size={18}
+                           color="red"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>499</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-down"
+                           size={18}
+                           color="red"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>499</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-down"
+                           size={18}
+                           color="red"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>499</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <View style={{ flexDirection: "row" }}>
                         <Ionicons
@@ -164,6 +244,8 @@ function Credit({ navigation }) {
                      </View>
                      <Text style={[styles.detailsItem]}>01/10/23</Text>
                   </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <View style={{ flexDirection: "row" }}>
                         <Ionicons
@@ -176,6 +258,78 @@ function Credit({ navigation }) {
                      </View>
                      <Text style={[styles.detailsItem]}>01/10/23</Text>
                   </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-up"
+                           size={18}
+                           color="lightgreen"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>5000</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-up"
+                           size={18}
+                           color="lightgreen"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>5000</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-up"
+                           size={18}
+                           color="lightgreen"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>5000</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-up"
+                           size={18}
+                           color="lightgreen"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>5000</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
+                  <View style={styles.detailsList}>
+                     <View style={{ flexDirection: "row" }}>
+                        <Ionicons
+                           name="arrow-up"
+                           size={18}
+                           color="lightgreen"
+                           style={{ top: 3 }}
+                        />
+                        <Text style={styles.detailsItem}>5000</Text>
+                     </View>
+                     <Text style={[styles.detailsItem]}>01/10/23</Text>
+                  </View>
+                  <View style={styles.dividerLine}></View>
+
                   <View style={styles.detailsList}>
                      <View style={{ flexDirection: "row" }}>
                         <Ionicons

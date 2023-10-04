@@ -94,7 +94,7 @@ function Login({ navigation }) {
                title="Login"
                filled
                onPress={() => navigation.navigate("TabNavigation")}
-               style={{ marginTop: 20 }}
+               style={{ marginVertical: 20 }}
             />
 
             <View style={[styles.options, { justifyContent: "center" }]}>
