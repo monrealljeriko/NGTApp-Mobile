@@ -24,7 +24,7 @@ function Register({ navigation }) {
    };
 
    return (
-      <View style={{ flex: 1, backgroundColor: "transparent" }}>
+      <View style={styles.container}>
          <View style={{ marginBottom: 20 }}>
             <Image
                source={require("../../assets/images/bg-login.png")}

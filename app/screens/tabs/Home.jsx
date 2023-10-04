@@ -1,11 +1,4 @@
-import {
-   View,
-   Text,
-   Image,
-   ScrollView,
-   TouchableOpacity,
-   Pressable,
-} from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import styles from "./styles";
 import COLORS from "../../component/Colors";
@@ -17,14 +10,24 @@ function Home({ navigation }) {
    return (
       <View style={styles.container}>
          <View style={styles.headerContainer}>
-            <View style={styles.headerProfile}>
-               <Image
-                  source={require("../../../assets/icons/icon-profile.png")}
-                  style={styles.headerImage}
+            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+               <View style={styles.headerProfile}>
+                  <Image
+                     source={require("../../../assets/icons/icon-profile.png")}
+                     style={styles.headerImage}
+                  />
+                  <Text style={styles.headerName}>John Doe</Text>
+               </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+               onPress={() => navigation.navigate("Notification")}
+            >
+               <Ionicons
+                  name="notifications"
+                  size={24}
+                  color={COLORS.primary}
                />
-               <Text style={styles.headerName}>John Doe</Text>
-            </View>
-            <Ionicons name="notifications" size={24} color={COLORS.primary} />
+            </TouchableOpacity>
          </View>
          <View style={styles.loanDetailsContainer}>
             <View>

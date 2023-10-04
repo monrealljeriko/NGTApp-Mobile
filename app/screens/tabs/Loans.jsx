@@ -10,11 +10,13 @@ function Loans({ navigation }) {
       <View style={styles.container}>
          <View style={styles.headerContainer}>
             <Text style={styles.headerTitle}>Total Loans</Text>
-            <Ionicons
-               name="add-circle-sharp"
-               size={24}
-               color={COLORS.primary}
-            />
+            <TouchableOpacity onPress={() => navigation.navigate("Apply")}>
+               <Ionicons
+                  name="add-circle-sharp"
+                  size={24}
+                  color={COLORS.primary}
+               />
+            </TouchableOpacity>
          </View>
          <View style={styles.loanDetailsContainer}>
             <View>

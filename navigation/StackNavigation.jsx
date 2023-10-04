@@ -6,8 +6,12 @@ import {
    Register,
    SectionHandler,
    RegisterCompleted,
+   Profile,
+   Notification,
+   Apply,
 } from "../app/index";
 import TabNavigation from "./TabNavigation";
+import COLORS from "../app/component/Colors";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +42,34 @@ function StackNavigation() {
                headerTintColor: "white",
             }}
          />
+         <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{
+               headerShown: true,
+               headerTransparent: true,
+               title: null,
+               headerTintColor: "white",
+            }}
+         />
+         <Stack.Screen
+            name="Notification"
+            component={Notification}
+            options={{
+               headerShown: true,
+               title: "Notification",
+               headerTintColor: COLORS.primary,
+            }}
+         />
+         <Stack.Screen
+            name="Apply"
+            component={Apply}
+            options={{
+               headerShown: true,
+               title: "Apply Loan",
+               headerTintColor: COLORS.primary,
+            }}
+         />
          <Stack.Screen name="TabNavigation" component={TabNavigation} />
          <Stack.Screen
             name="SectionHandler"
@@ -48,6 +80,7 @@ function StackNavigation() {
                headerTintColor: "#57708C",
             }}
          />
+
          <Stack.Screen name="RegisterCompleted" component={RegisterCompleted} />
       </Stack.Navigator>
    );

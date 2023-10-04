@@ -4,8 +4,12 @@ import Register from "./screens/Register";
 import Home from "./screens/tabs/Home";
 import Loans from "./screens/tabs/Loans";
 import Credit from "./screens/tabs/Credit";
+import Profile from "./screens/Profile";
+import Notification from "./screens/Notification";
+import Apply from "./screens/Apply";
 import SectionHandler from "./screens/RegisterSections/SectionHandler";
 import { RegisterCompleted } from "./screens/RegisterSections/SectionHandler";
+
 export {
    Start,
    Login,
@@ -13,6 +17,9 @@ export {
    Home,
    Loans,
    Credit,
+   Profile,
+   Notification,
+   Apply,
    SectionHandler,
    RegisterCompleted,
 };
