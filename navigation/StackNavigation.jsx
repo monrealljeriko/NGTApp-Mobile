@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
-   Welcome,
+   Start,
    Login,
    Register,
    SectionHandler,
@@ -14,10 +14,10 @@ const Stack = createNativeStackNavigator();
 function StackNavigation() {
    return (
       <Stack.Navigator
-         initialRouteName="Welcome"
+         initialRouteName="Start"
          screenOptions={{ headerShown: false }}
       >
-         <Stack.Screen name="Welcome" component={Welcome} />
+         <Stack.Screen name="Start" component={Start} />
          <Stack.Screen
             name="Login"
             component={Login}

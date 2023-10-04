@@ -1,9 +1,8 @@
 import { View, Text, Image, Pressable } from "react-native";
-import React from "react";
 import styles from "./styles";
 import Button from "../component/Button";
 
-function Welcome({ navigation }) {
+function Start({ navigation }) {
    return (
       <View style={styles.container}>
          <Image
@@ -55,4 +54,4 @@ function Welcome({ navigation }) {
    );
 }
 
-export default Welcome;
+export default Start;

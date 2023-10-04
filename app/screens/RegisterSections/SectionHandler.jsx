@@ -25,7 +25,7 @@ export function RegisterCompleted({ navigation }) {
             <Button
                title="Done"
                filled
-               onPress={() => navigation.navigate("Welcome")}
+               onPress={() => navigation.navigate("Start")}
                style={{
                   marginTop: 18,
                   marginBottom: 4,

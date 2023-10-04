@@ -1,4 +1,4 @@
-import Welcome from "./screens/Welcome";
+import Start from "./screens/Start";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Home from "./screens/tabs/Home";
@@ -7,7 +7,7 @@ import Credit from "./screens/tabs/Credit";
 import SectionHandler from "./screens/RegisterSections/SectionHandler";
 import { RegisterCompleted } from "./screens/RegisterSections/SectionHandler";
 export {
-   Welcome,
+   Start,
    Login,
    Register,
    Home,
