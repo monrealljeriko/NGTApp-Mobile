@@ -134,52 +134,6 @@ function Apply() {
       setNetProceedsFromLoan(
          parseFloat((loanAmount - totalDeductionCharge).toFixed(1))
       );
-      console.log("LOAN AMOUNT " + typeof loanAmount + " :" + loanAmount);
-      console.log(
-         "PURPOSE OF LOAN " + typeof purposeOfLoan + " :" + purposeOfLoan
-      );
-
-      console.log("TERM " + typeof term + ":" + term);
-      console.log(
-         "NUMBER OF PAYMENTS " +
-            typeof numberOfPayments +
-            " :" +
-            numberOfPayments
-      );
-      console.log(
-         "SHC " + typeof serviceHandlingCharge + ":" + serviceHandlingCharge
-      );
-      console.log(
-         "T FINANCE CHARGE " +
-            typeof totalFinanceCharge +
-            " :" +
-            totalFinanceCharge
-      );
-      console.log(
-         "T NON FINANCE CHARGE " +
-            typeof totalFinanceCharge +
-            ":" +
-            totalFinanceCharge
-      );
-      console.log(
-         "T DEDUCTION CHARGE " +
-            typeof totalDeductionCharge +
-            " :" +
-            totalDeductionCharge
-      );
-      console.log(
-         "NET PROCEEDS " +
-            typeof netProceedsFromLoan +
-            " :" +
-            netProceedsFromLoan
-      );
-      console.log("TOTAL PAYMENT " + typeof totalPayment + " :" + totalPayment);
-
-      console.log("PAYABLE IN " + typeof payableIN + " :" + payableIN);
-
-      console.log("PAYABLE LABEL " + typeof payableLabel + " :" + payableLabel);
-
-      console.log("------------------------------------");
    };
 
    return (
