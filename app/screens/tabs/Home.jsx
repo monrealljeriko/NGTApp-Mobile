@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import styles from "./styles";
 import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { FAB } from "react-native-paper";
+import Apply from "../Apply";
 
 function Home({ navigation }) {
    const [selectedTab, setSelectedTab] = useState(0);
+   const [isFabOpen, setIsFabOpen] = useState(false);
 
    return (
       <View style={styles.container}>
@@ -335,6 +338,62 @@ function Home({ navigation }) {
                </ScrollView>
             </View>
          )}
+
+         <FAB.Group
+            open={isFabOpen}
+            fabStyle={{ backgroundColor: COLORS.primary, borderRadius: 100 }}
+            icon={
+               isFabOpen
+                  ? () => (
+                       <Ionicons
+                          name="chevron-down-outline"
+                          size={24}
+                          color={COLORS.white}
+                       />
+                    )
+                  : () => (
+                       <Ionicons
+                          name="chevron-up-outline"
+                          size={24}
+                          color={COLORS.white}
+                       />
+                    )
+            }
+            actions={[
+               {
+                  icon: () => (
+                     <Ionicons name="reader" size={24} color={COLORS.primary} />
+                  ),
+                  label: "Answer Survey",
+                  labelStyle: { fontFamily: "Poppins-Regular" },
+                  onPress: () => {
+                     alert("Under construction");
+                     // Handle Edit action
+                     setIsFabOpen(false); // Close the FAB group
+                  },
+                  style: { borderRadius: 100 },
+               },
+               {
+                  icon: () => (
+                     <Ionicons
+                        name="add-circle"
+                        size={24}
+                        color={COLORS.primary}
+                     />
+                  ),
+                  label: "Apply Loan",
+                  labelStyle: { fontFamily: "Poppins-Regular" },
+                  style: { borderRadius: 100 },
+
+                  onPress: () => {
+                     // Handle Apply Loan action
+                     navigation.navigate(Apply);
+                     setIsFabOpen(false); // Close the FAB group
+                  },
+               },
+            ]}
+            onStateChange={({ open }) => setIsFabOpen(open)}
+         />
       </View>
    );
 }
