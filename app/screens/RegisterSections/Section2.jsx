@@ -4,9 +4,20 @@ import { Picker } from "@react-native-picker/picker";
 import styles from "../styles";
 import COLORS from "../../component/Colors";
 
-function Section2() {
+function Section2({ section2Obj, setSection2Obj }) {
    const [selectedIncome, setSelectedIncome] = useState("");
    const [selectedStatus, setSelecttedStatus] = useState("");
+
+   // function to handle multiple inputs with obj state
+   function handleInput(text, inputName) {
+      setSection2Obj((prevSection2Obj) => {
+         return {
+            ...prevSection2Obj,
+            [inputName]: text,
+         };
+      });
+      console.log(inputName + " : " + text);
+   }
 
    return (
       <View>
@@ -20,7 +31,8 @@ function Section2() {
                   placeholder="Occupation"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
-                  onChangeText={(text) => setLastName(text)}
+                  onChangeText={(text) => handleInput(text, "occupation")}
+                  value={section2Obj.occupation}
                />
             </View>
          </View>
@@ -30,7 +42,19 @@ function Section2() {
                   placeholder="Length of service or date started"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
-                  onChangeText={(text) => setLastName(text)}
+                  onChangeText={(text) => handleInput(text, "lengthOfService")}
+                  value={section2Obj.lengthOfService}
+               />
+            </View>
+         </View>
+         <View style={{ marginBottom: 12 }}>
+            <View style={styles.sectionInput}>
+               <TextInput
+                  placeholder="Employer or business name"
+                  placeholderTextColor={COLORS.gray}
+                  style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "bussinessName")}
+                  value={section2Obj.bussinessName}
                />
             </View>
          </View>
@@ -40,17 +64,8 @@ function Section2() {
                   placeholder="Employer or business address"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
-                  onChangeText={(text) => setLastName(text)}
-               />
-            </View>
-         </View>
-         <View style={{ marginBottom: 12 }}>
-            <View style={styles.sectionInput}>
-               <TextInput
-                  placeholder="Employer or business address"
-                  placeholderTextColor={COLORS.gray}
-                  style={styles.sectionInputText}
-                  onChangeText={(text) => setLastName(text)}
+                  onChangeText={(text) => handleInput(text, "businessAddress")}
+                  value={section2Obj.businessAddress}
                />
             </View>
          </View>
@@ -60,7 +75,6 @@ function Section2() {
                   placeholder="+63"
                   editable={false}
                   placeholderTextColor={COLORS.gray}
-                  keyboardType="numeric"
                   style={{
                      width: "15%",
                      borderRightWidth: 1,
@@ -70,8 +84,13 @@ function Section2() {
 
                <TextInput
                   placeholder="Contact number"
+                  keyboardType="numeric"
                   placeholderTextColor={COLORS.gray}
                   style={[styles.sectionInputText, { paddingLeft: 20 }]}
+                  onChangeText={(text) =>
+                     handleInput(text, "businessContactNumber")
+                  }
+                  value={section2Obj.businessContactNumber}
                />
             </View>
          </View>
@@ -84,9 +103,11 @@ function Section2() {
             <View style={styles.sectionInputDropdown}>
                <Picker
                   placeholder="Select income"
-                  selectedValue={selectedIncome}
-                  onValueChange={(itemValue) => setSelectedIncome(itemValue)}
-                  mode={Platform.OS === "ios" ? "modal" : "dropdown"}
+                  selectedValue={section2Obj.monthltIncome}
+                  onValueChange={(itemValue) =>
+                     handleInput(itemValue, "monthltIncome")
+                  }
+                  mode={section2Obj.monthltIncome ? "modal" : "dropdown"}
                   style={styles.pickerItemFont}
                >
                   <Picker.Item
@@ -119,9 +140,11 @@ function Section2() {
             <View style={styles.sectionInputDropdown}>
                <Picker
                   placeholder="Select income"
-                  selectedValue={selectedStatus}
-                  onValueChange={(itemValue) => setSelecttedStatus(itemValue)}
-                  mode={Platform.OS === "ios" ? "modal" : "dropdown"}
+                  selectedValue={section2Obj.employmentStatus}
+                  onValueChange={(itemValue) =>
+                     handleInput(itemValue, "employmentStatus")
+                  }
+                  mode={section2Obj.employmentStatus ? "modal" : "dropdown"}
                   style={styles.pickerItemFont}
                >
                   <Picker.Item

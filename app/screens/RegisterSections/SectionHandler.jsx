@@ -70,6 +70,81 @@ function SectionHandler({ navigation }) {
    const [currentPage, setCurrentPage] = useState(1);
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
    useState(false);
+
+   // section 1 data handler
+   const [section1Obj, setSection1Obj] = useState({
+      lastName: "",
+      firstName: "",
+      middleName: "",
+      placeOfBirth: "",
+      dateOfBirth: "",
+      height: "",
+      weight: "",
+      completedEducation: "",
+      taxIDnumber: "",
+      sssIDnumber: "",
+      addOtherID: "",
+      otherIDname: "",
+      otherIDnumber: "",
+      dependenciesCount: "",
+      dependenciesAges: "",
+      presentAddress: "",
+      addressType: "",
+      otherType: "",
+      addressOtherType: "",
+      provincialAddress: "",
+      lengthOfTime: "",
+      emailAddress: "",
+      contactNumber: "",
+      vehicleSelect: "",
+      vehicleType: "",
+      vehiclePlateNumber: "",
+   });
+
+   // section 2 data handler
+   const [section2Obj, setSection2Obj] = useState({
+      occupation: "",
+      lengthOfService: "",
+      businessAddress: "",
+      bussinessName: "",
+      businessContactNumber: "",
+      monthltIncome: "",
+      employmentStatus: "",
+   });
+
+   // section 3 data handler
+   const [section3Obj, setSection3Obj] = useState({
+      spouseLastName: "",
+      spouseFirstName: "",
+      spouseMiddleName: "",
+      spouseDateOfBirth: "",
+      spouseContactNumber: "",
+      spouseOccupation: "",
+      spouseBusiness: "",
+      spouseBusinessAddress: "",
+      spouseMonthlyIncome: "",
+      spouseEmploymentStatus: "",
+      spouseLenghtService: "",
+   });
+
+   // section 4 data handler
+   const [section4Obj, setSection4Obj] = useState({
+      referenceNameP1: "",
+      referenceAddressP1: "",
+      referenceRelationP1: "",
+      referenceContactNumberP1: "",
+      businessContactNumberP1: "",
+      addOtherPerson: "",
+      referenceNameP2: "",
+      referenceAddressP2: "",
+      referenceReLlationP2: "",
+      referenceContactNumberP2: "",
+      businessContactNumberP2: "",
+      heardFrom: "",
+      others: "",
+      referredBy: "",
+   });
+
    const handleNextPage = () => {
       if (currentPage < 5) {
          setCurrentPage(currentPage + 1);
@@ -100,15 +175,42 @@ function SectionHandler({ navigation }) {
    const renderSection = () => {
       switch (currentPage) {
          case 1:
-            return <Section1 />;
+            return (
+               <Section1
+                  section1Obj={section1Obj}
+                  setSection1Obj={setSection1Obj}
+               />
+            );
          case 2:
-            return <Section2 />;
+            return (
+               <Section2
+                  section2Obj={section2Obj}
+                  setSection2Obj={setSection2Obj}
+               />
+            );
          case 3:
-            return <Section3 />;
+            return (
+               <Section3
+                  section3Obj={section3Obj}
+                  setSection3Obj={setSection3Obj}
+               />
+            );
          case 4:
-            return <Section4 />;
+            return (
+               <Section4
+                  section4Obj={section4Obj}
+                  setSection4Obj={setSection4Obj}
+               />
+            );
          case 5:
-            return <Section5 />;
+            return (
+               <Section5
+                  section1Obj={section1Obj}
+                  section2Obj={section2Obj}
+                  section3Obj={section3Obj}
+                  section4Obj={section4Obj}
+               />
+            );
          default:
             return null;
       }

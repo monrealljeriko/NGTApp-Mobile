@@ -29,6 +29,12 @@ const styles = StyleSheet.create({
       fontSize: 14,
       fontFamily: "Poppins-Regular",
    },
+   customSubtextData: {
+      textAlign: "center",
+      fontSize: 14,
+      fontFamily: "Poppins-Regular",
+      textTransform: "uppercase",
+   },
    customSubtextSmall: {
       textAlign: "justify",
       fontSize: 12,

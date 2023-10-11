@@ -13,44 +13,46 @@ import styles from "../styles";
 import COLORS from "../../component/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-function Section1() {
+function Section1({ section1Obj, setSection1Obj }) {
    const [date, setDate] = useState(new Date());
    const [showDatePicker, setShowDatePicker] = useState(false);
-   const [dateText, setDateText] = useState("");
+   const [selectedID, setSelectedID] = useState(true);
 
-   const [selectedID, setSelectedID] = useState(null);
-   const [otherIDText, setOtherIDText] = useState("");
-   const [idNumber, setIDNumber] = useState("");
+   // function to handle multiple inputs with obj state
+   function handleInput(text, inputName) {
+      setSection1Obj((prevSection1Obj) => {
+         return {
+            ...prevSection1Obj,
+            [inputName]: text,
+         };
+      });
+      console.log(inputName + " : " + text);
+   }
 
-   const [selectedType, setSelectedType] = useState(false);
-   const [otherType, setOtherType] = useState("");
-
-   const [selectedVehicle, setSelectedVehicle] = useState("");
-   const [typeVehicle, setTypeVehicle] = useState("");
-   const [plateVehicle, setPlateVehicle] = useState("");
-
+   // handle date picker
    const onChange = (event, selectedDate) => {
       const currentDate = selectedDate || date;
       const formattedDate = currentDate.toLocaleDateString();
+      setShowDatePicker(!showDatePicker);
 
-      setShowDatePicker(Platform.OS === "ios");
-      setDate(currentDate);
-      setDateText(formattedDate);
+      if (event.type === "set") {
+         setDate(currentDate);
+         handleInput(formattedDate, "dateOfBirth");
+      }
    };
 
    const showDatepicker = () => {
       setShowDatePicker(true);
    };
 
-   const handleSelectID = (id) => {
-      if (selectedID === id) {
-         setSelectedID(null); // is clicked again, deselect it
-      } else {
-         setSelectedID(id);
+   const handleSelectID = () => {
+      setSelectedID(!selectedID);
+
+      {
+         selectedID
+            ? handleInput("otherID", "addOtherID")
+            : handleInput("", "addOtherID");
       }
-   };
-   const handleSelectedVehicle = (id) => {
-      setSelectedVehicle(id);
    };
 
    return (
@@ -64,8 +66,8 @@ function Section1() {
                   placeholder="Last name"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
-                  returnKeyType="next"
-                  // onChangeText={(text) => setLastName(text)}
+                  onChangeText={(text) => handleInput(text, "lastName")}
+                  value={section1Obj.lastName}
                />
             </View>
          </View>
@@ -76,6 +78,8 @@ function Section1() {
                   placeholder="First name"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "firstName")}
+                  value={section1Obj.firstName}
                />
             </View>
          </View>
@@ -86,6 +90,8 @@ function Section1() {
                   placeholder="Middle name"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "middleName")}
+                  value={section1Obj.middleName}
                />
             </View>
          </View>
@@ -95,6 +101,8 @@ function Section1() {
                   placeholder="Place of birth"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "placeOfBirth")}
+                  value={section1Obj.placeOfBirth}
                />
             </View>
          </View>
@@ -104,9 +112,8 @@ function Section1() {
                   <TextInput
                      placeholder={showDatePicker ? "" : "Date of birth"}
                      placeholderTextColor={COLORS.gray}
-                     keyboardType="numeric"
                      style={styles.sectionInputText}
-                     value={dateText}
+                     value={section1Obj.dateOfBirth}
                      editable={false}
                   />
                   <Ionicons
@@ -134,7 +141,10 @@ function Section1() {
                   <TextInput
                      placeholder="Heigt(cm)"
                      placeholderTextColor={COLORS.gray}
+                     keyboardType="numeric"
                      style={styles.sectionInputText}
+                     onChangeText={(text) => handleInput(text, "height")}
+                     value={section1Obj.height}
                   />
                </View>
             </View>
@@ -142,8 +152,11 @@ function Section1() {
                <View style={styles.sectionInput}>
                   <TextInput
                      placeholder="Weight(kg)"
+                     keyboardType="numeric"
                      placeholderTextColor={COLORS.gray}
                      style={styles.sectionInputText}
+                     onChangeText={(text) => handleInput(text, "weight")}
+                     value={section1Obj.weight}
                   />
                </View>
             </View>
@@ -154,6 +167,10 @@ function Section1() {
                   placeholder="Highest completed education/course"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) =>
+                     handleInput(text, "completedEducation")
+                  }
+                  value={section1Obj.completedEducation}
                />
             </View>
          </View>
@@ -167,6 +184,8 @@ function Section1() {
                   keyboardType="numeric"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "taxIDnumber")}
+                  value={section1Obj.taxIDnumber}
                />
             </View>
          </View>
@@ -177,14 +196,16 @@ function Section1() {
                   keyboardType="numeric"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "sssIDnumber")}
+                  value={section1Obj.sssIDnumber}
                />
             </View>
          </View>
          <View>
-            <TouchableOpacity onPress={() => handleSelectID("otherID")}>
+            <TouchableOpacity onPress={() => handleSelectID()}>
                <View style={{ flexDirection: "row" }}>
                   <View style={styles.sectionOption}>
-                     {selectedID === "otherID" ? (
+                     {!selectedID ? (
                         <Ionicons
                            name="remove-outline"
                            size={16}
@@ -207,16 +228,18 @@ function Section1() {
             </TouchableOpacity>
          </View>
 
-         {selectedID === "otherID" && (
+         {section1Obj.addOtherID == "otherID" && (
             <View>
                <View style={{ marginBottom: 12 }}>
                   <View style={styles.sectionInput}>
                      <TextInput
                         placeholder="Specify ID"
                         placeholderTextColor={COLORS.gray}
-                        value={otherIDText}
                         style={styles.sectionInputText}
-                        onChangeText={(text) => setOtherIDText(text)}
+                        onChangeText={(text) =>
+                           handleInput(text, "otherIDname")
+                        }
+                        value={section1Obj.otherIDname}
                      />
                   </View>
                </View>
@@ -224,10 +247,13 @@ function Section1() {
                   <View style={styles.sectionInput}>
                      <TextInput
                         placeholder="ID number"
+                        keyboardType="numeric"
                         placeholderTextColor={COLORS.gray}
-                        value={idNumber}
-                        onChangeText={(text) => setIDNumber(text)}
                         style={styles.sectionInputText}
+                        onChangeText={(text) =>
+                           handleInput(text, "otherIDnumber")
+                        }
+                        value={section1Obj.otherIDnumber}
                      />
                   </View>
                </View>
@@ -242,7 +268,12 @@ function Section1() {
                   <TextInput
                      placeholder="Count"
                      placeholderTextColor={COLORS.gray}
+                     keyboardType="numeric"
                      style={styles.sectionInputText}
+                     onChangeText={(text) =>
+                        handleInput(text, "dependenciesCount")
+                     }
+                     value={section1Obj.dependenciesCount}
                   />
                </View>
             </View>
@@ -251,7 +282,12 @@ function Section1() {
                   <TextInput
                      placeholder="Ages"
                      placeholderTextColor={COLORS.gray}
+                     keyboardType="numeric"
                      style={styles.sectionInputText}
+                     onChangeText={(text) =>
+                        handleInput(text, "dependenciesAges")
+                     }
+                     value={section1Obj.dependenciesAges}
                   />
                </View>
             </View>
@@ -265,16 +301,19 @@ function Section1() {
                   placeholder="Present address"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "presentAddress")}
+                  value={section1Obj.presentAddress}
                />
             </View>
          </View>
          <View style={{ marginBottom: 12 }}>
             <View style={styles.sectionInputDropdown}>
                <Picker
-                  placeholder={selectedType == "" ? "" : "Date of birth"}
-                  selectedValue={selectedType}
-                  onValueChange={(itemValue) => setSelectedType(itemValue)}
-                  mode={Platform.OS === "ios" ? "modal" : "dropdown"}
+                  selectedValue={section1Obj.addressType}
+                  onValueChange={(itemValue) =>
+                     handleInput(itemValue, "addressType")
+                  }
+                  mode={section1Obj.addressType ? "modal" : "dropdown"}
                >
                   <Picker.Item
                      label="Select type"
@@ -292,15 +331,17 @@ function Section1() {
                </Picker>
             </View>
 
-            {selectedType === "Others" && (
+            {section1Obj.addressType === "Others" && (
                <View style={{ marginTop: 12 }}>
                   <View style={styles.sectionInput}>
                      <TextInput
-                        placeholder="Other owner type"
+                        placeholder="Owner address type"
                         placeholderTextColor={COLORS.gray}
-                        value={otherType}
-                        onChangeText={(text) => setOtherType(text)}
                         style={styles.sectionInputText}
+                        onChangeText={(text) =>
+                           handleInput(text, "addressOtherType")
+                        }
+                        value={section1Obj.addressOtherType}
                      />
                   </View>
                </View>
@@ -312,6 +353,10 @@ function Section1() {
                   placeholder="Provincial address"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) =>
+                     handleInput(text, "provincialAddress")
+                  }
+                  value={section1Obj.provincialAddress}
                />
             </View>
          </View>
@@ -321,6 +366,8 @@ function Section1() {
                   placeholder="Length of time at present address"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "lengthOfTime")}
+                  value={section1Obj.lengthOfTime}
                />
             </View>
          </View>
@@ -330,6 +377,8 @@ function Section1() {
                   placeholder="Email address"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) => handleInput(text, "emailAddress")}
+                  value={section1Obj.emailAddress}
                />
             </View>
          </View>
@@ -352,6 +401,8 @@ function Section1() {
                   placeholderTextColor={COLORS.gray}
                   keyboardType="numeric"
                   style={[styles.sectionInputText, { paddingLeft: 20 }]}
+                  onChangeText={(text) => handleInput(text, "contactNumber")}
+                  value={section1Obj.contactNumber}
                />
             </View>
          </View>
@@ -366,9 +417,11 @@ function Section1() {
                >
                   Do you own a vehicle?
                </Text>
-               <TouchableOpacity onPress={() => handleSelectedVehicle("Yes")}>
+               <TouchableOpacity
+                  onPress={() => handleInput("Yes", "vehicleSelect")}
+               >
                   <View style={styles.sectionOption}>
-                     {selectedVehicle === "Yes" && (
+                     {section1Obj.vehicleSelect === "Yes" && (
                         <View style={styles.sectionOptionFill} />
                      )}
                   </View>
@@ -381,9 +434,11 @@ function Section1() {
                >
                   Yes
                </Text>
-               <TouchableOpacity onPress={() => handleSelectedVehicle("No")}>
+               <TouchableOpacity
+                  onPress={() => handleInput("No", "vehicleSelect")}
+               >
                   <View style={styles.sectionOption}>
-                     {selectedVehicle === "No" && (
+                     {section1Obj.vehicleSelect === "No" && (
                         <View style={styles.sectionOptionFill} />
                      )}
                   </View>
@@ -399,16 +454,18 @@ function Section1() {
             </View>
          </View>
 
-         {selectedVehicle === "Yes" && (
+         {section1Obj.vehicleSelect === "Yes" && (
             <View>
                <View style={{ marginBottom: 12 }}>
                   <View style={styles.sectionInput}>
                      <TextInput
                         placeholder="Type"
                         placeholderTextColor={COLORS.gray}
-                        value={typeVehicle}
                         style={styles.sectionInputText}
-                        onChangeText={(text) => setTypeVehicle(text)}
+                        onChangeText={(text) =>
+                           handleInput(text, "vehicleType")
+                        }
+                        value={section1Obj.vehicleType}
                      />
                   </View>
                </View>
@@ -417,9 +474,11 @@ function Section1() {
                      <TextInput
                         placeholder="Plate number"
                         placeholderTextColor={COLORS.gray}
-                        value={plateVehicle}
-                        onChangeText={(text) => setPlateVehicle(text)}
                         style={styles.sectionInputText}
+                        onChangeText={(text) =>
+                           handleInput(text, "vehiclePlateNumber")
+                        }
+                        value={section1Obj.vehiclePlateNumber}
                      />
                   </View>
                </View>

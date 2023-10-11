@@ -5,15 +5,27 @@ import { Picker } from "@react-native-picker/picker";
 import styles from "../styles";
 import COLORS from "../../component/Colors";
 
-function Section4() {
-   const [addPerson, setAddPerson] = useState(null);
+function Section4({ section4Obj, setSection4Obj }) {
+   const [addPerson, setAddPerson] = useState(true);
    const [selectedSource, setSelectedSource] = useState("");
 
-   const handlePerson = (id) => {
-      if (addPerson === id) {
-         setAddPerson(null); // is clicked again, deselect it
-      } else {
-         setAddPerson(id);
+   // function to handle multiple inputs with obj state
+   function handleInput(text, inputName) {
+      setSection4Obj((prevSection4Obj) => {
+         return {
+            ...prevSection4Obj,
+            [inputName]: text,
+         };
+      });
+      console.log(inputName + " : " + text);
+   }
+
+   const handlePerson = () => {
+      setAddPerson(!addPerson); // is clicked again, deselect it
+      {
+         addPerson
+            ? handleInput("personAdd", "addOtherPerson")
+            : handleInput("", "addOtherPerson");
       }
    };
 
@@ -27,7 +39,8 @@ function Section4() {
                   placeholder="Name"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
-                  onChangeText={(text) => setLastName(text)}
+                  onChangeText={(text) => handleInput(text, "referenceNameP1")}
+                  value={section4Obj.referenceNameP1}
                />
             </View>
          </View>
@@ -38,6 +51,10 @@ function Section4() {
                   placeholder="Address"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) =>
+                     handleInput(text, "referenceAddressP1")
+                  }
+                  value={section4Obj.referenceAddressP1}
                />
             </View>
          </View>
@@ -48,6 +65,10 @@ function Section4() {
                   placeholder="Relation"
                   placeholderTextColor={COLORS.gray}
                   style={styles.sectionInputText}
+                  onChangeText={(text) =>
+                     handleInput(text, "referenceRelationP1")
+                  }
+                  value={section4Obj.referenceRelationP1}
                />
             </View>
          </View>
@@ -58,7 +79,6 @@ function Section4() {
                   placeholder="+63"
                   editable={false}
                   placeholderTextColor={COLORS.gray}
-                  keyboardType="numeric"
                   style={{
                      width: "15%",
                      borderRightWidth: 1,
@@ -69,16 +89,21 @@ function Section4() {
                <TextInput
                   placeholder="Contact number"
                   placeholderTextColor={COLORS.gray}
+                  keyboardType="numeric"
                   style={[styles.sectionInputText, { paddingLeft: 20 }]}
+                  onChangeText={(text) =>
+                     handleInput(text, "referenceContactNumberP1")
+                  }
+                  value={section4Obj.referenceContactNumberP1}
                />
             </View>
          </View>
 
          <View>
-            <TouchableOpacity onPress={() => handlePerson("refPerson")}>
+            <TouchableOpacity onPress={() => handlePerson()}>
                <View style={{ flexDirection: "row" }}>
                   <View style={styles.sectionOption}>
-                     {addPerson === "refPerson" ? (
+                     {!addPerson ? (
                         <Ionicons
                            name="remove-outline"
                            size={16}
@@ -101,7 +126,7 @@ function Section4() {
             </TouchableOpacity>
          </View>
 
-         {addPerson === "refPerson" && (
+         {section4Obj.addOtherPerson == "personAdd" && (
             <View>
                <View style={{ marginBottom: 12 }}>
                   <Text style={styles.sectionSubText}>Person 2 :</Text>
@@ -110,7 +135,10 @@ function Section4() {
                         placeholder="Name"
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
-                        onChangeText={(text) => setLastName(text)}
+                        onChangeText={(text) =>
+                           handleInput(text, "referenceNameP2")
+                        }
+                        value={section4Obj.referenceNameP2}
                      />
                   </View>
                </View>
@@ -121,6 +149,10 @@ function Section4() {
                         placeholder="Address"
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
+                        onChangeText={(text) =>
+                           handleInput(text, "referenceAddressP2")
+                        }
+                        value={section4Obj.referenceAddressP2}
                      />
                   </View>
                </View>
@@ -131,6 +163,10 @@ function Section4() {
                         placeholder="Relation"
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
+                        onChangeText={(text) =>
+                           handleInput(text, "referenceRelationP2")
+                        }
+                        value={section4Obj.referenceRelationP2}
                      />
                   </View>
                </View>
@@ -151,8 +187,13 @@ function Section4() {
 
                      <TextInput
                         placeholder="Contact number"
+                        keyboardType="numeric"
                         placeholderTextColor={COLORS.gray}
                         style={[styles.sectionInputText, { paddingLeft: 20 }]}
+                        onChangeText={(text) =>
+                           handleInput(text, "referenceContactNumberP2")
+                        }
+                        value={section4Obj.referenceContactNumberP2}
                      />
                   </View>
                </View>
@@ -168,9 +209,11 @@ function Section4() {
             <View style={[styles.sectionInputDropdown, { marginBottom: 12 }]}>
                <Picker
                   placeholder="Select income"
-                  selectedValue={selectedSource}
-                  onValueChange={(itemValue) => setSelectedSource(itemValue)}
-                  mode={Platform.OS === "ios" ? "modal" : "dropdown"}
+                  selectedValue={section4Obj.heardFrom}
+                  onValueChange={(itemValue) =>
+                     handleInput(itemValue, "heardFrom")
+                  }
+                  mode={section4Obj.heardFrom ? "modal" : "dropdown"}
                   style={styles.pickerItemFont}
                >
                   <Picker.Item
@@ -179,7 +222,7 @@ function Section4() {
                      style={styles.pickerItem}
                   />
 
-                  <Picker.Item label="Advertisement" value="ads" />
+                  <Picker.Item label="Advertisement" value="advertisement" />
                   <Picker.Item label="Events or trade fair" value="events" />
                   <Picker.Item
                      label="Fliers of information drive"
@@ -189,31 +232,33 @@ function Section4() {
                      label="Internet or social media"
                      value="internet"
                   />
-                  <Picker.Item label="Referred by" value="refer" />
+                  <Picker.Item label="Referred by" value="referred" />
                   <Picker.Item label="Others" value="others" />
                </Picker>
             </View>
 
-            {selectedSource === "others" && (
+            {section4Obj.heardFrom === "others" && (
                <View style={{ marginBottom: 12 }}>
                   <View style={styles.sectionInput}>
                      <TextInput
                         placeholder="Specify"
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
-                        onChangeText={(text) => setLastName(text)}
+                        onChangeText={(text) => handleInput(text, "others")}
+                        value={section4Obj.others}
                      />
                   </View>
                </View>
             )}
-            {selectedSource === "refer" && (
+            {section4Obj.heardFrom === "referred" && (
                <View style={{ marginBottom: 12 }}>
                   <View style={styles.sectionInput}>
                      <TextInput
                         placeholder="Specify"
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
-                        onChangeText={(text) => setLastName(text)}
+                        onChangeText={(text) => handleInput(text, "referredBy")}
+                        value={section4Obj.referredBy}
                      />
                   </View>
                </View>
