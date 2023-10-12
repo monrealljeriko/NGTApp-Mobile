@@ -3,6 +3,7 @@ import {
    Text,
    StyleSheet,
    TextInput,
+   Image,
    ScrollView,
    TouchableOpacity,
 } from "react-native";
@@ -11,8 +12,68 @@ import COLORS from "../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import Button from "../component/Button";
+import Modal from "react-native-modal";
 
-function Apply() {
+// success screen page
+export function RequestCompleted({ navigation }) {
+   return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+         <Image source={require("../../assets/images/submit-check.png")} />
+         <View style={{ marginHorizontal: 40, marginTop: 20 }}>
+            <Text style={styles.submitTitle}>Requested Successfully</Text>
+            <Text style={styles.submitText}>
+               Your request has been submitted successfully. You will be
+               notified soon.
+            </Text>
+            <Button
+               title="Close"
+               filled
+               onPress={() => navigation.navigate("Loans")}
+               style={{
+                  marginTop: 22,
+                  marginBottom: 4,
+                  border: "none",
+                  marginHorizontal: 60,
+               }}
+            />
+         </View>
+      </View>
+   );
+}
+
+// Modal configuration
+function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
+   return (
+      <Modal isVisible={isVisible} backdropOpacity={0.5}>
+         <View style={styles.modalContainer}>
+            <View style={{ margin: 20 }}>
+               <Text style={styles.modalHeader}>
+                  Are you sure you want to submit your request?
+               </Text>
+            </View>
+            <View style={styles.modalButton}>
+               <TouchableOpacity onPress={onCancel}>
+                  <View style={styles.moodalCancel}>
+                     <Text style={styles.modalCancelText}>Cancel</Text>
+                  </View>
+               </TouchableOpacity>
+
+               <TouchableOpacity onPress={onConfirm}>
+                  <View style={styles.modalConfirm}>
+                     <Text style={styles.modalConfirmText}>Confirm</Text>
+                  </View>
+               </TouchableOpacity>
+            </View>
+         </View>
+      </Modal>
+   );
+}
+
+function Apply({ navigation }) {
+   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+   const [loanStatus, setLoanStatus] = useState(true);
+
+   // for calculations
    const [selectedTerms, setSelectedTerms] = useState("");
    const [numberOfPayments, setNumberOfPayments] = useState("");
    const [selectedLoans, setSelectedLoans] = useState("");
@@ -136,6 +197,17 @@ function Apply() {
       );
    };
 
+   const handleSubmit = () => {
+      setConfirmationVisible(true);
+   };
+   const handleConfirmSubmit = () => {
+      console.log("Successul!");
+      navigation.navigate("RequestCompleted");
+   };
+   const handleCancelSubmit = () => {
+      console.log("Cancelled!");
+      setConfirmationVisible(false);
+   };
    return (
       <View style={styles.container}>
          <ScrollView>
@@ -348,9 +420,18 @@ function Apply() {
                   </View>
                </View>
                <View style={{ marginVertical: 20 }}>
-                  <Button title="Submit Request" filled />
+                  <Button
+                     title="Submit Request"
+                     filled
+                     onPress={handleSubmit}
+                  />
                </View>
             </View>
+            <ConfirmationModal
+               isVisible={isConfirmationVisible}
+               onConfirm={handleConfirmSubmit}
+               onCancel={handleCancelSubmit}
+            />
          </ScrollView>
       </View>
    );
@@ -454,5 +535,71 @@ const styles = StyleSheet.create({
       justifyContent: "space-between",
       marginHorizontal: 10,
       alignItems: "center",
+   },
+
+   // sumbit
+   submitTitle: {
+      fontSize: 22,
+      fontFamily: "Poppins-Regular",
+      color: COLORS.primary,
+      textAlign: "center",
+   },
+   submitText: {
+      fontSize: 14,
+      fontFamily: "Poppins-Regular",
+      textAlign: "center",
+   },
+
+   // Section submit
+   modalContainer: {
+      backgroundColor: "white",
+      marginHorizontal: 20,
+      height: 140,
+      borderRadius: 15,
+   },
+   modalHeader: {
+      textAlign: "center",
+      fontFamily: "Poppins-Regular",
+      fontSize: 18,
+   },
+   modalContainer: {
+      backgroundColor: "white",
+      marginHorizontal: 20,
+      height: 140,
+      borderRadius: 15,
+   },
+   modalHeader: {
+      textAlign: "center",
+      fontFamily: "Poppins-Regular",
+      fontSize: 18,
+   },
+   modalButton: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+   },
+   /*  moodalCancel: {
+      borderTopWidth: 1.5,
+      paddingVertical: 10,
+      borderBottomLeftRadius: 15,
+      width: 165,
+      alignItems: "center",
+      borderTopColor: COLORS.white,
+   }, */
+   /*   modalConfirm: {
+      paddingVertical: 10,
+      borderBottomEndRadius: 15,
+      width: 165,
+      alignItems: "center",
+      backgroundColor: COLORS.primary,
+   }, */
+   modalCancelText: {
+      fontFamily: "Poppins-Regular",
+      fontSize: 16,
+      color: "red",
+   },
+   modalConfirmText: {
+      fontFamily: "Poppins-Regular",
+      fontSize: 16,
+      color: COLORS.primary,
    },
 });

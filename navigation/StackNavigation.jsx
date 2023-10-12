@@ -9,6 +9,7 @@ import {
    Profile,
    Notification,
    Apply,
+   RequestCompleted,
 } from "../app/index";
 import TabNavigation from "./TabNavigation";
 import COLORS from "../app/component/Colors";
@@ -82,6 +83,7 @@ function StackNavigation() {
          />
 
          <Stack.Screen name="RegisterCompleted" component={RegisterCompleted} />
+         <Stack.Screen name="RequestCompleted" component={RequestCompleted} />
       </Stack.Navigator>
    );
 }

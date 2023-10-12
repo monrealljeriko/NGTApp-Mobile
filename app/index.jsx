@@ -9,6 +9,7 @@ import Notification from "./screens/Notification";
 import Apply from "./screens/Apply";
 import SectionHandler from "./screens/RegisterSections/SectionHandler";
 import { RegisterCompleted } from "./screens/RegisterSections/SectionHandler";
+import { RequestCompleted } from "./screens/Apply";
 
 export {
    Start,
@@ -22,4 +23,5 @@ export {
    Apply,
    SectionHandler,
    RegisterCompleted,
+   RequestCompleted,
 };

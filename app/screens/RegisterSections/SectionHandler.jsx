@@ -23,13 +23,14 @@ export function RegisterCompleted({ navigation }) {
                do eiusmod tempor incididunt ut labore et dolore
             </Text>
             <Button
-               title="Done"
+               title="Close"
                filled
                onPress={() => navigation.navigate("Start")}
                style={{
-                  marginTop: 18,
+                  marginTop: 22,
                   marginBottom: 4,
                   border: "none",
+                  marginHorizontal: 60,
                }}
             />
          </View>
@@ -69,7 +70,6 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
 function SectionHandler({ navigation }) {
    const [currentPage, setCurrentPage] = useState(1);
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
-   useState(false);
 
    // section 1 data handler
    const [section1Obj, setSection1Obj] = useState({
@@ -279,7 +279,6 @@ function SectionHandler({ navigation }) {
                ) : (
                   <Button
                      title="Next"
-                     d
                      filled
                      onPress={handleNextPage}
                      style={{ width: "50%" }}

@@ -627,33 +627,28 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                                  : section4Obj.referenceContactNumberP2}
                            </Text>
                         </View>
-                        <View
-                           style={[styles.sectionContainer, { marginTop: 18 }]}
-                        >
-                           <Text
-                              style={[
-                                 styles.customSubtext,
-                                 { textAlign: "left" },
-                              ]}
-                           >
-                              Heard from :
-                           </Text>
-                           <Text style={[styles.customSubtextData, ,]}>
-                              {section4Obj.heardFrom == ""
-                                 ? "n/a"
-                                 : section4Obj.heardFrom}
-                           </Text>
-                           <Text style={[styles.customSubtextData]}>
-                              {section4Obj.heardFrom == "others" &&
-                                 section4Obj.others}
-                           </Text>
-                           <Text style={[styles.customSubtextData]}>
-                              {section4Obj.heardFrom == "referred" &&
-                                 section4Obj.referredBy}
-                           </Text>
-                        </View>
                      </View>
                   )}
+                  <View style={[styles.sectionContainer, { marginTop: 18 }]}>
+                     <Text
+                        style={[styles.customSubtext, { textAlign: "left" }]}
+                     >
+                        Heard from :
+                     </Text>
+                     <Text style={[styles.customSubtextData, ,]}>
+                        {section4Obj.heardFrom == ""
+                           ? "n/a"
+                           : section4Obj.heardFrom}
+                     </Text>
+                     <Text style={[styles.customSubtextData]}>
+                        {section4Obj.heardFrom == "others" &&
+                           section4Obj.others}
+                     </Text>
+                     <Text style={[styles.customSubtextData]}>
+                        {section4Obj.heardFrom == "referred" &&
+                           section4Obj.referredBy}
+                     </Text>
+                  </View>
                </View>
             )}
          </View>
