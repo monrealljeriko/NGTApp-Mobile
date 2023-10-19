@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
    },
    customSubtextSmall: {
       textAlign: "justify",
-      fontSize: 12,
+      fontSize: 14,
       fontFamily: "Poppins-Regular",
    },
    buttonContainer: {

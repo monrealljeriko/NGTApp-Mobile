@@ -71,7 +71,6 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
 
 function Apply({ navigation }) {
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
-   const [loanStatus, setLoanStatus] = useState(true);
 
    // for calculations
    const [selectedTerms, setSelectedTerms] = useState("");
@@ -81,7 +80,6 @@ function Apply({ navigation }) {
    const [payableLabel, setPayableLabel] = useState("");
    const [interestRateLabel, setInterestRateLabel] = useState("0");
 
-   const [interestRate, setInterestRate] = useState(0);
    const [serviceHandlingCharge, setServiceHandlingCharge] = useState(0);
    const [totalFinanceCharge, setTotalFinanceCharge] = useState(0);
    const [totalNonFinanceCharges, setTotalNonFinanceCharges] = useState(0);
@@ -101,21 +99,27 @@ function Apply({ navigation }) {
       if (term === 30) {
          switch (numberOfPayments) {
             case "Daily":
-               setInterestRate(0.0125);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.0125).toFixed(1))
+               );
                setInterestRateLabel("1.25%");
                setTotalPayment(parseFloat((loanAmount / 30).toFixed(1)));
                setPayableIN(30);
                setPayableLabel("days");
                break;
             case "Weekly":
-               setInterestRate(0.02);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.02).toFixed(1))
+               );
                setInterestRateLabel("2%");
                setTotalPayment(parseFloat((loanAmount / 4.29).toFixed(1)));
                setPayableIN(4);
                setPayableLabel("wks");
                break;
             case "Monthly":
-               setInterestRate(0.025);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.025).toFixed(1))
+               );
                setInterestRateLabel("2.5%");
                setTotalPayment(parseFloat((loanAmount / 1).toFixed(1)));
                setPayableIN(1);
@@ -128,21 +132,27 @@ function Apply({ navigation }) {
       if (term === 60) {
          switch (numberOfPayments) {
             case "Daily":
-               setInterestRate(0.0325);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.0325).toFixed(1))
+               );
                setInterestRateLabel("3.25%");
                setTotalPayment(parseFloat((loanAmount / 60).toFixed(1)));
                setPayableIN(60);
                setPayableLabel("days");
                break;
             case "Weekly":
-               setInterestRate(0.04);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.04).toFixed(1))
+               );
                setInterestRateLabel("4%");
                setTotalPayment(parseFloat((loanAmount / 8.57).toFixed(1)));
                setPayableIN(8);
                setPayableLabel("wks");
                break;
             case "Monthly":
-               setInterestRate(0.05);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.05).toFixed(1))
+               );
                setInterestRateLabel("5%");
                setTotalPayment(parseFloat((loanAmount / 2).toFixed(1)));
                setPayableIN(2);
@@ -155,21 +165,27 @@ function Apply({ navigation }) {
       if (term === 100) {
          switch (numberOfPayments) {
             case "Daily":
-               setInterestRate(0.055);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.055).toFixed(1))
+               );
                setInterestRateLabel("5.5%");
                setTotalPayment(parseFloat((loanAmount / 100).toFixed(1)));
                setPayableIN(100);
                setPayableLabel("days");
                break;
             case "Weekly":
-               setInterestRate(0.07);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.07).toFixed(1))
+               );
                setInterestRateLabel("7%");
                setTotalPayment(parseFloat((loanAmount / 14).toFixed(1)));
                setPayableIN(14);
                setPayableLabel("wks");
                break;
             case "Monthly":
-               setInterestRate(0.08);
+               setTotalFinanceCharge(
+                  parseFloat((loanAmount * 0.08).toFixed(1))
+               );
                setInterestRateLabel("8%");
                setTotalPayment(parseFloat((loanAmount / 3).toFixed(1)));
                setPayableIN(3);
@@ -180,7 +196,6 @@ function Apply({ navigation }) {
          }
       }
 
-      setTotalFinanceCharge(parseFloat((loanAmount * interestRate).toFixed(1)));
       setTotalNonFinanceCharges(100);
       setServiceHandlingCharge(parseFloat((loanAmount * 0.02).toFixed(1)));
       setTotalDeductionCharge(
@@ -195,6 +210,9 @@ function Apply({ navigation }) {
       setNetProceedsFromLoan(
          parseFloat((loanAmount - totalDeductionCharge).toFixed(1))
       );
+      console.log("LOAN AMOUNT " + typeof loanAmount + " :" + loanAmount);
+
+      console.log("TERM " + typeof term + ":" + term);
    };
 
    const handleSubmit = () => {
@@ -255,7 +273,7 @@ function Apply({ navigation }) {
                         onValueChange={(itemValue) => {
                            setSelectedTerms(itemValue);
                         }}
-                        mode={Platform.OS === "ios" ? "modal" : "dropdown"}
+                        mode={selectedTerms ? "modal" : "dropdown"}
                         style={styles.pickerItemFont}
                      >
                         <Picker.Item
@@ -280,7 +298,7 @@ function Apply({ navigation }) {
                         onValueChange={(itemValue) => {
                            setNumberOfPayments(itemValue);
                         }}
-                        mode={Platform.OS === "ios" ? "modal" : "dropdown"}
+                        mode={numberOfPayments ? "modal" : "dropdown"}
                         style={styles.pickerItemFont}
                      >
                         <Picker.Item
@@ -318,7 +336,8 @@ function Apply({ navigation }) {
                         </Text>
                         <Text style={styles.cardTextBold}>
                            ₱
-                           {selectedTerms != "" &&
+                           {selectedLoans != "" &&
+                              selectedTerms != "" &&
                               numberOfPayments != "" &&
                               serviceHandlingCharge}
                         </Text>
@@ -338,7 +357,8 @@ function Apply({ navigation }) {
                         </Text>
                         <Text style={styles.cardTextBold}>
                            ₱
-                           {selectedTerms != "" &&
+                           {selectedLoans != "" &&
+                              selectedTerms != "" &&
                               numberOfPayments != "" &&
                               totalFinanceCharge}
                         </Text>
@@ -351,7 +371,8 @@ function Apply({ navigation }) {
                         </Text>
                         <Text style={styles.cardTextBold}>
                            ₱
-                           {selectedTerms != "" &&
+                           {selectedLoans != "" &&
+                              selectedTerms != "" &&
                               numberOfPayments != "" &&
                               totalNonFinanceCharges}
                         </Text>
@@ -371,7 +392,8 @@ function Apply({ navigation }) {
                         </Text>
                         <Text style={styles.cardTextBold}>
                            ₱
-                           {selectedTerms != "" &&
+                           {selectedLoans != "" &&
+                              selectedTerms != "" &&
                               numberOfPayments != "" &&
                               totalDeductionCharge}
                         </Text>
@@ -384,7 +406,8 @@ function Apply({ navigation }) {
                         </Text>
                         <Text style={styles.cardTextBold}>
                            ₱
-                           {selectedTerms != "" &&
+                           {selectedLoans != "" &&
+                              selectedTerms != "" &&
                               numberOfPayments != "" &&
                               netProceedsFromLoan}
                         </Text>
@@ -404,7 +427,8 @@ function Apply({ navigation }) {
                         </Text>
                         <Text style={[styles.cardTextBold, { fontSize: 22 }]}>
                            ₱
-                           {selectedTerms != "" &&
+                           {selectedLoans != "" &&
+                              selectedTerms != "" &&
                               numberOfPayments != "" &&
                               totalPayment}
                         </Text>

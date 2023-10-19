@@ -60,6 +60,26 @@ function Register({ navigation }) {
                            >
                               Terms and Conditions
                            </Text>
+
+                           <Text
+                              style={[
+                                 styles.customSubtext,
+                                 { textAlign: "justify" },
+                              ]}
+                           >
+                              {"     "}
+                              The San Jose Public Market Vendor and Community
+                              Credit Cooperative is a financial institution
+                              established in April 2017, offering a productive
+                              and emergency loans to help improve borrowers'
+                              businesses, subject to eligibility criteria. If
+                              you faced payment issues, reapplying is possible
+                              after settling payments, but your loan amount may
+                              be decreased. If you repeatedly miss payment
+                              deadlines, the office will send a demand letter.
+                              If you don't respond, you must visit the office,
+                              or legal action will be taken against you.
+                           </Text>
                            <Text style={styles.customSubtext}>
                               Welcome to Our Lending Management System!
                            </Text>
@@ -89,8 +109,8 @@ function Register({ navigation }) {
                               If you borrow money, you've got to pay it back
                               according to the rules you and the lender agreed
                               on. If you're the lender, be aware that lending
-                              has its risks. We're not responsible for your loan
-                              deals – that's between you and the borrower.
+                              has its risks. The system is not responsible for
+                              loan deals betwen borrower and lender.
                            </Text>
                            <Text style={styles.customSubtextTC}>
                               4. Privacy
@@ -165,7 +185,7 @@ function Register({ navigation }) {
                                  { alignSelf: "center" },
                               ]}
                            >
-                              Prepare the following requirements:
+                              Prepare and bring the following requirements:
                            </Text>
                            <Text style={styles.customSubtext}>
                               1. Membership Application Form
@@ -181,6 +201,41 @@ function Register({ navigation }) {
 
                            <Text style={styles.customSubtext}>
                               4. 1x1 ID Picture
+                           </Text>
+                        </View>
+                        <View style={{ gap: 10 }}>
+                           <Text
+                              style={[
+                                 styles.customSubtextTC,
+                                 { fontFamily: "Poppins-Bold" },
+                              ]}
+                           >
+                              Additional requirement that must be done
+                              face-to-face:
+                           </Text>
+                           <Text style={styles.customSubtextTC}>
+                              1. Interview
+                           </Text>
+                           <Text style={styles.customSubtextSmall}>
+                              To assess financial situation, creditworthiness
+                              and repayment ability of the borrower
+                           </Text>
+                           <Text style={styles.customSubtextTC}>
+                              1. Seminar
+                           </Text>
+                           <Text style={styles.customSubtextSmall}>
+                              To assess financial situation, creditworthiness
+                              and repayment ability of the borrower
+                           </Text>
+                        </View>
+                        <View style={{ marginTop: 20 }}>
+                           <Text style={styles.customSubtextSmall}>Note:</Text>
+                           <Text style={styles.customSubtextSmall}>
+                              {" "}
+                              Physical submission of requirements is necessary
+                              to ensure that all documentation is complete and
+                              can be thoroughly checked for accuracy and
+                              authenticity.
                            </Text>
                         </View>
                      </View>
