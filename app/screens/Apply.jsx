@@ -13,6 +13,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import Button from "../component/Button";
 import Modal from "react-native-modal";
+import { doc, setDoc } from "firebase/firestore";
+import { FIREBASE_DB } from "../../firebaseConfig";
 
 // success screen page
 export function RequestCompleted({ navigation }) {
@@ -71,7 +73,7 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
 
 function Apply({ navigation }) {
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
-
+   const [showEMICalculation, setShowEMICalculation] = useState(false);
    // for calculations
    const [selectedTerms, setSelectedTerms] = useState("");
    const [numberOfPayments, setNumberOfPayments] = useState("");
@@ -79,6 +81,7 @@ function Apply({ navigation }) {
    const [purposeOfLoan, setPurposeOfLoan] = useState("");
    const [payableLabel, setPayableLabel] = useState("");
    const [interestRateLabel, setInterestRateLabel] = useState("0");
+   const [dateRequested, setDateRequested] = useState("");
 
    const [serviceHandlingCharge, setServiceHandlingCharge] = useState(0);
    const [totalFinanceCharge, setTotalFinanceCharge] = useState(0);
@@ -86,11 +89,47 @@ function Apply({ navigation }) {
    const [totalDeductionCharge, setTotalDeductionCharge] = useState(0);
    const [netProceedsFromLoan, setNetProceedsFromLoan] = useState(0);
    const [totalPayment, setTotalPayment] = useState(0);
-   const [payableIN, setPayableIN] = useState(0);
+   const [loanRequestID, setLoanRequestID] = useState(0);
 
    useEffect(() => {
       calculateTotals();
    }, [selectedTerms, numberOfPayments, selectedLoans, purposeOfLoan]);
+
+   // get the current date
+   useEffect(() => {
+      // Function to get the current date
+      const getCurrentDate = () => {
+         const now = new Date();
+         const year = now.getFullYear();
+         const month = now.getMonth() + 1; // Months are zero-based (0 = January, 11 = December)
+         const day = now.getDate();
+         return `${month}/${day}/${year}`;
+      };
+
+      const generateRequestId = () => {
+         // Generate 6 random numbers (0-9)
+         const numChars = "0123456789";
+         let numId = "";
+         for (let i = 0; i < 6; i++) {
+            numId += numChars[Math.floor(Math.random() * 10)];
+         }
+
+         // Generate 2 random words (uppercase alphanumeric characters)
+         const wordChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+         let wordId = "";
+         for (let i = 0; i < 2; i++) {
+            wordId += wordChars[Math.floor(Math.random() * 36)];
+         }
+
+         const uniqueId = wordId + numId;
+
+         return uniqueId;
+      };
+
+      // Set the current date in the state
+      setLoanRequestID(generateRequestId());
+      setDateRequested(getCurrentDate());
+   }, []);
 
    const calculateTotals = () => {
       const term = parseInt(selectedTerms);
@@ -104,8 +143,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("1.25%");
                setTotalPayment(parseFloat((loanAmount / 30).toFixed(1)));
-               setPayableIN(30);
-               setPayableLabel("days");
+               setPayableLabel("30/days");
                break;
             case "Weekly":
                setTotalFinanceCharge(
@@ -113,8 +151,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("2%");
                setTotalPayment(parseFloat((loanAmount / 4.29).toFixed(1)));
-               setPayableIN(4);
-               setPayableLabel("wks");
+               setPayableLabel("4/wks");
                break;
             case "Monthly":
                setTotalFinanceCharge(
@@ -122,8 +159,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("2.5%");
                setTotalPayment(parseFloat((loanAmount / 1).toFixed(1)));
-               setPayableIN(1);
-               setPayableLabel("mos");
+               setPayableLabel("1/mos");
                break;
             default:
                break;
@@ -137,8 +173,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("3.25%");
                setTotalPayment(parseFloat((loanAmount / 60).toFixed(1)));
-               setPayableIN(60);
-               setPayableLabel("days");
+               setPayableLabel("60/days");
                break;
             case "Weekly":
                setTotalFinanceCharge(
@@ -146,8 +181,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("4%");
                setTotalPayment(parseFloat((loanAmount / 8.57).toFixed(1)));
-               setPayableIN(8);
-               setPayableLabel("wks");
+               setPayableLabel("8/wks");
                break;
             case "Monthly":
                setTotalFinanceCharge(
@@ -155,8 +189,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("5%");
                setTotalPayment(parseFloat((loanAmount / 2).toFixed(1)));
-               setPayableIN(2);
-               setPayableLabel("mos");
+               setPayableLabel("2/mos");
                break;
             default:
                break;
@@ -171,7 +204,7 @@ function Apply({ navigation }) {
                setInterestRateLabel("5.5%");
                setTotalPayment(parseFloat((loanAmount / 100).toFixed(1)));
                setPayableIN(100);
-               setPayableLabel("days");
+               setPayableLabel("100/days");
                break;
             case "Weekly":
                setTotalFinanceCharge(
@@ -179,8 +212,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("7%");
                setTotalPayment(parseFloat((loanAmount / 14).toFixed(1)));
-               setPayableIN(14);
-               setPayableLabel("wks");
+               setPayableLabel("14/wks");
                break;
             case "Monthly":
                setTotalFinanceCharge(
@@ -188,8 +220,7 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("8%");
                setTotalPayment(parseFloat((loanAmount / 3).toFixed(1)));
-               setPayableIN(3);
-               setPayableLabel("mos");
+               setPayableLabel("3/mos");
                break;
             default:
                break;
@@ -210,17 +241,37 @@ function Apply({ navigation }) {
       setNetProceedsFromLoan(
          parseFloat((loanAmount - totalDeductionCharge).toFixed(1))
       );
-      console.log("LOAN AMOUNT " + typeof loanAmount + " :" + loanAmount);
-
-      console.log("TERM " + typeof term + ":" + term);
    };
 
    const handleSubmit = () => {
       setConfirmationVisible(true);
    };
-   const handleConfirmSubmit = () => {
-      console.log("Successul!");
-      navigation.navigate("RequestCompleted");
+   const handleConfirmSubmit = async () => {
+      const dataToAdd = {
+         loanID: loanRequestID,
+         loanAmount: parseInt(selectedLoans),
+         purposeOfLoan: purposeOfLoan,
+         terms: selectedTerms,
+         numberOfPayments: numberOfPayments,
+         payableIN: payableLabel,
+         interestRate: interestRateLabel,
+         serviceHandlingCharge: serviceHandlingCharge,
+         financeCharge: totalFinanceCharge,
+         netProceedsFromLoan: netProceedsFromLoan,
+         payment: totalPayment,
+         dateRequested: dateRequested,
+         // Add other data fields as needed
+      };
+
+      try {
+         const docRef = doc(FIREBASE_DB, "loanRequest", loanRequestID);
+         await setDoc(docRef, dataToAdd);
+
+         console.log("Data added to Firestore successfully!");
+         navigation.navigate("RequestCompleted"); // Navigate to the success screen
+      } catch (error) {
+         console.error("Error adding data to Firestore: ", error);
+      }
    };
    const handleCancelSubmit = () => {
       console.log("Cancelled!");
@@ -228,235 +279,268 @@ function Apply({ navigation }) {
    };
    return (
       <View style={styles.container}>
-         <ScrollView>
-            <View style={styles.applyContainer}>
-               <View style={{ marginBottom: 12 }}>
-                  <Text style={styles.sectionSubText}>Loan Amount</Text>
-                  <View style={styles.sectionInput}>
-                     <TextInput
-                        placeholder="₱"
-                        editable={false}
-                        placeholderTextColor={COLORS.gray}
-                        keyboardType="numeric"
-                        style={{ bottom: 3 }}
-                     />
-
-                     <TextInput
-                        placeholder="0.0"
-                        placeholderTextColor={COLORS.gray}
-                        keyboardType="numeric"
-                        style={styles.sectionInputText}
-                        value={selectedLoans}
-                        onChangeText={(text) => setSelectedLoans(text)}
-                     />
-                  </View>
-               </View>
-               <View style={{ marginBottom: 12 }}>
-                  <Text style={styles.sectionSubText}>Purpose</Text>
-                  <View style={styles.sectionInput}>
-                     <TextInput
-                        placeholder="Name of Purpose"
-                        placeholderTextColor={COLORS.gray}
-                        style={styles.sectionInputText}
-                        value={purposeOfLoan}
-                        onChangeText={(text) => setPurposeOfLoan(text)}
-                     />
-                  </View>
-               </View>
-               <View style={{ marginBottom: 22 }}>
-                  <Text style={styles.sectionSubText}>Term</Text>
-
-                  <View style={styles.sectionInputDropdown}>
-                     <Picker
-                        placeholder="Number of Days"
-                        selectedValue={selectedTerms}
-                        onValueChange={(itemValue) => {
-                           setSelectedTerms(itemValue);
-                        }}
-                        mode={selectedTerms ? "modal" : "dropdown"}
-                        style={styles.pickerItemFont}
-                     >
-                        <Picker.Item
-                           label="Number of Days"
-                           value=""
-                           style={styles.pickerItem}
+         <View style={styles.applyContainer}>
+            <ScrollView>
+               <View style={{ paddingHorizontal: 40 }}>
+                  <View style={{ marginBottom: 12 }}>
+                     <Text style={styles.sectionSubText}>Loan Amount</Text>
+                     <View style={styles.sectionInput}>
+                        <TextInput
+                           placeholder="₱"
+                           editable={false}
+                           placeholderTextColor={COLORS.gray}
+                           keyboardType="numeric"
+                           style={{ bottom: 3 }}
                         />
 
-                        <Picker.Item label="30 Days" value="30" />
-                        <Picker.Item label="60 Days" value="60" />
-                        <Picker.Item label="100 Days" value="100" />
-                     </Picker>
-                  </View>
-               </View>
-               <View style={{ marginBottom: 22 }}>
-                  <Text style={styles.sectionSubText}>Number of payments</Text>
-
-                  <View style={styles.sectionInputDropdown}>
-                     <Picker
-                        placeholder="Number of Payments"
-                        selectedValue={numberOfPayments}
-                        onValueChange={(itemValue) => {
-                           setNumberOfPayments(itemValue);
-                        }}
-                        mode={numberOfPayments ? "modal" : "dropdown"}
-                        style={styles.pickerItemFont}
-                     >
-                        <Picker.Item
-                           label="Number of Payments"
-                           value=""
-                           style={styles.pickerItem}
+                        <TextInput
+                           placeholder="0.0"
+                           placeholderTextColor={COLORS.gray}
+                           keyboardType="numeric"
+                           style={styles.sectionInputText}
+                           value={selectedLoans}
+                           onChangeText={(text) => setSelectedLoans(text)}
                         />
+                     </View>
+                  </View>
+                  <View style={{ marginBottom: 12 }}>
+                     <Text style={styles.sectionSubText}>Purpose</Text>
+                     <View style={styles.sectionInput}>
+                        <TextInput
+                           placeholder="Name of Purpose"
+                           placeholderTextColor={COLORS.gray}
+                           style={styles.sectionInputText}
+                           value={purposeOfLoan}
+                           onChangeText={(text) => setPurposeOfLoan(text)}
+                        />
+                     </View>
+                  </View>
+                  <View style={{ marginBottom: 22 }}>
+                     <Text style={styles.sectionSubText}>Term</Text>
 
-                        <Picker.Item label="Daily" value="Daily" />
-                        <Picker.Item label="Weekly" value="Weekly" />
-                        <Picker.Item label="Monthly" value="Monthly" />
-                     </Picker>
-                  </View>
-               </View>
-               <Text style={styles.sectionSubText}>Calculations</Text>
+                     <View style={styles.sectionInputDropdown}>
+                        <Picker
+                           placeholder="Number of Days"
+                           selectedValue={selectedTerms}
+                           onValueChange={(itemValue) => {
+                              setSelectedTerms(itemValue);
+                           }}
+                           mode={selectedTerms ? "modal" : "dropdown"}
+                           style={styles.pickerItemFont}
+                        >
+                           <Picker.Item
+                              label="Number of Days"
+                              value=""
+                              style={styles.pickerItem}
+                           />
 
-               <View
-                  style={{
-                     flexDirection: "row",
-                     justifyContent: "space-between",
-                  }}
-               >
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>Interest</Text>
-                        <Text style={styles.cardTextBold}>
-                           {interestRateLabel}
-                        </Text>
+                           <Picker.Item label="30 Days" value="30" />
+                           <Picker.Item label="60 Days" value="60" />
+                           <Picker.Item label="100 Days" value="100" />
+                        </Picker>
                      </View>
                   </View>
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>
-                           Service Handling Charge (2%)
-                        </Text>
-                        <Text style={styles.cardTextBold}>
-                           ₱
-                           {selectedLoans != "" &&
-                              selectedTerms != "" &&
-                              numberOfPayments != "" &&
-                              serviceHandlingCharge}
-                        </Text>
+                  <View style={{ marginBottom: 22 }}>
+                     <Text style={styles.sectionSubText}>
+                        Number of payments
+                     </Text>
+
+                     <View style={styles.sectionInputDropdown}>
+                        <Picker
+                           placeholder="Number of Payments"
+                           selectedValue={numberOfPayments}
+                           onValueChange={(itemValue) => {
+                              setNumberOfPayments(itemValue);
+                           }}
+                           mode={numberOfPayments ? "modal" : "dropdown"}
+                           style={styles.pickerItemFont}
+                        >
+                           <Picker.Item
+                              label="Number of Payments"
+                              value=""
+                              style={styles.pickerItem}
+                           />
+
+                           <Picker.Item label="Daily" value="Daily" />
+                           <Picker.Item label="Weekly" value="Weekly" />
+                           <Picker.Item label="Monthly" value="Monthly" />
+                        </Picker>
                      </View>
+                  </View>
+                  <View
+                     style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                     }}
+                  >
+                     <Text style={styles.sectionSubText}>EMI Calculations</Text>
+                     <TouchableOpacity
+                        onPress={() =>
+                           setShowEMICalculation(!showEMICalculation)
+                        }
+                     >
+                        <Text style={styles.cardTextTouchable}>
+                           {showEMICalculation == true ? "Hide" : "Show"}
+                        </Text>
+                     </TouchableOpacity>
+                  </View>
+                  {showEMICalculation && (
+                     <View>
+                        <View
+                           style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                           }}
+                        >
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>Interest</Text>
+                                 <Text style={styles.cardTextBold}>
+                                    {interestRateLabel}
+                                 </Text>
+                              </View>
+                           </View>
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>
+                                    Service Handling Charge (2%)
+                                 </Text>
+                                 <Text style={styles.cardTextBold}>
+                                    ₱
+                                    {selectedLoans != "" &&
+                                       selectedTerms != "" &&
+                                       numberOfPayments != "" &&
+                                       serviceHandlingCharge}
+                                 </Text>
+                              </View>
+                           </View>
+                        </View>
+                        <View
+                           style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                           }}
+                        >
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>
+                                    Total Finance Charge
+                                 </Text>
+                                 <Text style={styles.cardTextBold}>
+                                    ₱
+                                    {selectedLoans != "" &&
+                                       selectedTerms != "" &&
+                                       numberOfPayments != "" &&
+                                       totalFinanceCharge}
+                                 </Text>
+                              </View>
+                           </View>
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>
+                                    Total Non Finance Charge
+                                 </Text>
+                                 <Text style={styles.cardTextBold}>
+                                    ₱
+                                    {selectedLoans != "" &&
+                                       selectedTerms != "" &&
+                                       numberOfPayments != "" &&
+                                       totalNonFinanceCharges}
+                                 </Text>
+                              </View>
+                           </View>
+                        </View>
+                        <View
+                           style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                           }}
+                        >
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>
+                                    Total Deduction charge
+                                 </Text>
+                                 <Text style={styles.cardTextBold}>
+                                    ₱
+                                    {selectedLoans != "" &&
+                                       selectedTerms != "" &&
+                                       numberOfPayments != "" &&
+                                       totalDeductionCharge}
+                                 </Text>
+                              </View>
+                           </View>
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>
+                                    Net Proceed from Loans
+                                 </Text>
+                                 <Text style={styles.cardTextBold}>
+                                    ₱
+                                    {selectedLoans != "" &&
+                                       selectedTerms != "" &&
+                                       numberOfPayments != "" &&
+                                       netProceedsFromLoan}
+                                 </Text>
+                              </View>
+                           </View>
+                        </View>
+                        <View
+                           style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                           }}
+                        >
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>
+                                    Your {numberOfPayments} Payment
+                                 </Text>
+                                 <Text
+                                    style={[
+                                       styles.cardTextBold,
+                                       { fontSize: 22 },
+                                    ]}
+                                 >
+                                    ₱
+                                    {selectedLoans != "" &&
+                                       selectedTerms != "" &&
+                                       numberOfPayments != "" &&
+                                       totalPayment}
+                                 </Text>
+                              </View>
+                           </View>
+                           <View style={styles.cardItem}>
+                              <View style={styles.contentWrapper}>
+                                 <Text style={styles.cardText}>Payable in</Text>
+                                 <Text
+                                    style={[
+                                       styles.cardTextBold,
+                                       { fontSize: 22 },
+                                    ]}
+                                 >
+                                    {payableLabel == "" ? "/" : payableLabel}
+                                 </Text>
+                              </View>
+                           </View>
+                        </View>
+                     </View>
+                  )}
+                  <View style={{ marginVertical: 20 }}>
+                     <Button
+                        title="Submit Request"
+                        filled
+                        onPress={handleSubmit}
+                     />
                   </View>
                </View>
-               <View
-                  style={{
-                     flexDirection: "row",
-                     justifyContent: "space-between",
-                  }}
-               >
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>
-                           Total Finance Charge
-                        </Text>
-                        <Text style={styles.cardTextBold}>
-                           ₱
-                           {selectedLoans != "" &&
-                              selectedTerms != "" &&
-                              numberOfPayments != "" &&
-                              totalFinanceCharge}
-                        </Text>
-                     </View>
-                  </View>
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>
-                           Total Non Finance Charge
-                        </Text>
-                        <Text style={styles.cardTextBold}>
-                           ₱
-                           {selectedLoans != "" &&
-                              selectedTerms != "" &&
-                              numberOfPayments != "" &&
-                              totalNonFinanceCharges}
-                        </Text>
-                     </View>
-                  </View>
-               </View>
-               <View
-                  style={{
-                     flexDirection: "row",
-                     justifyContent: "space-between",
-                  }}
-               >
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>
-                           Total Deduction charge
-                        </Text>
-                        <Text style={styles.cardTextBold}>
-                           ₱
-                           {selectedLoans != "" &&
-                              selectedTerms != "" &&
-                              numberOfPayments != "" &&
-                              totalDeductionCharge}
-                        </Text>
-                     </View>
-                  </View>
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>
-                           Net Proceed from Loans
-                        </Text>
-                        <Text style={styles.cardTextBold}>
-                           ₱
-                           {selectedLoans != "" &&
-                              selectedTerms != "" &&
-                              numberOfPayments != "" &&
-                              netProceedsFromLoan}
-                        </Text>
-                     </View>
-                  </View>
-               </View>
-               <View
-                  style={{
-                     flexDirection: "row",
-                     justifyContent: "space-between",
-                  }}
-               >
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>
-                           Your {numberOfPayments} Payment
-                        </Text>
-                        <Text style={[styles.cardTextBold, { fontSize: 22 }]}>
-                           ₱
-                           {selectedLoans != "" &&
-                              selectedTerms != "" &&
-                              numberOfPayments != "" &&
-                              totalPayment}
-                        </Text>
-                     </View>
-                  </View>
-                  <View style={styles.cardItem}>
-                     <View style={styles.contentWrapper}>
-                        <Text style={styles.cardText}>Payable in</Text>
-                        <Text style={[styles.cardTextBold, { fontSize: 22 }]}>
-                           {payableIN}/{payableLabel}
-                        </Text>
-                     </View>
-                  </View>
-               </View>
-               <View style={{ marginVertical: 20 }}>
-                  <Button
-                     title="Submit Request"
-                     filled
-                     onPress={handleSubmit}
-                  />
-               </View>
-            </View>
-            <ConfirmationModal
-               isVisible={isConfirmationVisible}
-               onConfirm={handleConfirmSubmit}
-               onCancel={handleCancelSubmit}
-            />
-         </ScrollView>
+            </ScrollView>
+         </View>
+         <ConfirmationModal
+            isVisible={isConfirmationVisible}
+            onConfirm={handleConfirmSubmit}
+            onCancel={handleCancelSubmit}
+         />
       </View>
    );
 }
@@ -474,7 +558,6 @@ const styles = StyleSheet.create({
       borderRadius: 15,
       backgroundColor: COLORS.white,
       paddingVertical: 20,
-      paddingHorizontal: 40,
    },
    sectionText: {
       fontSize: 18,
@@ -504,6 +587,13 @@ const styles = StyleSheet.create({
       width: "100%",
       fontFamily: "Poppins-Regular",
       fontSize: 14,
+   },
+   cardTextTouchable: {
+      fontSize: 14,
+      fontFamily: "Poppins-Regular",
+      color: COLORS.tertiary,
+      borderColor: COLORS.tertiary,
+      marginRight: 10,
    },
    customNumner: {
       width: "12%",

@@ -110,7 +110,7 @@ function Loans({ navigation }) {
                      </View>
                   </View>
 
-                  <View style={styles.cardHeaderLabel}>
+                  {/*  <View style={styles.cardHeaderLabel}>
                      <Text style={styles.cardLabelText}>Finished</Text>
                   </View>
 
@@ -144,177 +144,58 @@ function Loans({ navigation }) {
                            <Text style={styles.cardTextTouchable}>View</Text>
                         </TouchableOpacity>
                      </View>
-                  </View>
+                  </View> */}
                </View>
             </ScrollView>
          ) : (
             <View style={styles.historyContainer}>
-               <Text style={styles.historyTitle}>Payments</Text>
+               <Text style={styles.historyTitle}>Loans</Text>
                <View style={styles.historyHeaderLabel}>
-                  <Text style={styles.historyLabel}>Day</Text>
-                  <Text style={styles.historyLabel}>Date</Text>
+                  <Text style={styles.historyLabel}>ID</Text>
+                  <Text style={styles.historyLabel}>Date Granted</Text>
+                  <Text style={styles.historyLabel}>Date Due</Text>
                   <Text style={styles.historyLabel}>Amount</Text>
                   <Text style={styles.historyLabel}>Status</Text>
                </View>
                <ScrollView>
                   <View style={styles.historyList}>
-                     <Text style={styles.historyItem}>01</Text>
+                     <Text style={styles.historyItem}>011111</Text>
+                     <Text style={[styles.historyItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
                      <Text style={[styles.historyItem, { right: 15 }]}>
                         01/10/23
                      </Text>
                      <Text style={[styles.historyItem, { right: 20 }]}>
-                        155
+                        10000
                      </Text>
                      <Ionicons
                         name="checkmark-circle"
                         size={18}
-                        color="lightgreen"
+                        color="green"
+                        style={{ right: 10 }}
                      />
                   </View>
                   <View style={styles.dividerLine}></View>
-
                   <View style={styles.historyList}>
-                     <Text style={styles.historyItem}>02</Text>
+                     <Text style={styles.historyItem}>011111</Text>
+                     <Text style={[styles.historyItem, { right: 15 }]}>
+                        01/10/23
+                     </Text>
                      <Text style={[styles.historyItem, { right: 15 }]}>
                         01/10/23
                      </Text>
                      <Text style={[styles.historyItem, { right: 20 }]}>
-                        155
+                        1000
                      </Text>
                      <Ionicons
                         name="checkmark-circle"
                         size={18}
-                        color={COLORS.gray2}
+                        color="green"
+                        style={{ right: 10 }}
                      />
                   </View>
                   <View style={styles.dividerLine}></View>
-
-                  <View style={styles.historyList}>
-                     <Text style={styles.historyItem}>03</Text>
-                     <Text style={[styles.historyItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.historyItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
-                  <View style={styles.dividerLine}></View>
-
-                  <View style={styles.historyList}>
-                     <Text style={styles.historyItem}>90</Text>
-                     <Text style={[styles.historyItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.historyItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
-                  <View style={styles.dividerLine}></View>
-
-                  <View style={styles.detailsList}>
-                     <Text style={styles.detailsItem}>90</Text>
-                     <Text style={[styles.detailsItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.detailsItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
-                  <View style={styles.dividerLine}></View>
-
-                  <View style={styles.detailsList}>
-                     <Text style={styles.detailsItem}>90</Text>
-                     <Text style={[styles.detailsItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.detailsItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
-                  <View style={styles.dividerLine}></View>
-
-                  <View style={styles.detailsList}>
-                     <Text style={styles.detailsItem}>90</Text>
-                     <Text style={[styles.detailsItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.detailsItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
-                  <View style={styles.dividerLine}></View>
-
-                  <View style={styles.detailsList}>
-                     <Text style={styles.detailsItem}>90</Text>
-                     <Text style={[styles.detailsItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.detailsItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
-                  <View style={styles.dividerLine}></View>
-
-                  <View style={styles.detailsList}>
-                     <Text style={styles.detailsItem}>90</Text>
-                     <Text style={[styles.detailsItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.detailsItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
-                  <View style={styles.dividerLine}></View>
-
-                  <View style={styles.detailsList}>
-                     <Text style={styles.detailsItem}>90</Text>
-                     <Text style={[styles.detailsItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.detailsItem, { right: 20 }]}>
-                        155
-                     </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color={COLORS.gray2}
-                     />
-                  </View>
                </ScrollView>
             </View>
          )}

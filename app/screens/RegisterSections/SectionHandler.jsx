@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import Section1 from "./Section1";
 import Section2 from "./Section2";
@@ -10,6 +10,8 @@ import Button from "../../component/Button";
 import Modal from "react-native-modal";
 import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { doc, setDoc } from "firebase/firestore";
+import { FIREBASE_DB } from "../../../firebaseConfig";
 
 export function RegisterCompleted({ navigation }) {
    return (
@@ -70,6 +72,31 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
 function SectionHandler({ navigation }) {
    const [currentPage, setCurrentPage] = useState(1);
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+   const [registerID, setRegisterID] = useState(0);
+
+   useEffect(() => {
+      function generateUniqueId() {
+         // Generate 8 random numbers (0-9)
+         const numChars = "0123456789";
+         let numId = "";
+         for (let i = 0; i < 8; i++) {
+            numId += numChars[Math.floor(Math.random() * 10)];
+         }
+
+         // Generate 4 random letters (A-Z)
+         const letterChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+         let letterId = "";
+         for (let i = 0; i < 4; i++) {
+            letterId += letterChars[Math.floor(Math.random() * 26)];
+         }
+
+         const uniqueId = letterId + numId;
+
+         return uniqueId;
+      }
+
+      setRegisterID(generateUniqueId());
+   }, []);
 
    // section 1 data handler
    const [section1Obj, setSection1Obj] = useState({
@@ -163,9 +190,27 @@ function SectionHandler({ navigation }) {
       }
    };
 
-   const handleConfirmSubmit = () => {
+   const handleConfirmSubmit = async () => {
+      const userData = {
+         ...section1Obj,
+         ...section2Obj,
+         ...section3Obj,
+         ...section4Obj,
+         registerID,
+      };
+
+      try {
+         const docRef = doc(FIREBASE_DB, "register", registerID);
+         await setDoc(docRef, userData);
+
+         console.log("Data added to Firestore successfully!");
+         navigation.navigate("RegisterCompleted"); // Navigate to the success screen
+      } catch (error) {
+         console.error("Error adding data to Firestore: ", error);
+      }
+      /*  console.log(registerID);
       console.log("Successul!");
-      navigation.navigate("RegisterCompleted");
+      navigation.navigate("RegisterCompleted"); */
    };
    const handleCancelSubmit = () => {
       console.log("Cancelled!");

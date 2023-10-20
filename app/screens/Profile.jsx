@@ -11,6 +11,7 @@ import COLORS from "../component/Colors";
 import Modal from "react-native-modal";
 import Button from "../component/Button";
 import { Ionicons } from "@expo/vector-icons";
+import { FIREBASE_AUTH } from "../../firebaseConfig";
 
 // Modal Profile
 function MyProfile({ isVisible, onCancel }) {
@@ -235,9 +236,7 @@ function Profile({ navigation }) {
                      alignItems: "center",
                   }}
                >
-                  <TouchableOpacity
-                     onPress={() => navigation.navigate("Start")}
-                  >
+                  <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()}>
                      <View style={{ flexDirection: "row", gap: 10 }}>
                         <Text style={styles.logout}>Logout </Text>
                         <Ionicons

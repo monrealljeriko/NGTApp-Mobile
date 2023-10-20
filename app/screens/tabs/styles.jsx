@@ -277,15 +277,18 @@ const styles = StyleSheet.create({
    },
    historyList: {
       flexDirection: "row",
-      justifyContent: "space-around",
+      justifyContent: "space-between",
+      marginHorizontal: 10,
    },
    historyLabel: {
       fontFamily: "Poppins-Regular",
       alignSelf: "flex-end",
+      fontSize: 12,
    },
    historyItem: {
       fontFamily: "Poppins-Regular",
       marginVertical: 2,
+      fontSize: 12,
    },
 });
 
