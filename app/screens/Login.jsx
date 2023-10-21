@@ -55,64 +55,60 @@ function Login({ navigation }) {
                <Text style={styles.customSubtitle}>Welcome Back ! 👋</Text>
             </View>
 
-            {loading ? (
-               <ActivityIndicator size="large" color="#57708C" />
-            ) : (
-               <>
-                  <View style={{ marginBottom: 15 }}>
-                     <View style={styles.customInput}>
-                        <Icon name="mail" style={styles.customIcon}></Icon>
-                        <TextInput
-                           placeholder="Email or username"
-                           keyboardType="email-address"
-                           value={email}
-                           style={{
-                              width: "100%",
-                              fontFamily: "Poppins-Regular",
-                           }}
-                           onChangeText={(text) => setEmail(text)}
-                        />
-                     </View>
+            <>
+               <View style={{ marginBottom: 15 }}>
+                  <View style={styles.customInput}>
+                     <Icon name="mail" style={styles.customIcon}></Icon>
+                     <TextInput
+                        placeholder="Email or username"
+                        keyboardType="email-address"
+                        value={email}
+                        style={{
+                           width: "100%",
+                           fontFamily: "Poppins-Regular",
+                        }}
+                        onChangeText={(text) => setEmail(text)}
+                     />
                   </View>
-                  <View style={{ marginBottom: 15 }}>
-                     <View style={styles.customInput}>
-                        <Icon name="lock" style={styles.customIcon}></Icon>
-                        <TextInput
-                           placeholder="Password"
-                           value={password}
-                           secureTextEntry={isPasswordShown}
-                           style={{
-                              width: "100%",
-                              fontFamily: "Poppins-Regular",
-                           }}
-                           onChangeText={(text) => setPassword(text)}
-                        />
+               </View>
+               <View style={{ marginBottom: 15 }}>
+                  <View style={styles.customInput}>
+                     <Icon name="lock" style={styles.customIcon}></Icon>
+                     <TextInput
+                        placeholder="Password"
+                        value={password}
+                        secureTextEntry={isPasswordShown}
+                        style={{
+                           width: "100%",
+                           fontFamily: "Poppins-Regular",
+                        }}
+                        onChangeText={(text) => setPassword(text)}
+                     />
 
-                        <TouchableOpacity
-                           onPress={() => setIsPasswordShown(!isPasswordShown)}
-                           style={{
-                              position: "absolute",
-                              right: 12,
-                           }}
-                        >
-                           {isPasswordShown == true ? (
-                              <Ionicons
-                                 name="eye-off"
-                                 size={20}
-                                 color={COLORS.primary}
-                              />
-                           ) : (
-                              <Ionicons
-                                 name="eye"
-                                 size={20}
-                                 color={COLORS.primary}
-                              />
-                           )}
-                        </TouchableOpacity>
-                     </View>
+                     <TouchableOpacity
+                        onPress={() => setIsPasswordShown(!isPasswordShown)}
+                        style={{
+                           position: "absolute",
+                           right: 12,
+                        }}
+                     >
+                        {isPasswordShown == true ? (
+                           <Ionicons
+                              name="eye-off"
+                              size={20}
+                              color={COLORS.primary}
+                           />
+                        ) : (
+                           <Ionicons
+                              name="eye"
+                              size={20}
+                              color={COLORS.primary}
+                           />
+                        )}
+                     </TouchableOpacity>
                   </View>
-               </>
-            )}
+               </View>
+            </>
             <View style={[styles.options, { marginVertical: 10 }]}>
                <Checkbox
                   style={styles.checkBoxRemember}
@@ -128,12 +124,21 @@ function Login({ navigation }) {
                   <Text style={styles.pressableText}>Forget password</Text>
                </Pressable>
             </View>
-            <Button
-               title="Login"
-               filled
-               onPress={signIn}
-               style={{ marginVertical: 20 }}
-            />
+            {loading ? (
+               <ActivityIndicator
+                  size="large"
+                  color="#57708C"
+                  style={{ marginVertical: 20 }}
+               />
+            ) : (
+               <Button
+                  title="Login"
+                  filled
+                  onPress={signIn}
+                  style={{ marginVertical: 20 }}
+               />
+            )}
+
             <View style={[styles.options, { justifyContent: "center" }]}>
                <Text style={styles.customSubtext}>Become a member ?</Text>
                <Pressable onPress={() => navigation.navigate("Register")}>

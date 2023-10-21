@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
    historyContainer: {
       backgroundColor: "white",
       elevation: 5,
-      margin: 15,
+      margin: 10,
       borderRadius: 15,
       flex: 1,
       paddingBottom: 20,
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
    },
    historyHeaderLabel: {
       flexDirection: "row",
-      justifyContent: "space-around",
+      justifyContent: "space-evenly",
       backgroundColor: COLORS.white,
       paddingVertical: 10,
       marginBottom: 10,
@@ -287,6 +287,7 @@ const styles = StyleSheet.create({
    },
    historyItem: {
       fontFamily: "Poppins-Regular",
+      alignSelf: "center",
       marginVertical: 2,
       fontSize: 12,
    },

@@ -204,6 +204,19 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       justifyContent: "space-between",
    },
+   sectionReview: {
+      borderColor: COLORS.gray2,
+      borderWidth: 1,
+      borderRadius: 15,
+      paddingHorizontal: 22,
+      fontFamily: "Poppins-Regular",
+      paddingVertical: 15,
+   },
+   clickableReview: {
+      flexDirection: "row",
+      gap: 5,
+      justifyContent: "space-between",
+   },
    sectionInputText: {
       width: "100%",
       fontFamily: "Poppins-Regular",

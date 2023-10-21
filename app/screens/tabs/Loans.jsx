@@ -95,7 +95,7 @@ function Loans({ navigation }) {
                            <Text style={styles.cardText}>01/02/23</Text>
                         </View>
                         <View style={{ right: 38 }}>
-                           <Text style={styles.cardText}>Date Due</Text>
+                           <Text style={styles.cardText}>Date Due:</Text>
                            <Text style={styles.cardText}>03/01/23</Text>
                         </View>
                      </View>
@@ -149,51 +149,68 @@ function Loans({ navigation }) {
             </ScrollView>
          ) : (
             <View style={styles.historyContainer}>
-               <Text style={styles.historyTitle}>Loans</Text>
-               <View style={styles.historyHeaderLabel}>
-                  <Text style={styles.historyLabel}>ID</Text>
-                  <Text style={styles.historyLabel}>Date Granted</Text>
-                  <Text style={styles.historyLabel}>Date Due</Text>
-                  <Text style={styles.historyLabel}>Amount</Text>
-                  <Text style={styles.historyLabel}>Status</Text>
-               </View>
                <ScrollView>
+                  <Text style={styles.historyTitle}>Loans</Text>
+                  <View style={styles.historyHeaderLabel}>
+                     <Text style={styles.historyLabel}>ID</Text>
+                     <Text style={[styles.historyLabel, { left: 25 }]}>
+                        Date
+                     </Text>
+                     <Text style={[styles.historyLabel, { left: 28 }]}>
+                        Amount
+                     </Text>
+                     <Text style={[styles.historyLabel, { left: 25 }]}>
+                        Term
+                     </Text>
+                     <Text style={[styles.historyLabel, { left: 15 }]}>
+                        Interest
+                     </Text>
+                     <Text style={[styles.historyLabel, { left: 5 }]}>
+                        Status
+                     </Text>
+                  </View>
                   <View style={styles.historyList}>
-                     <Text style={styles.historyItem}>011111</Text>
-                     <Text style={[styles.historyItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.historyItem, { right: 15 }]}>
-                        01/10/23
-                     </Text>
-                     <Text style={[styles.historyItem, { right: 20 }]}>
+                     <Text style={styles.historyItem}>HG043452</Text>
+                     <View>
+                        <Text style={[styles.historyItem, { right: 20 }]}>
+                           01/10/23
+                        </Text>
+                        <Text style={[styles.historyItem, { right: 20 }]}>
+                           01/10/23
+                        </Text>
+                     </View>
+                     <Text style={[styles.historyItem, { right: 30 }]}>
                         10000
                      </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color="green"
-                        style={{ right: 10 }}
-                     />
+                     <Text style={[styles.historyItem, { right: 28 }]}>
+                        100
+                     </Text>
+                     <Text style={[styles.historyItem, { right: 25 }]}>8%</Text>
+                     <Text style={[styles.historyItem, { right: 22 }]}>
+                        Paid
+                     </Text>
                   </View>
                   <View style={styles.dividerLine}></View>
                   <View style={styles.historyList}>
-                     <Text style={styles.historyItem}>011111</Text>
-                     <Text style={[styles.historyItem, { right: 15 }]}>
-                        01/10/23
+                     <Text style={styles.historyItem}>HG043452</Text>
+                     <View>
+                        <Text style={[styles.historyItem, { right: 20 }]}>
+                           01/10/23
+                        </Text>
+                        <Text style={[styles.historyItem, { right: 20 }]}>
+                           01/10/23
+                        </Text>
+                     </View>
+                     <Text style={[styles.historyItem, { right: 30 }]}>
+                        10000
                      </Text>
-                     <Text style={[styles.historyItem, { right: 15 }]}>
-                        01/10/23
+                     <Text style={[styles.historyItem, { right: 28 }]}>
+                        100
                      </Text>
-                     <Text style={[styles.historyItem, { right: 20 }]}>
-                        1000
+                     <Text style={[styles.historyItem, { right: 25 }]}>8%</Text>
+                     <Text style={[styles.historyItem, { right: 22 }]}>
+                        Paid
                      </Text>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={18}
-                        color="green"
-                        style={{ right: 10 }}
-                     />
                   </View>
                   <View style={styles.dividerLine}></View>
                </ScrollView>
