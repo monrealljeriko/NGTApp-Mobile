@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import COLORS from "../component/Colors";
-import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import Button from "../component/Button";
 import Modal from "react-native-modal";
-import { doc, setDoc } from "firebase/firestore";
+import { ActivityIndicator } from "react-native-paper";
+import { doc, setDoc, collection } from "firebase/firestore";
 import { FIREBASE_DB } from "../../firebaseConfig";
 
 // success screen page
@@ -71,7 +71,7 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
    );
 }
 
-function Apply({ navigation }) {
+function Apply({ navigation, route }) {
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
    const [showEMICalculation, setShowEMICalculation] = useState(false);
    // for calculations
@@ -82,7 +82,9 @@ function Apply({ navigation }) {
    const [payableLabel, setPayableLabel] = useState("");
    const [interestRateLabel, setInterestRateLabel] = useState("0");
    const [dateRequested, setDateRequested] = useState("");
+   const [timeRequested, setTimeRequested] = useState("");
 
+   const [paymentSchedule, setPaymentSchedule] = useState([]);
    const [serviceHandlingCharge, setServiceHandlingCharge] = useState(0);
    const [totalFinanceCharge, setTotalFinanceCharge] = useState(0);
    const [totalNonFinanceCharges, setTotalNonFinanceCharges] = useState(0);
@@ -90,27 +92,39 @@ function Apply({ navigation }) {
    const [netProceedsFromLoan, setNetProceedsFromLoan] = useState(0);
    const [totalPayment, setTotalPayment] = useState(0);
    const [loanRequestID, setLoanRequestID] = useState(0);
+   const [schedulePaymentID, setSchedulePaymentID] = useState(0);
+   const [loading, setLoading] = useState(false);
+
+   // Access the userUid parameter from the route
+   const { userUid } = route.params;
 
    useEffect(() => {
       calculateTotals();
    }, [selectedTerms, numberOfPayments, selectedLoans, purposeOfLoan]);
 
-   // get the current date
    useEffect(() => {
       // Function to get the current date
+      const now = new Date();
       const getCurrentDate = () => {
-         const now = new Date();
          const year = now.getFullYear();
          const month = now.getMonth() + 1; // Months are zero-based (0 = January, 11 = December)
          const day = now.getDate();
          return `${month}/${day}/${year}`;
       };
 
-      const generateRequestId = () => {
+      // Function to get the current time
+      const getCurrentTime = () => {
+         const hours = now.getHours();
+         const minutes = now.getMinutes();
+         return `${hours}:${minutes}`;
+      };
+
+      // Function to generate uid for loan request
+      const generateRequestId = (idx) => {
          // Generate 6 random numbers (0-9)
          const numChars = "0123456789";
          let numId = "";
-         for (let i = 0; i < 6; i++) {
+         for (let i = 0; i < idx; i++) {
             numId += numChars[Math.floor(Math.random() * 10)];
          }
 
@@ -127,13 +141,18 @@ function Apply({ navigation }) {
       };
 
       // Set the current date in the state
-      setLoanRequestID(generateRequestId());
+      setLoanRequestID(generateRequestId(6));
+      setSchedulePaymentID(generateRequestId(4));
       setDateRequested(getCurrentDate());
+      setTimeRequested(getCurrentTime());
    }, []);
 
    const calculateTotals = () => {
       const term = parseInt(selectedTerms);
       const loanAmount = parseInt(selectedLoans);
+      const startDate = dateRequested;
+      const status = "incomplete";
+      const data = [];
 
       if (term === 30) {
          switch (numberOfPayments) {
@@ -144,6 +163,16 @@ function Apply({ navigation }) {
                setInterestRateLabel("1.25%");
                setTotalPayment(parseFloat((loanAmount / 30).toFixed(1)));
                setPayableLabel("30/days");
+
+               // setSchedule Payments
+               for (let day = 1; day <= 30; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 30).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             case "Weekly":
                setTotalFinanceCharge(
@@ -152,6 +181,16 @@ function Apply({ navigation }) {
                setInterestRateLabel("2%");
                setTotalPayment(parseFloat((loanAmount / 4.29).toFixed(1)));
                setPayableLabel("4/wks");
+
+               // setSchedule Payments
+               for (let day = 1; day <= 4; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 4.29).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             case "Monthly":
                setTotalFinanceCharge(
@@ -160,6 +199,14 @@ function Apply({ navigation }) {
                setInterestRateLabel("2.5%");
                setTotalPayment(parseFloat((loanAmount / 1).toFixed(1)));
                setPayableLabel("1/mos");
+
+               // setSchedule Payments
+               data.push({
+                  day: "01",
+                  date: startDate,
+                  amount: parseFloat((loanAmount / 1).toFixed(1)),
+                  status,
+               });
                break;
             default:
                break;
@@ -174,6 +221,15 @@ function Apply({ navigation }) {
                setInterestRateLabel("3.25%");
                setTotalPayment(parseFloat((loanAmount / 60).toFixed(1)));
                setPayableLabel("60/days");
+
+               for (let day = 1; day <= 60; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 60).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             case "Weekly":
                setTotalFinanceCharge(
@@ -182,6 +238,15 @@ function Apply({ navigation }) {
                setInterestRateLabel("4%");
                setTotalPayment(parseFloat((loanAmount / 8.57).toFixed(1)));
                setPayableLabel("8/wks");
+
+               for (let day = 1; day <= 8; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 8.57).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             case "Monthly":
                setTotalFinanceCharge(
@@ -190,6 +255,15 @@ function Apply({ navigation }) {
                setInterestRateLabel("5%");
                setTotalPayment(parseFloat((loanAmount / 2).toFixed(1)));
                setPayableLabel("2/mos");
+
+               for (let day = 1; day <= 2; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 2).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             default:
                break;
@@ -203,8 +277,17 @@ function Apply({ navigation }) {
                );
                setInterestRateLabel("5.5%");
                setTotalPayment(parseFloat((loanAmount / 100).toFixed(1)));
-               setPayableIN(100);
+               setPayableLabel("30/days");
                setPayableLabel("100/days");
+
+               for (let day = 1; day <= 100; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 100).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             case "Weekly":
                setTotalFinanceCharge(
@@ -213,6 +296,15 @@ function Apply({ navigation }) {
                setInterestRateLabel("7%");
                setTotalPayment(parseFloat((loanAmount / 14).toFixed(1)));
                setPayableLabel("14/wks");
+
+               for (let day = 1; day <= 14; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 14).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             case "Monthly":
                setTotalFinanceCharge(
@@ -221,12 +313,23 @@ function Apply({ navigation }) {
                setInterestRateLabel("8%");
                setTotalPayment(parseFloat((loanAmount / 3).toFixed(1)));
                setPayableLabel("3/mos");
+
+               for (let day = 1; day <= 3; day++) {
+                  data.push({
+                     day: day < 10 ? `0${day}` : `${day}`,
+                     date: startDate,
+                     amount: parseFloat((loanAmount / 3).toFixed(1)),
+                     status,
+                  });
+               }
                break;
             default:
                break;
          }
       }
+      setPaymentSchedule(data);
 
+      console.log(data);
       setTotalNonFinanceCharges(100);
       setServiceHandlingCharge(parseFloat((loanAmount * 0.02).toFixed(1)));
       setTotalDeductionCharge(
@@ -247,7 +350,11 @@ function Apply({ navigation }) {
       setConfirmationVisible(true);
    };
    const handleConfirmSubmit = async () => {
-      const dataToAdd = {
+      // Get the user's UID
+      const userUID = userUid;
+
+      // set of fields
+      const loanReqDataToAdd = {
          loanID: loanRequestID,
          loanAmount: parseInt(selectedLoans),
          purposeOfLoan: purposeOfLoan,
@@ -260,17 +367,48 @@ function Apply({ navigation }) {
          netProceedsFromLoan: netProceedsFromLoan,
          payment: totalPayment,
          dateRequested: dateRequested,
-         // Add other data fields as needed
+         timeRequested: timeRequested,
+         status: "pending",
+      };
+
+      const schedulePaymentDataToAdd = {
+         paymentSchedule: paymentSchedule,
+         loanID: loanRequestID,
       };
 
       try {
-         const docRef = doc(FIREBASE_DB, "loanRequest", loanRequestID);
-         await setDoc(docRef, dataToAdd);
+         setLoading(true);
+         const userDocRef = doc(FIREBASE_DB, "borrowers", userUID);
 
-         console.log("Data added to Firestore successfully!");
+         // Reference to the loan requests subcollection
+         const loanRequestsCollectionRef = collection(
+            userDocRef,
+            "loanRequests"
+         );
+         const paymentScheduleCollectionRef = collection(
+            userDocRef,
+            "paymentSchedule"
+         );
+
+         // Add the loan request document to the loanRequests subcollection
+         await setDoc(
+            doc(loanRequestsCollectionRef, loanRequestID),
+            loanReqDataToAdd
+         );
+         await setDoc(
+            doc(paymentScheduleCollectionRef, schedulePaymentID),
+            schedulePaymentDataToAdd
+         );
+
+         console.log("LoanID: " + loanRequestID);
+         console.log("scheduleID: " + schedulePaymentID);
+         console.log("Loan request added to Firestore successfully!");
          navigation.navigate("RequestCompleted"); // Navigate to the success screen
       } catch (error) {
-         console.error("Error adding data to Firestore: ", error);
+         console.error("Error adding loan request to Firestore: ", error);
+      } finally {
+         setConfirmationVisible(false);
+         setLoading(false);
       }
    };
    const handleCancelSubmit = () => {
@@ -526,21 +664,33 @@ function Apply({ navigation }) {
                         </View>
                      </View>
                   )}
-                  <View style={{ marginVertical: 20 }}>
-                     <Button
-                        title="Submit Request"
-                        filled
-                        onPress={handleSubmit}
+                  {loading ? (
+                     <ActivityIndicator
+                        size="large"
+                        color="#57708C"
+                        style={{
+                           marginVertical: 20,
+                        }}
                      />
-                  </View>
+                  ) : (
+                     <>
+                        <ConfirmationModal
+                           isVisible={isConfirmationVisible}
+                           onConfirm={handleConfirmSubmit}
+                           onCancel={handleCancelSubmit}
+                        />
+                        <View style={{ marginVertical: 20 }}>
+                           <Button
+                              title="Submit Request"
+                              filled
+                              onPress={handleSubmit}
+                           />
+                        </View>
+                     </>
+                  )}
                </View>
             </ScrollView>
          </View>
-         <ConfirmationModal
-            isVisible={isConfirmationVisible}
-            onConfirm={handleConfirmSubmit}
-            onCancel={handleCancelSubmit}
-         />
       </View>
    );
 }

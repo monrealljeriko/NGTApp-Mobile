@@ -60,6 +60,7 @@ function StackNavigation() {
                <Stack.Screen
                   name="Apply"
                   component={Apply}
+                  initialParams={{ userUid: user ? user.uid : null }}
                   options={{
                      headerShown: true,
                      title: "Apply Loan",
