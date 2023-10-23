@@ -139,6 +139,17 @@ function Profile({ navigation }) {
    const [isAccountVisible, setAccountVisible] = useState(false);
    const [isAboutVisible, setAboutVisible] = useState(false);
 
+   // Function to handle the sign-out and navigate to the "Login" screen
+   const handleSignOut = async () => {
+      try {
+         await FIREBASE_AUTH.signOut();
+         // Navigate to the "Login" screen
+         navigation.navigate("Login");
+      } catch (error) {
+         console.error("Sign-out error: ", error);
+      }
+   };
+
    const handleClose = () => {
       setMyProfileVisible(false);
       setAccountVisible(false);
@@ -236,7 +247,7 @@ function Profile({ navigation }) {
                      alignItems: "center",
                   }}
                >
-                  <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()}>
+                  <TouchableOpacity onPress={() => handleSignOut()}>
                      <View style={{ flexDirection: "row", gap: 10 }}>
                         <Text style={styles.logout}>Logout </Text>
                         <Ionicons

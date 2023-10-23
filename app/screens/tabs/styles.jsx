@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
    detailsContainer: {
       backgroundColor: "white",
       elevation: 5,
-      margin: 15,
+      margin: 10,
       borderRadius: 15,
       flex: 1,
       paddingBottom: 20,
