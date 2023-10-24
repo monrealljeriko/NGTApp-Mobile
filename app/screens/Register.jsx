@@ -47,7 +47,7 @@ function Register({ navigation }) {
                      values={["Requirements", "T & C"]}
                      selectedIndex={selectedIndex}
                      onChange={handleSegmentChange}
-                     style={{ height: 40 }}
+                     style={{ height: 40, backgroundColor: "#EEEEF0" }}
                   />
                   {selectedIndex == 1 ? (
                      <View>
@@ -137,16 +137,18 @@ function Register({ navigation }) {
                               color={isChecked ? COLORS.primary : undefined}
                            />
 
-                           <Text
-                              style={[
-                                 styles.customSubtext,
-                                 {
-                                    color: isChecked ? "green" : "red",
-                                 },
-                              ]}
-                           >
-                              I agree to the terms and conditions
-                           </Text>
+                           <Pressable onPress={() => setIsChecked(!isChecked)}>
+                              <Text
+                                 style={[
+                                    styles.customSubtext,
+                                    {
+                                       color: isChecked ? "green" : "red",
+                                    },
+                                 ]}
+                              >
+                                 I agree to the terms and conditions
+                              </Text>
+                           </Pressable>
                         </View>
 
                         <Button

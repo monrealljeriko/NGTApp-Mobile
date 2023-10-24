@@ -6,7 +6,7 @@ import {
    Pressable,
    Platform,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import styles from "../styles";
@@ -18,6 +18,16 @@ function Section1({ section1Obj, setSection1Obj }) {
    const [showDatePicker, setShowDatePicker] = useState(false);
    const [selectedID, setSelectedID] = useState(true);
 
+   useEffect(() => {
+      // Function to get the current date
+      const now = new Date();
+      const getCurrentDate = () => {
+         const year = now.getFullYear();
+         return `${year}`;
+      };
+
+      handleInput(getCurrentDate(), "memberSince");
+   }, []);
    // function to handle multiple inputs with obj state
    function handleInput(text, inputName) {
       setSection1Obj((prevSection1Obj) => {

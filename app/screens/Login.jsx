@@ -87,7 +87,7 @@ function Login({ navigation }) {
          }
          // console.log("original ", originalEmail);
 
-         console.log("email", email);
+         // console.log("email", email);
       });
       AsyncStorage.getItem("password").then((storedPassword) => {
          if (storedPassword) {
@@ -163,16 +163,20 @@ function Login({ navigation }) {
                </View>
             </>
             <View style={[styles.options, { marginVertical: 10 }]}>
-               <Checkbox
-                  style={styles.checkBoxRemember}
-                  value={isChecked}
-                  onValueChange={setIsChecked}
-                  color={isChecked ? COLORS.primary : undefined}
-               />
+               <View style={{ flexDirection: "row" }}>
+                  <Checkbox
+                     style={styles.checkBoxRemember}
+                     value={isChecked}
+                     onValueChange={setIsChecked}
+                     color={isChecked ? COLORS.primary : undefined}
+                  />
 
-               <Text style={{ fontFamily: "Poppins-Regular", right: 30 }}>
-                  Remember Me
-               </Text>
+                  <Pressable onPress={() => setIsChecked(!isChecked)}>
+                     <Text style={{ fontFamily: "Poppins-Regular", left: 10 }}>
+                        Remember Me
+                     </Text>
+                  </Pressable>
+               </View>
                <Pressable onPress={() => alert("Underconstruction")}>
                   <Text style={styles.pressableText}>Forget password</Text>
                </Pressable>

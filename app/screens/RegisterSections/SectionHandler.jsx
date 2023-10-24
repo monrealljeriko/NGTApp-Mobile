@@ -126,6 +126,7 @@ function SectionHandler({ navigation }) {
       vehicleSelect: "",
       vehicleType: "",
       vehiclePlateNumber: "",
+      memberSince: "",
    });
 
    // section 2 data handler
@@ -200,7 +201,7 @@ function SectionHandler({ navigation }) {
       };
 
       try {
-         const docRef = doc(FIREBASE_DB, "register", registerID);
+         const docRef = doc(FIREBASE_DB, "memberRegister", registerID);
          await setDoc(docRef, userData);
 
          console.log("Data added to Firestore successfully!");
