@@ -14,7 +14,9 @@ import {
 import TabNavigation from "./TabNavigation";
 import COLORS from "../app/component/Colors";
 import { User, onAuthStateChanged } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH } from "../firebaseConfig";
+import { FIREBASE_DB } from "../firebaseConfig";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,11 +24,27 @@ function StackNavigation() {
    const [user, setUser] = useState(null);
 
    useEffect(() => {
-      onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      onAuthStateChanged(FIREBASE_AUTH, async (user) => {
          if (user) {
             console.log("user", user.uid);
+
+            // Get or create the user's data in Firestore
+            const userUid = user.uid;
+            const userDataRef = doc(FIREBASE_DB, "borrowers", userUid);
+            const userDataSnapshot = await getDoc(userDataRef);
+
+            if (!userDataSnapshot.exists()) {
+               // If the user data doesn't exist, create it with initial values
+               const initialUserData = {
+                  totalLoans: 0,
+               };
+               await setDoc(userDataRef, initialUserData);
+            }
+            setUser(user);
+         } else {
+            setUser(null);
+            console.log("user signout: ", user);
          }
-         setUser(user);
       });
    }, []);
 
@@ -37,7 +55,9 @@ function StackNavigation() {
       >
          {user ? (
             <>
-               <Stack.Screen name="TabNavigation" component={TabNavigation} />
+               <Stack.Screen name="TabNavigation">
+                  {() => <TabNavigation userUid={user.uid} />}
+               </Stack.Screen>
                <Stack.Screen
                   name="Profile"
                   component={Profile}

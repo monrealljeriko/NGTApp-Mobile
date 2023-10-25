@@ -5,7 +5,7 @@ import TabBar from "../app/component/TabBar/";
 
 const BottomTab = createBottomTabNavigator();
 
-function TabNavigation() {
+function TabNavigation({ userUid }) {
    return (
       <BottomTab.Navigator
          screenOptions={{ headerShown: false }}
@@ -14,6 +14,7 @@ function TabNavigation() {
          <BottomTab.Screen
             name="Home"
             component={Home}
+            initialParams={{ userUid: userUid }}
             options={{
                tabBarIconName: "home",
                tabBarLabel: "Home",
@@ -22,6 +23,7 @@ function TabNavigation() {
          <BottomTab.Screen
             name="Loans"
             component={Loans}
+            initialParams={{ userUid: userUid }}
             options={{
                tabBarIconName: "albums",
                tabBarLabel: "Loans",
@@ -30,6 +32,7 @@ function TabNavigation() {
          <BottomTab.Screen
             name="Credit"
             component={Credit}
+            initialParams={{ userUid: userUid }}
             options={{
                tabBarIconName: "timer",
                tabBarLabel: "Credit",
