@@ -8,12 +8,12 @@ import {
    TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import COLORS from "../component/Colors";
-import { Picker } from "@react-native-picker/picker";
 import Button from "../component/Button";
 import Modal from "react-native-modal";
+import COLORS from "../component/Colors";
+import { Picker } from "@react-native-picker/picker";
 import { ActivityIndicator } from "react-native-paper";
-import { doc, setDoc, collection } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
 import { FIREBASE_DB } from "../../firebaseConfig";
 
 // success screen page
@@ -84,6 +84,7 @@ function Apply({ navigation, route }) {
    const [dateRequested, setDateRequested] = useState("");
    const [timeRequested, setTimeRequested] = useState("");
 
+   // for payment schedule
    const [paymentSchedule, setPaymentSchedule] = useState([]);
    const [serviceHandlingCharge, setServiceHandlingCharge] = useState(0);
    const [totalFinanceCharge, setTotalFinanceCharge] = useState(0);
@@ -93,10 +94,53 @@ function Apply({ navigation, route }) {
    const [totalPayment, setTotalPayment] = useState(0);
    const [loanRequestID, setLoanRequestID] = useState(0);
    const [schedulePaymentID, setSchedulePaymentID] = useState(0);
-   const [loading, setLoading] = useState(false);
 
-   // Access the userUid parameter from the route
-   const { userUid } = route.params;
+   const [loading, setLoading] = useState(false);
+   const [pendingLoan, setPendingLoan] = useState([]);
+   const [activeLoan, setActiveLoan] = useState([]);
+   const { userUid } = route.params; // Access the userUid parameter from the route
+
+   useEffect(() => {
+      const fetchLoanData = async () => {
+         if (userUid) {
+            // Fetch the totalLoans data from Firestore
+            const borrowerUid = userUid;
+            const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+
+            try {
+               const borrowerSnapshot = await getDoc(borrowerRef);
+               if (borrowerSnapshot.exists()) {
+                  const loanRef = collection(borrowerRef, "loanRequests");
+                  const querySnapshot = await getDocs(loanRef);
+
+                  const pendingLoanData = [];
+                  const activeLoanData = [];
+
+                  // snapshot the loan data
+                  querySnapshot.forEach((loanDoc) => {
+                     const loan = loanDoc.data();
+                     if (loan.status === "Pending") {
+                        pendingLoanData.push(loan);
+                     }
+                     if (loan.status === "Active") {
+                        activeLoanData.push(loan);
+                     }
+                  });
+
+                  // save the data to usestate
+                  setPendingLoan(pendingLoanData);
+                  setActiveLoan(activeLoanData);
+               }
+            } catch (error) {
+               console.error("Error fetching data from Firestore:", error);
+            }
+            setLoading(false);
+         } else {
+            setLoading(false);
+         }
+      };
+      fetchLoanData();
+   }, []);
 
    useEffect(() => {
       calculateTotals();
@@ -347,7 +391,17 @@ function Apply({ navigation, route }) {
    };
 
    const handleSubmit = () => {
-      setConfirmationVisible(true);
+      if (pendingLoan.length > 0) {
+         alert(
+            "You have a pending loan. Please wait for approval before applying for a new loan."
+         );
+      } else if (activeLoan.length > 0) {
+         alert(
+            "You have an active loan. Please wait until your current loan is completed before applying for a new one."
+         );
+      } else {
+         setConfirmationVisible(true);
+      }
    };
    const handleConfirmSubmit = async () => {
       // Get the user's UID
@@ -368,7 +422,7 @@ function Apply({ navigation, route }) {
          payment: totalPayment,
          dateRequested: dateRequested,
          timeRequested: timeRequested,
-         status: "pending",
+         status: "Pending",
       };
 
       const schedulePaymentDataToAdd = {

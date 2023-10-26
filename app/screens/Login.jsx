@@ -6,16 +6,15 @@ import {
    TextInput,
    TouchableOpacity,
 } from "react-native";
-
 import React, { useState, useEffect } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../component/Button";
 import COLORS from "../component/Colors";
 import Icon from "react-native-vector-icons/Feather";
 import styles from "./styles";
-import { FIREBASE_AUTH } from "../../firebaseConfig";
+import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native-paper";
+import { FIREBASE_AUTH } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -47,6 +46,7 @@ function Login({ navigation }) {
             email,
             password
          );
+         console.log("User signed in");
 
          // Check if the "Remember Me" checkbox is checked
          if (isChecked) {
