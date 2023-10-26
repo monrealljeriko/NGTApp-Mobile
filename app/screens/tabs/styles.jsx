@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
    payableLoan: {
       fontFamily: "Poppins-Regular",
       color: COLORS.white,
-      fontSize: 14,
+      fontSize: 16,
    },
 
    loanCardContainer: {
@@ -124,10 +124,10 @@ const styles = StyleSheet.create({
    },
    cartTitle: {
       fontFamily: "Poppins-SemiBold",
-      fontSize: 22,
+      fontSize: 26,
    },
    cardText: {
-      fontSize: 14,
+      fontSize: 16,
       fontFamily: "Poppins-Regular",
    },
    cardTextTouchable: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       justifyContent: "space-between",
       marginHorizontal: 20,
-      marginVertical: 5,
+      marginVertical: 2,
       alignItems: "center",
    },
    appliedCardItem: {
