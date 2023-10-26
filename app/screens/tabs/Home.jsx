@@ -95,7 +95,7 @@ function Home({ navigation, route }) {
             // save the data to usestate
             setCurrentLoan(loanData);
             setCurrentSchedule(scheduleData);
-            setLoanBalance(remainingBalance.toFixed(1));
+            setLoanBalance(remainingBalance.toFixed());
          }
       } catch (error) {
          console.error("Error fetching data from Firestore:", error);
@@ -170,7 +170,7 @@ function Home({ navigation, route }) {
                   // save the data to usestate
                   setCurrentLoan(loanData);
                   setCurrentSchedule(scheduleData);
-                  setLoanBalance(remainingBalance.toFixed(1));
+                  setLoanBalance(remainingBalance.toFixed());
                }
             } catch (error) {
                console.error("Error fetching data from Firestore:", error);
@@ -204,7 +204,7 @@ function Home({ navigation, route }) {
             </TouchableOpacity>
          </View>
          <View style={styles.loanDetailsContainer}>
-            {currentLoan ? (
+            {currentLoan.length > 0 ? (
                <>
                   {loading ? (
                      <ActivityIndicator
@@ -240,7 +240,7 @@ function Home({ navigation, route }) {
                </>
             ) : (
                <>
-                  {currentLoan ? (
+                  {loading ? (
                      <ActivityIndicator
                         size="large"
                         color={COLORS.white}
@@ -255,7 +255,7 @@ function Home({ navigation, route }) {
                                  { color: COLORS.white },
                               ]}
                            >
-                              No current loan
+                              No active loan
                            </Text>
                         </View>
                      </View>
@@ -384,7 +384,7 @@ function Home({ navigation, route }) {
             </ScrollView>
          ) : (
             <>
-               {currentLoan ? (
+               {currentLoan.length > 0 ? (
                   <View style={styles.detailsContainer}>
                      {loading ? (
                         <ActivityIndicator

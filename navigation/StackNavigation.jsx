@@ -26,7 +26,7 @@ function StackNavigation() {
    useEffect(() => {
       onAuthStateChanged(FIREBASE_AUTH, async (user) => {
          if (user) {
-            console.log("user", user.uid);
+            console.log("user:", user.uid);
 
             // Get or create the user's data in Firestore
             const userUid = user.uid;
@@ -43,7 +43,7 @@ function StackNavigation() {
             setUser(user);
          } else {
             setUser(null);
-            console.log("user signout: ", user);
+            console.log("user:", user);
          }
       });
    }, []);

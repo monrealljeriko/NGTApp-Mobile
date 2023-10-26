@@ -20,6 +20,7 @@ function Loans({ navigation, route }) {
    const [pendingLoan, setPendingLoan] = useState([]);
    const [activeLoan, setActiveLoan] = useState([]);
    const [completedLoan, setCompletedLoan] = useState([]);
+   const [overallLoan, setOverallLoan] = useState([]);
    const [refreshing, setRefreshing] = useState(false);
    const { userUid } = route.params; // Access the userUid parameter from the route
 
@@ -42,7 +43,7 @@ function Loans({ navigation, route }) {
             const pendingLoanData = [];
             const activeLoanData = [];
             const completedLoanData = [];
-
+            const overallData = [];
             // snapshot the loan data
             querySnapshot.forEach((loanDoc) => {
                const loan = loanDoc.data();
@@ -57,6 +58,7 @@ function Loans({ navigation, route }) {
                   completedLoanData.push(loan);
                   borrowerTotalLoans += loan.loanAmount;
                }
+               overallData.push(loan);
             });
 
             // save the data to usestate
@@ -64,6 +66,7 @@ function Loans({ navigation, route }) {
             setPendingLoan(pendingLoanData);
             setActiveLoan(activeLoanData);
             setCompletedLoan(completedLoanData);
+            setOverallLoan(overallData);
          }
       } catch (error) {
          console.error("Error fetching data from Firestore:", error);
@@ -137,21 +140,52 @@ function Loans({ navigation, route }) {
             </TouchableOpacity>
          </View>
          <View style={styles.loanDetailsContainer}>
-            {loading ? (
-               <ActivityIndicator
-                  size="large"
-                  color={COLORS.white}
-                  style={{ marginVertical: 20 }}
-               />
+            {totalLoans > 0 ? (
+               <>
+                  {loading ? (
+                     <ActivityIndicator
+                        size="large"
+                        color={COLORS.white}
+                        style={{ marginVertical: 20 }}
+                     />
+                  ) : (
+                     <View>
+                        <Text
+                           style={[styles.loanTitle, { textAlign: "center" }]}
+                        >
+                           Outstanding Amount
+                        </Text>
+                        <Text
+                           style={[styles.loanBalance, { textAlign: "center" }]}
+                        >
+                           ₱{totalLoans}
+                        </Text>
+                     </View>
+                  )}
+               </>
             ) : (
-               <View>
-                  <Text style={[styles.loanTitle, { textAlign: "center" }]}>
-                     Outstanding Amount
-                  </Text>
-                  <Text style={[styles.loanBalance, { textAlign: "center" }]}>
-                     ₱{totalLoans}
-                  </Text>
-               </View>
+               <>
+                  {loading ? (
+                     <ActivityIndicator
+                        size="large"
+                        color={COLORS.white}
+                        style={{ marginVertical: 20 }}
+                     />
+                  ) : (
+                     <View style={styles.loanCardContainer}>
+                        <View style={styles.cardHeaderLabel}>
+                           <Text
+                              style={[
+                                 styles.loanTitle,
+                                 { color: COLORS.white },
+                              ]}
+                           >
+                              Total loans unavailabe
+                           </Text>
+                        </View>
+                     </View>
+                  )}
+               </>
             )}
          </View>
          <View style={styles.segmentControl}>
@@ -203,7 +237,7 @@ function Loans({ navigation, route }) {
 
          {selectedTab == 0 ? (
             <>
-               {totalLoans ? (
+               {overallLoan.length > 0 ? (
                   <ScrollView
                      refreshControl={
                         <RefreshControl
@@ -385,6 +419,14 @@ function Loans({ navigation, route }) {
                                  <Text style={styles.cardLabelText}>
                                     {loan.status}
                                  </Text>
+                                 <Text
+                                    style={[
+                                       styles.cardLabelText,
+                                       { fontFamily: "Poppins-Regular" },
+                                    ]}
+                                 >
+                                    {loan.purposeOfLoan}
+                                 </Text>
                               </View>
 
                               <View style={styles.appliedCardItem}>
@@ -459,16 +501,25 @@ function Loans({ navigation, route }) {
                ) : (
                   <View style={styles.loanCardContainer}>
                      <View style={styles.cardHeaderLabel}>
-                        <Text style={styles.cardText}>
-                           Your loan will show up here.
-                        </Text>
+                        <ScrollView
+                           refreshControl={
+                              <RefreshControl
+                                 refreshing={refreshing}
+                                 onRefresh={onRefresh}
+                              />
+                           }
+                        >
+                           <Text style={styles.cardText}>
+                              Your loan will show up here.
+                           </Text>
+                        </ScrollView>
                      </View>
                   </View>
                )}
             </>
          ) : (
             <>
-               {totalLoans ? (
+               {completedLoan.length > 0 ? (
                   <View style={styles.historyContainer}>
                      {loading ? (
                         <ActivityIndicator
@@ -592,9 +643,18 @@ function Loans({ navigation, route }) {
                      ) : (
                         <View style={styles.loanCardContainer}>
                            <View style={styles.cardHeaderLabel}>
-                              <Text style={styles.cardText}>
-                                 Your history will show up here.
-                              </Text>
+                              <ScrollView
+                                 refreshControl={
+                                    <RefreshControl
+                                       refreshing={refreshing}
+                                       onRefresh={onRefresh}
+                                    />
+                                 }
+                              >
+                                 <Text style={styles.cardText}>
+                                    Your history will show up here.
+                                 </Text>
+                              </ScrollView>
                            </View>
                         </View>
                      )}

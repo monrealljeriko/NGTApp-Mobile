@@ -46,24 +46,18 @@ function Login({ navigation }) {
             email,
             password
          );
-         console.log("User signed in");
 
          // Check if the "Remember Me" checkbox is checked
          if (isChecked) {
             // Save the email and password to AsyncStorage
             await AsyncStorage.setItem("email", email);
             await AsyncStorage.setItem("password", password);
-            console.log("Email and password saved");
          } else {
             // If not checked, remove any saved login details
             await AsyncStorage.removeItem("email");
             await AsyncStorage.removeItem("password");
-            console.log("Email and password removed");
          }
-
-         console.log(response);
       } catch (error) {
-         console.log(error);
          alert("Sign in failed: " + error.message);
       } finally {
          setLoading(false);

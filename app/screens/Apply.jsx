@@ -372,8 +372,6 @@ function Apply({ navigation, route }) {
          }
       }
       setPaymentSchedule(data);
-
-      console.log(data);
       setTotalNonFinanceCharges(100);
       setServiceHandlingCharge(parseFloat((loanAmount * 0.02).toFixed(1)));
       setTotalDeductionCharge(
