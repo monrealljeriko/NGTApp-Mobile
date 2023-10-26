@@ -1,36 +1,186 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import {
+   View,
+   Text,
+   Image,
+   ScrollView,
+   TouchableOpacity,
+   ActivityIndicator,
+} from "react-native";
+import {
+   collection,
+   getDoc,
+   doc,
+   getDocs,
+   updateDoc,
+} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import styles from "./styles";
+import Apply from "../Apply";
 import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { FAB } from "react-native-paper";
-import Apply from "../Apply";
+import { RefreshControl } from "react-native";
+import { FIREBASE_DB } from "../../../firebaseConfig";
 
-function Home({ navigation }) {
+function Home({ navigation, route }) {
    const [selectedTab, setSelectedTab] = useState(0);
    const [isFabOpen, setIsFabOpen] = useState(false);
-   const [data, setData] = useState([
-      {
-         day: "01",
-         date: "01/10/23",
-         amount: 155,
-         status: "complete",
-      },
-      {
-         day: "02",
-         date: "01/10/23",
-         amount: 155,
-         status: "incomplete",
-      },
-      {
-         day: "03",
-         date: "01/10/23",
-         amount: 155,
-         status: "incomplete",
-      },
+   const [loading, setLoading] = useState(true);
+   const [refreshing, setRefreshing] = useState(false);
+   const [currentLoan, setCurrentLoan] = useState([]);
+   const [currentSchedule, setCurrentSchedule] = useState([]);
+   const [loanBalance, setLoanBalance] = useState(0);
+   const { userUid } = route.params; // Access the userUid parameter from the route
 
-      // Add more data objects as needed
-   ]);
+   // uptate status of loan
+   const updateStatus = async (fieldRef) => {
+      await updateDoc(fieldRef, { status: "Completed" });
+   };
+
+   const onRefresh = async () => {
+      setRefreshing(true);
+
+      // Fetch the totalLoans data from Firestore
+      const borrowerUid = userUid;
+      const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+
+      try {
+         const borrowerSnapshot = await getDoc(borrowerRef);
+         let remainingBalance = 0;
+
+         if (borrowerSnapshot.exists()) {
+            const loanRef = collection(borrowerRef, "loanRequests");
+            const scheduleRef = collection(borrowerRef, "paymentSchedule");
+            const queryLoanSnapshot = await getDocs(loanRef);
+            const querySchedSnapshot = await getDocs(scheduleRef);
+
+            const loanData = [];
+            const scheduleData = [];
+
+            // snapshot, Loop through the loan data
+            queryLoanSnapshot.forEach((loanDoc) => {
+               const loan = loanDoc.data();
+               const loanIdRef = loan.loanID;
+
+               if (loan.status === "Active") {
+                  loanData.push(loan);
+                  // Loop through the payment schedule data
+                  querySchedSnapshot.forEach((schedDoc) => {
+                     const sched = schedDoc.data();
+                     const paymentScheduleArray = sched.paymentSchedule;
+
+                     // Check if the payment schedule corresponds to the current loan
+                     if (loanIdRef === sched.loanID) {
+                        scheduleData.push(sched); // Add the payment schedule data
+                        const schedIdRef = sched.loanID;
+
+                        // Loop through the payment items in the schedule
+                        paymentScheduleArray.forEach((paymentItem, index) => {
+                           if (paymentItem.status === "incomplete") {
+                              remainingBalance += paymentItem.amount;
+                           }
+                           if (
+                              index === paymentScheduleArray.length - 1 &&
+                              paymentItem.status === "complete"
+                           ) {
+                              const fieldRef = doc(loanRef, schedIdRef);
+                              updateStatus(fieldRef);
+                           }
+                        });
+                     }
+                  });
+               }
+            });
+
+            // save the data to usestate
+            setCurrentLoan(loanData);
+            setCurrentSchedule(scheduleData);
+            setLoanBalance(remainingBalance.toFixed(1));
+         }
+      } catch (error) {
+         console.error("Error fetching data from Firestore:", error);
+      }
+      setRefreshing(false);
+   };
+
+   useEffect(() => {
+      const fetchLoanData = async () => {
+         if (userUid) {
+            // Fetch the totalLoans data from Firestore
+            const borrowerUid = userUid;
+            const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+
+            try {
+               const borrowerSnapshot = await getDoc(borrowerRef);
+               let remainingBalance = 0;
+
+               if (borrowerSnapshot.exists()) {
+                  const loanRef = collection(borrowerRef, "loanRequests");
+                  const scheduleRef = collection(
+                     borrowerRef,
+                     "paymentSchedule"
+                  );
+                  const queryLoanSnapshot = await getDocs(loanRef);
+                  const querySchedSnapshot = await getDocs(scheduleRef);
+
+                  const loanData = [];
+                  const scheduleData = [];
+
+                  // snapshot, Loop through the loan data
+                  queryLoanSnapshot.forEach((loanDoc) => {
+                     const loan = loanDoc.data();
+                     const loanIdRef = loan.loanID;
+
+                     if (loan.status === "Active") {
+                        loanData.push(loan);
+                        // Loop through the payment schedule data
+                        querySchedSnapshot.forEach((schedDoc) => {
+                           const sched = schedDoc.data();
+                           const paymentScheduleArray = sched.paymentSchedule;
+
+                           // Check if the payment schedule corresponds to the current loan
+                           if (loanIdRef === sched.loanID) {
+                              scheduleData.push(sched); // Add the payment schedule data
+                              const schedIdRef = sched.loanID;
+
+                              // Loop through the payment items in the schedule
+                              paymentScheduleArray.forEach(
+                                 (paymentItem, index) => {
+                                    if (paymentItem.status === "incomplete") {
+                                       remainingBalance += paymentItem.amount;
+                                    }
+                                    if (
+                                       index ===
+                                          paymentScheduleArray.length - 1 &&
+                                       paymentItem.status === "complete"
+                                    ) {
+                                       const fieldRef = doc(
+                                          loanRef,
+                                          schedIdRef
+                                       );
+                                       updateStatus(fieldRef);
+                                    }
+                                 }
+                              );
+                           }
+                        });
+                     }
+                  });
+
+                  // save the data to usestate
+                  setCurrentLoan(loanData);
+                  setCurrentSchedule(scheduleData);
+                  setLoanBalance(remainingBalance.toFixed(1));
+               }
+            } catch (error) {
+               console.error("Error fetching data from Firestore:", error);
+            }
+            setLoading(false);
+         }
+      };
+      fetchLoanData();
+   }, []);
+
    return (
       <View style={styles.container}>
          <View style={styles.headerContainer}>
@@ -54,20 +204,64 @@ function Home({ navigation }) {
             </TouchableOpacity>
          </View>
          <View style={styles.loanDetailsContainer}>
-            <View>
-               <Text style={styles.loanTitle}>Current Loan</Text>
-               <Text style={styles.loanBalance}>₱14000</Text>
-            </View>
-            <View
-               style={{
-                  justifyContent: "center",
-                  gap: 10,
-                  bottom: 5,
-               }}
-            >
-               <Text style={styles.payableLoan}>Payable in 90/days</Text>
-               <Text style={styles.payableLoan}>₱11200 Remaining</Text>
-            </View>
+            {currentLoan ? (
+               <>
+                  {loading ? (
+                     <ActivityIndicator
+                        size="large"
+                        color={COLORS.white}
+                        style={{ marginVertical: 20 }}
+                     />
+                  ) : (
+                     <>
+                        <View>
+                           <Text style={styles.loanTitle}>Current Loan</Text>
+                           {currentLoan && currentLoan.loan}
+                           <Text style={styles.loanBalance}>
+                              ₱{currentLoan[0]?.loanAmount}
+                           </Text>
+                        </View>
+                        <View
+                           style={{
+                              justifyContent: "center",
+                              gap: 10,
+                              bottom: 5,
+                           }}
+                        >
+                           <Text style={styles.payableLoan}>
+                              Payable in {currentLoan[0]?.payableIN}
+                           </Text>
+                           <Text style={styles.payableLoan}>
+                              ₱{loanBalance} Remaining
+                           </Text>
+                        </View>
+                     </>
+                  )}
+               </>
+            ) : (
+               <>
+                  {currentLoan ? (
+                     <ActivityIndicator
+                        size="large"
+                        color={COLORS.white}
+                        style={{ marginVertical: 20 }}
+                     />
+                  ) : (
+                     <View style={styles.loanCardContainer}>
+                        <View style={styles.cardHeaderLabel}>
+                           <Text
+                              style={[
+                                 styles.loanTitle,
+                                 { color: COLORS.white },
+                              ]}
+                           >
+                              No current loan
+                           </Text>
+                        </View>
+                     </View>
+                  )}
+               </>
+            )}
          </View>
 
          {/* Segment */}
@@ -189,44 +383,113 @@ function Home({ navigation }) {
                </View>
             </ScrollView>
          ) : (
-            <View style={styles.detailsContainer}>
-               <Text style={styles.detailsTitle}>Daily Schedule</Text>
-               <View style={styles.detailsHeaderLabel}>
-                  <Text style={styles.detailsLabel}>Day</Text>
-                  <Text style={styles.detailsLabel}>Date</Text>
-                  <Text style={styles.detailsLabel}>Amount</Text>
-                  <Text style={styles.detailsLabel}>Status</Text>
-               </View>
-               <ScrollView>
-                  {data.map((item, index) => (
-                     <View key={index}>
-                        <View style={styles.detailsList}>
-                           <Text style={styles.detailsItem}>{item.day}</Text>
-                           <Text style={[styles.detailsItem, { right: 15 }]}>
-                              {item.date}
+            <>
+               {currentLoan ? (
+                  <View style={styles.detailsContainer}>
+                     {loading ? (
+                        <ActivityIndicator
+                           size="large"
+                           color={COLORS.primary}
+                           style={{ marginVertical: 20 }}
+                        />
+                     ) : (
+                        <ScrollView
+                           refreshControl={
+                              <RefreshControl
+                                 refreshing={refreshing}
+                                 onRefresh={onRefresh}
+                              />
+                           }
+                        >
+                           <Text style={styles.detailsTitle}>
+                              {currentLoan.length > 0 &&
+                              currentLoan[0].numberOfPayments
+                                 ? currentLoan[0].numberOfPayments
+                                 : "Term"}{" "}
+                              Schedule
                            </Text>
-                           <Text style={[styles.detailsItem, { right: 25 }]}>
-                              {item.amount}
+                           <View style={styles.detailsHeaderLabel}>
+                              <Text style={styles.detailsLabel}>
+                                 {currentLoan.length > 0 &&
+                                 currentLoan[0].numberOfPayments
+                                    ? "Count"
+                                    : "Term"}
+                              </Text>
+                              <Text style={styles.detailsLabel}>Date</Text>
+                              <Text style={styles.detailsLabel}>Amount</Text>
+                              <Text style={styles.detailsLabel}>Status</Text>
+                           </View>
+                           {currentSchedule.map((data, index) => (
+                              <View key={index}>
+                                 {data.paymentSchedule.map(
+                                    (paymentItem, itemIndex) => (
+                                       <View key={itemIndex}>
+                                          <View style={styles.detailsList}>
+                                             <Text style={styles.detailsItem}>
+                                                {paymentItem.day}
+                                             </Text>
+                                             <Text
+                                                style={[
+                                                   styles.detailsItem,
+                                                   { right: 15 },
+                                                ]}
+                                             >
+                                                {paymentItem.date}
+                                             </Text>
+                                             <Text
+                                                style={[
+                                                   styles.detailsItem,
+                                                   { right: 25 },
+                                                ]}
+                                             >
+                                                {paymentItem.amount}
+                                             </Text>
+                                             <Ionicons
+                                                size={18}
+                                                name={
+                                                   paymentItem.status ===
+                                                   "complete"
+                                                      ? "checkmark-circle"
+                                                      : "checkmark-circle"
+                                                }
+                                                color={
+                                                   paymentItem.status ===
+                                                   "complete"
+                                                      ? "#34B233"
+                                                      : COLORS.gray2
+                                                }
+                                             />
+                                          </View>
+                                          <View
+                                             style={styles.dividerLine}
+                                          ></View>
+                                       </View>
+                                    )
+                                 )}
+                              </View>
+                           ))}
+                        </ScrollView>
+                     )}
+                  </View>
+               ) : (
+                  <View style={styles.loanCardContainer}>
+                     <View style={styles.cardHeaderLabel}>
+                        <ScrollView
+                           refreshControl={
+                              <RefreshControl
+                                 refreshing={refreshing}
+                                 onRefresh={onRefresh}
+                              />
+                           }
+                        >
+                           <Text style={styles.cardText}>
+                              Your schedule of loan will show up here.
                            </Text>
-                           <Ionicons
-                              name={
-                                 item.status === "complete"
-                                    ? "checkmark-circle"
-                                    : "checkmark-circle"
-                              }
-                              size={18}
-                              color={
-                                 item.status === "complete"
-                                    ? "#34B233"
-                                    : COLORS.gray2
-                              }
-                           />
-                        </View>
-                        <View style={styles.dividerLine}></View>
+                        </ScrollView>
                      </View>
-                  ))}
-               </ScrollView>
-            </View>
+                  </View>
+               )}
+            </>
          )}
 
          <FAB.Group
