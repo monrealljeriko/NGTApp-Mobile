@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
       fontFamily: "Poppins-Regular",
       textAlign: "center",
       marginTop: 15,
-      marginBottom: 10,
    },
    detailsHeaderLabel: {
       flexDirection: "row",
@@ -100,6 +99,7 @@ const styles = StyleSheet.create({
    detailsList: {
       flexDirection: "row",
       justifyContent: "space-around",
+      marginHorizontal: 10,
    },
    detailsLabel: {
       fontFamily: "Poppins-Regular",

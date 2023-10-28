@@ -24,8 +24,8 @@ function Loans({ navigation, route }) {
    const [refreshing, setRefreshing] = useState(false);
    const { userUid } = route.params; // Access the userUid parameter from the route
 
+   // update date on refresh
    const onRefresh = async () => {
-      // Refresh the loan data here
       setRefreshing(true);
 
       const borrowerUid = userUid;
@@ -75,6 +75,7 @@ function Loans({ navigation, route }) {
       setRefreshing(false);
    };
 
+   // fetch data from firestore database
    useEffect(() => {
       const fetchLoanData = async () => {
          if (userUid) {
@@ -95,7 +96,7 @@ function Loans({ navigation, route }) {
                   const pendingLoanData = [];
                   const activeLoanData = [];
                   const completedLoanData = [];
-
+                  const overallData = [];
                   // snapshot the loan data
                   querySnapshot.forEach((loanDoc) => {
                      const loan = loanDoc.data();
@@ -110,6 +111,7 @@ function Loans({ navigation, route }) {
                         completedLoanData.push(loan);
                         borrowerTotalLoans += loan.loanAmount;
                      }
+                     overallData.push(loan);
                   });
 
                   // save the data to usestate
@@ -117,6 +119,7 @@ function Loans({ navigation, route }) {
                   setPendingLoan(pendingLoanData);
                   setActiveLoan(activeLoanData);
                   setCompletedLoan(completedLoanData);
+                  setOverallLoan(overallData);
                }
             } catch (error) {
                console.error("Error fetching data from Firestore:", error);
@@ -237,7 +240,13 @@ function Loans({ navigation, route }) {
 
          {selectedTab == 0 ? (
             <>
-               {overallLoan.length > 0 ? (
+               {loading ? (
+                  <ActivityIndicator
+                     size="large"
+                     color={COLORS.primary}
+                     style={{ marginVertical: 20 }}
+                  />
+               ) : overallLoan.length > 0 ? (
                   <ScrollView
                      refreshControl={
                         <RefreshControl
@@ -246,14 +255,8 @@ function Loans({ navigation, route }) {
                         />
                      }
                   >
-                     {loading ? (
-                        <ActivityIndicator
-                           size="large"
-                           color={COLORS.primary}
-                           style={{ marginVertical: 20 }}
-                        />
-                     ) : (
-                        pendingLoan.slice(0, 1).map((loan, index) => (
+                     <>
+                        {pendingLoan.slice(0, 1).map((loan, index) => (
                            <View
                               key={index}
                               style={[
@@ -264,6 +267,14 @@ function Loans({ navigation, route }) {
                               <View style={styles.cardHeaderLabel}>
                                  <Text style={styles.cardLabelText}>
                                     {loan.status}
+                                 </Text>
+                                 <Text
+                                    style={[
+                                       styles.cardLabelText,
+                                       { fontFamily: "Poppins-Regular" },
+                                    ]}
+                                 >
+                                    {loan.purposeOfLoan}
                                  </Text>
                               </View>
 
@@ -293,7 +304,7 @@ function Loans({ navigation, route }) {
                                           Date Granted:
                                        </Text>
                                        <Text style={styles.cardText}>
-                                          {loan.dateGranted}
+                                          {/*  {loan.dateGranted} */}
                                        </Text>
                                     </View>
                                     <View style={{ right: 20 }}>
@@ -301,7 +312,7 @@ function Loans({ navigation, route }) {
                                           Date Due:
                                        </Text>
                                        <Text style={styles.cardText}>
-                                          {loan.dateDue}
+                                          {/* {loan.dateDue} */}
                                        </Text>
                                     </View>
                                  </View>
@@ -312,28 +323,21 @@ function Loans({ navigation, route }) {
                                     <Text style={styles.cardText}>
                                        ID-{loan.loanID}
                                     </Text>
-                                    <TouchableOpacity
-                                       onPress={() =>
-                                          navigation.navigate("Home")
-                                       }
-                                    >
-                                       <Text style={styles.cardTextTouchable}>
+                                    <TouchableOpacity>
+                                       <Text
+                                          style={[
+                                             styles.cardTextTouchable,
+                                             { color: COLORS.gray },
+                                          ]}
+                                       >
                                           View
                                        </Text>
                                     </TouchableOpacity>
                                  </View>
                               </View>
                            </View>
-                        ))
-                     )}
-                     {loading ? (
-                        <ActivityIndicator
-                           size="large"
-                           color={COLORS.primary}
-                           style={{ marginVertical: 20 }}
-                        />
-                     ) : (
-                        activeLoan.slice(0, 1).map((loan, index) => (
+                        ))}
+                        {activeLoan.map((loan, index) => (
                            <View
                               key={index}
                               style={[
@@ -345,6 +349,14 @@ function Loans({ navigation, route }) {
                                  <Text style={styles.cardLabelText}>
                                     {loan.status}
                                  </Text>
+                                 <Text
+                                    style={[
+                                       styles.cardLabelText,
+                                       { fontFamily: "Poppins-Regular" },
+                                    ]}
+                                 >
+                                    {loan.purposeOfLoan}
+                                 </Text>
                               </View>
 
                               <View style={styles.appliedCardItem}>
@@ -352,7 +364,7 @@ function Loans({ navigation, route }) {
                                     <Text
                                        style={[
                                           styles.cartTitle,
-                                          { color: "green" },
+                                          { color: COLORS.complete },
                                        ]}
                                     >
                                        {loan.loanAmount}
@@ -404,16 +416,8 @@ function Loans({ navigation, route }) {
                                  </View>
                               </View>
                            </View>
-                        ))
-                     )}
-                     {loading ? (
-                        <ActivityIndicator
-                           size="large"
-                           color={COLORS.primary}
-                           style={{ marginVertical: 20 }}
-                        />
-                     ) : (
-                        completedLoan.slice(0, 1).map((loan, index) => (
+                        ))}
+                        {completedLoan.slice(0, 1).map((loan, index) => (
                            <View key={index} style={[styles.loanCardContainer]}>
                               <View style={styles.cardHeaderLabel}>
                                  <Text style={styles.cardLabelText}>
@@ -495,8 +499,8 @@ function Loans({ navigation, route }) {
                                  </View>
                               </View>
                            </View>
-                        ))
-                     )}
+                        ))}
+                     </>
                   </ScrollView>
                ) : (
                   <View style={styles.loanCardContainer}>
