@@ -107,55 +107,17 @@ function Apply({ navigation, route }) {
    const [activeLoan, setActiveLoan] = useState([]);
    const { userUid } = route.params; // Access the userUid parameter from the route
 
-   // fetch data from firestore database
+   // runs the component of first mount
+
    useEffect(() => {
-      const fetchLoanData = async () => {
-         if (userUid) {
-            // Fetch the totalLoans data from Firestore
-            const borrowerUid = userUid;
-            const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
-
-            try {
-               const borrowerSnapshot = await getDoc(borrowerRef);
-               if (borrowerSnapshot.exists()) {
-                  const loanRef = collection(borrowerRef, "loanRequests");
-                  const querySnapshot = await getDocs(loanRef);
-
-                  const pendingLoanData = [];
-                  const activeLoanData = [];
-
-                  // snapshot the loan data
-                  querySnapshot.forEach((loanDoc) => {
-                     const loan = loanDoc.data();
-                     if (loan.status === "Pending") {
-                        pendingLoanData.push(loan);
-                     }
-                     if (loan.status === "Active") {
-                        activeLoanData.push(loan);
-                     }
-                  });
-
-                  // save the data to usestate
-                  setPendingLoan(pendingLoanData);
-                  setActiveLoan(activeLoanData);
-               }
-            } catch (error) {
-               console.error("Error fetching data from Firestore:", error);
-            }
-            setLoading(false);
-         } else {
-            setLoading(false);
-         }
-      };
       fetchLoanData();
    }, []);
 
-   // update the fields and calculations
    useEffect(() => {
       calculateTotals();
    }, [selectedTerms, numberOfPayments, selectedLoans, purposeOfLoan]);
 
-   // date and uid
+   // useffect for generating date and uid
    useEffect(() => {
       // Function to get the current date
       const now = new Date();
@@ -201,6 +163,45 @@ function Apply({ navigation, route }) {
       setTimeRequested(getCurrentTime());
    }, []);
 
+   // Fetch the totalLoans data from Firestore database;
+   const fetchLoanData = async () => {
+      if (userUid) {
+         const borrowerUid = userUid;
+         const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+
+         try {
+            const borrowerSnapshot = await getDoc(borrowerRef);
+            if (borrowerSnapshot.exists()) {
+               const loanRef = collection(borrowerRef, "loanRequests");
+               const querySnapshot = await getDocs(loanRef);
+
+               const pendingLoanData = [];
+               const activeLoanData = [];
+
+               // snapshot the loan data
+               querySnapshot.forEach((loanDoc) => {
+                  const loan = loanDoc.data();
+                  if (loan.status === "Pending") {
+                     pendingLoanData.push(loan);
+                  }
+                  if (loan.status === "Active") {
+                     activeLoanData.push(loan);
+                  }
+               });
+
+               // save the data to usestate
+               setPendingLoan(pendingLoanData);
+               setActiveLoan(activeLoanData);
+            }
+         } catch (error) {
+            console.error("Error fetching data from Firestore:", error);
+         }
+         setLoading(false);
+      }
+   };
+   // update the fields and calculations
+
+   // calculate functions
    const calculateTotals = () => {
       const term = parseInt(selectedTerms);
       const loanAmount = parseInt(selectedLoans);
@@ -456,6 +457,7 @@ function Apply({ navigation, route }) {
       );
    };
 
+   // fuction to check loan is pendin or active
    const handleSubmit = () => {
       if (pendingLoan.length > 0) {
          alert(
@@ -469,6 +471,8 @@ function Apply({ navigation, route }) {
          setConfirmationVisible(true);
       }
    };
+
+   // function for sending data to firstore database
    const handleConfirmSubmit = async () => {
       // Get the user's UID
       const userUID = userUid;
@@ -479,7 +483,7 @@ function Apply({ navigation, route }) {
       const newLoanCount = borrowerLoanCount + 1;
       await updateDoc(userDocRef, { loanCount: newLoanCount });
 
-      // set of fields
+      // set of loan datas fields
       const loanReqDataToAdd = {
          loanID: loanRequestID,
          loanAmount: parseInt(selectedLoans),
@@ -498,8 +502,10 @@ function Apply({ navigation, route }) {
          dateGranted: paymentSchedule[0].date,
          status: "Pending",
          loanCount: newLoanCount,
+         dateCounter: 0,
       };
 
+      // set of loan data fields for schedule
       const schedulePaymentDataToAdd = {
          scheduleID: schedulePaymentID,
          paymentSchedule: paymentSchedule,
@@ -528,10 +534,7 @@ function Apply({ navigation, route }) {
             doc(paymentScheduleCollectionRef, schedulePaymentID),
             schedulePaymentDataToAdd
          );
-         console.log("LoanCount:", newLoanCount);
-         console.log("LoanID: " + loanRequestID);
-         console.log("scheduleID: " + schedulePaymentID);
-         console.log("Loan request added to Firestore successfully!");
+         console.log("Loan requested successfully with id " + loanRequestID);
          navigation.navigate("RequestCompleted"); // Navigate to the success screen
       } catch (error) {
          console.error("Error adding loan request to Firestore: ", error);
@@ -544,6 +547,7 @@ function Apply({ navigation, route }) {
       console.log("Cancelled!");
       setConfirmationVisible(false);
    };
+
    return (
       <View style={styles.container}>
          <View style={styles.applyContainer}>

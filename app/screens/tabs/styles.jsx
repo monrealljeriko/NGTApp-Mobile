@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
    loanDetailsContainer: {
       backgroundColor: COLORS.primary,
       paddingHorizontal: 40,
-      paddingVertical: 20,
+      paddingTop: 20,
+      paddingBottom: 10,
       flexDirection: "row",
       justifyContent: "space-around",
    },
