@@ -1,4 +1,11 @@
-import { View, Text, Image, Pressable, ScrollView } from "react-native";
+import {
+   View,
+   Text,
+   Image,
+   Pressable,
+   ScrollView,
+   TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 import Checkbox from "expo-checkbox";
 import Button from "../component/Button";
@@ -169,13 +176,13 @@ function Register({ navigation }) {
                            <Text style={styles.customSubtext}>
                               Already a member ?
                            </Text>
-                           <Pressable
+                           <TouchableOpacity
                               onPress={() => navigation.navigate("Login")}
                            >
                               <Text style={styles.pressableText}>
                                  Click here
                               </Text>
-                           </Pressable>
+                           </TouchableOpacity>
                         </View>
                      </View>
                   ) : (

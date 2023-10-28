@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import Button from "../component/Button";
 
@@ -45,9 +45,9 @@ function Start({ navigation }) {
                }}
             >
                <Text style={styles.customSubtext}>Know more about us?</Text>
-               <Pressable onPress={() => alert("Underconstruction")}>
+               <TouchableOpacity onPress={() => alert("Underconstruction")}>
                   <Text style={styles.pressableText}>Click here</Text>
-               </Pressable>
+               </TouchableOpacity>
             </View>
          </View>
       </View>

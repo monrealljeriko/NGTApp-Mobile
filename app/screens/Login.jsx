@@ -171,9 +171,9 @@ function Login({ navigation }) {
                      </Text>
                   </Pressable>
                </View>
-               <Pressable onPress={() => alert("Underconstruction")}>
+               <TouchableOpacity onPress={() => alert("Underconstruction")}>
                   <Text style={styles.pressableText}>Forget password</Text>
-               </Pressable>
+               </TouchableOpacity>
             </View>
             {loading ? (
                <ActivityIndicator
@@ -192,9 +192,11 @@ function Login({ navigation }) {
 
             <View style={[styles.options, { justifyContent: "center" }]}>
                <Text style={styles.customSubtext}>Become a member ?</Text>
-               <Pressable onPress={() => navigation.navigate("Register")}>
+               <TouchableOpacity
+                  onPress={() => navigation.navigate("Register")}
+               >
                   <Text style={styles.pressableText}>Click here</Text>
-               </Pressable>
+               </TouchableOpacity>
             </View>
             {/* <Button title="Clear Async Data" onPress={clearData} /> */}
          </View>
