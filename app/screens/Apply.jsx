@@ -7,15 +7,22 @@ import {
    ScrollView,
    TouchableOpacity,
 } from "react-native";
+import {
+   collection,
+   doc,
+   setDoc,
+   getDoc,
+   getDocs,
+   updateDoc,
+} from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import Button from "../component/Button";
 import Modal from "react-native-modal";
 import COLORS from "../component/Colors";
 import { Picker } from "@react-native-picker/picker";
 import { ActivityIndicator } from "react-native-paper";
-import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
 import { FIREBASE_DB } from "../../firebaseConfig";
-
+import { addMonths, addWeeks, addDays, format } from "date-fns";
 // success screen page
 export function RequestCompleted({ navigation }) {
    return (
@@ -100,6 +107,7 @@ function Apply({ navigation, route }) {
    const [activeLoan, setActiveLoan] = useState([]);
    const { userUid } = route.params; // Access the userUid parameter from the route
 
+   // fetch data from firestore database
    useEffect(() => {
       const fetchLoanData = async () => {
          if (userUid) {
@@ -142,10 +150,12 @@ function Apply({ navigation, route }) {
       fetchLoanData();
    }, []);
 
+   // update the fields and calculations
    useEffect(() => {
       calculateTotals();
    }, [selectedTerms, numberOfPayments, selectedLoans, purposeOfLoan]);
 
+   // date and uid
    useEffect(() => {
       // Function to get the current date
       const now = new Date();
@@ -194,9 +204,15 @@ function Apply({ navigation, route }) {
    const calculateTotals = () => {
       const term = parseInt(selectedTerms);
       const loanAmount = parseInt(selectedLoans);
-      const startDate = dateRequested;
       const status = "incomplete";
-      const data = [];
+      const due = false;
+      const overdue = false;
+      const overdueDays = 0;
+      const nextPaymentDate = [];
+
+      // get the current date
+      const currentDate = new Date();
+      const currentDay = currentDate.getDate();
 
       if (term === 30) {
          switch (numberOfPayments) {
@@ -210,11 +226,15 @@ function Apply({ navigation, route }) {
 
                // setSchedule Payments
                for (let day = 1; day <= 30; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
+                  const nextDay = addDays(currentDate, day);
+                  nextPaymentDate.push({
+                     count: day < 10 ? `0${day}` : `${day}`,
+                     date: format(nextDay, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 30).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -227,12 +247,16 @@ function Apply({ navigation, route }) {
                setPayableLabel("4/wks");
 
                // setSchedule Payments
-               for (let day = 1; day <= 4; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
+               for (let week = 1; week <= 4; week++) {
+                  const nextWeek = addWeeks(currentDate, week);
+                  nextPaymentDate.push({
+                     count: week < 10 ? `0${week}` : `${week}`,
+                     date: format(nextWeek, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 4.29).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -245,11 +269,16 @@ function Apply({ navigation, route }) {
                setPayableLabel("1/mos");
 
                // setSchedule Payments
-               data.push({
-                  day: "01",
-                  date: startDate,
+               const nextMonth = addMonths(currentDate, 1);
+
+               nextPaymentDate.push({
+                  count: "01",
+                  date: format(nextMonth, "MM/dd/yyyy"),
                   amount: parseFloat((loanAmount / 1).toFixed(1)),
                   status,
+                  due,
+                  overdue,
+                  overdueDays,
                });
                break;
             default:
@@ -267,11 +296,15 @@ function Apply({ navigation, route }) {
                setPayableLabel("60/days");
 
                for (let day = 1; day <= 60; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
+                  const nextDay = addDays(currentDate, day);
+                  nextPaymentDate.push({
+                     count: day < 10 ? `0${day}` : `${day}`,
+                     date: format(nextDay, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 60).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -283,12 +316,16 @@ function Apply({ navigation, route }) {
                setTotalPayment(parseFloat((loanAmount / 8.57).toFixed(1)));
                setPayableLabel("8/wks");
 
-               for (let day = 1; day <= 8; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
-                     amount: parseFloat((loanAmount / 8.57).toFixed(1)),
+               for (let week = 1; week <= 8; week++) {
+                  const nextWeek = addWeeks(currentDate, week);
+                  nextPaymentDate.push({
+                     count: week < 10 ? `0${week}` : `${week}`,
+                     date: format(nextWeek, "MM/dd/yyyy"),
+                     amount: parseFloat((loanAmount / 8).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -300,12 +337,21 @@ function Apply({ navigation, route }) {
                setTotalPayment(parseFloat((loanAmount / 2).toFixed(1)));
                setPayableLabel("2/mos");
 
-               for (let day = 1; day <= 2; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
+               for (let mos = 1; mos <= 2; mos++) {
+                  const nextMonth = addMonths(currentDate, mos);
+                  const nextDate = new Date(
+                     nextMonth.getFullYear(),
+                     nextMonth.getMonth(),
+                     currentDay
+                  );
+                  nextPaymentDate.push({
+                     count: mos < 10 ? `0${mos}` : `${mos}`,
+                     date: format(nextDate, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 2).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -325,11 +371,20 @@ function Apply({ navigation, route }) {
                setPayableLabel("100/days");
 
                for (let day = 1; day <= 100; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
+                  const nextDay = addDays(currentDate, day);
+                  nextPaymentDate.push({
+                     count:
+                        day < 10
+                           ? `00${day}`
+                           : day < 100
+                           ? `0${day}`
+                           : `${day}`,
+                     date: format(nextDay, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 100).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -341,12 +396,16 @@ function Apply({ navigation, route }) {
                setTotalPayment(parseFloat((loanAmount / 14).toFixed(1)));
                setPayableLabel("14/wks");
 
-               for (let day = 1; day <= 14; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
+               for (let week = 1; week <= 14; week++) {
+                  const nextWeek = addWeeks(currentDate, week);
+                  nextPaymentDate.push({
+                     count: week < 10 ? `0${week}` : `${week}`,
+                     date: format(nextWeek, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 14).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -358,12 +417,21 @@ function Apply({ navigation, route }) {
                setTotalPayment(parseFloat((loanAmount / 3).toFixed(1)));
                setPayableLabel("3/mos");
 
-               for (let day = 1; day <= 3; day++) {
-                  data.push({
-                     day: day < 10 ? `0${day}` : `${day}`,
-                     date: startDate,
+               for (let mos = 1; mos <= 3; mos++) {
+                  const nextMonth = addMonths(currentDate, mos);
+                  const nextDate = new Date(
+                     nextMonth.getFullYear(),
+                     nextMonth.getMonth(),
+                     currentDay
+                  );
+                  nextPaymentDate.push({
+                     count: mos < 10 ? `0${mos}` : `${mos}`,
+                     date: format(nextDate, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 3).toFixed(1)),
                      status,
+                     due,
+                     overdue,
+                     overdueDays,
                   });
                }
                break;
@@ -371,7 +439,7 @@ function Apply({ navigation, route }) {
                break;
          }
       }
-      setPaymentSchedule(data);
+      setPaymentSchedule(nextPaymentDate);
       setTotalNonFinanceCharges(100);
       setServiceHandlingCharge(parseFloat((loanAmount * 0.02).toFixed(1)));
       setTotalDeductionCharge(
@@ -404,6 +472,12 @@ function Apply({ navigation, route }) {
    const handleConfirmSubmit = async () => {
       // Get the user's UID
       const userUID = userUid;
+      const userDocRef = doc(FIREBASE_DB, "borrowers", userUID);
+      const borrowerSnapshot = await getDoc(userDocRef);
+      const borrowerData = borrowerSnapshot.data();
+      const borrowerLoanCount = borrowerData.loanCount;
+      const newLoanCount = borrowerLoanCount + 1;
+      await updateDoc(userDocRef, { loanCount: newLoanCount });
 
       // set of fields
       const loanReqDataToAdd = {
@@ -420,17 +494,20 @@ function Apply({ navigation, route }) {
          payment: totalPayment,
          dateRequested: dateRequested,
          timeRequested: timeRequested,
+         dateDue: paymentSchedule[paymentSchedule.length - 1].date,
+         dateGranted: paymentSchedule[0].date,
          status: "Pending",
+         loanCount: newLoanCount,
       };
 
       const schedulePaymentDataToAdd = {
+         scheduleID: schedulePaymentID,
          paymentSchedule: paymentSchedule,
          loanID: loanRequestID,
       };
 
       try {
          setLoading(true);
-         const userDocRef = doc(FIREBASE_DB, "borrowers", userUID);
 
          // Reference to the loan requests subcollection
          const loanRequestsCollectionRef = collection(
@@ -451,7 +528,7 @@ function Apply({ navigation, route }) {
             doc(paymentScheduleCollectionRef, schedulePaymentID),
             schedulePaymentDataToAdd
          );
-
+         console.log("LoanCount:", newLoanCount);
          console.log("LoanID: " + loanRequestID);
          console.log("scheduleID: " + schedulePaymentID);
          console.log("Loan request added to Firestore successfully!");
