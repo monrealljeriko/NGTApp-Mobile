@@ -11,6 +11,7 @@ import {
    getDoc,
    doc,
    getDocs,
+   setDoc,
    updateDoc,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { FAB } from "react-native-paper";
 import { RefreshControl } from "react-native";
 import { FIREBASE_DB } from "../../../firebaseConfig";
+import { format, addMonths, addWeeks, addDays } from "date-fns";
 
 function Home({ navigation, route }) {
    const [selectedTab, setSelectedTab] = useState(0);
@@ -30,13 +32,81 @@ function Home({ navigation, route }) {
    const [currentLoan, setCurrentLoan] = useState([]);
    const [currentSchedule, setCurrentSchedule] = useState([]);
    const [loanBalance, setLoanBalance] = useState(0);
+   const [duePayment, setDuePayment] = useState([]);
+   const [overduePayment, setOverduePayment] = useState([]);
+   const [lastPayment, setLastPayment] = useState([]);
    const { userUid } = route.params; // Access the userUid parameter from the route
+
+   // split the current date and payment date
+   const dateParts = (handleDate) => {
+      const paymentDateParts = handleDate.split("/");
+      const month = parseInt(paymentDateParts[0]) - 1;
+      const day = parseInt(paymentDateParts[1]);
+      const year = parseInt(paymentDateParts[2]);
+      const splitedDate = new Date(year, month, day);
+      return splitedDate;
+   };
+
+   const updatePaymentSchedule = (scheduleData, dueDate) => {
+      const updatedSchedule = scheduleData.map((payment) => {
+         const updatedPayment = { ...payment };
+         const newDueDate = dateParts(dueDate);
+
+         // Map over the paymentSchedule array and update each item
+         updatedPayment.paymentSchedule = updatedPayment.paymentSchedule.map(
+            (paymentItem) => {
+               const newPaymentDate = dateParts(paymentItem.date);
+               const dateDifference = newDueDate - newPaymentDate;
+               const daysDifference = Math.floor(
+                  dateDifference / (1000 * 60 * 60 * 24)
+               );
+
+               if (
+                  daysDifference === 0 &&
+                  paymentItem.status === "incomplete"
+               ) {
+                  console.log(
+                     "Count ",
+                     paymentItem.count,
+                     " : Your loan is due now."
+                  );
+                  return {
+                     ...paymentItem,
+                     due: true,
+                     overdue: false,
+                     overdueDays: 0,
+                  };
+               } else if (
+                  daysDifference > 0 &&
+                  paymentItem.status === "incomplete"
+               ) {
+                  console.log(
+                     "Count ",
+                     paymentItem.count,
+                     " : Your loan is overdue, need to pay."
+                  );
+                  return {
+                     ...paymentItem,
+                     due: false,
+                     overdue: true,
+                     overdueDays: daysDifference,
+                  };
+               }
+               // return item no update
+               return paymentItem;
+            }
+         );
+         return updatedPayment;
+      });
+      return updatedSchedule;
+   };
 
    // uptate status of loan
    const updateStatus = async (fieldRef) => {
       await updateDoc(fieldRef, { status: "Completed" });
    };
 
+   // update date on refresh
    const onRefresh = async () => {
       setRefreshing(true);
 
@@ -50,12 +120,17 @@ function Home({ navigation, route }) {
 
          if (borrowerSnapshot.exists()) {
             const loanRef = collection(borrowerRef, "loanRequests");
+            let remainingBalance = 0;
+
             const scheduleRef = collection(borrowerRef, "paymentSchedule");
             const queryLoanSnapshot = await getDocs(loanRef);
             const querySchedSnapshot = await getDocs(scheduleRef);
 
             const loanData = [];
             const scheduleData = [];
+            const dueData = [];
+            const overdueData = [];
+            const lastPaymentData = [];
 
             // snapshot, Loop through the loan data
             queryLoanSnapshot.forEach((loanDoc) => {
@@ -68,16 +143,25 @@ function Home({ navigation, route }) {
                   querySchedSnapshot.forEach((schedDoc) => {
                      const sched = schedDoc.data();
                      const paymentScheduleArray = sched.paymentSchedule;
+                     remainingBalance = loan.loanAmount;
 
                      // Check if the payment schedule corresponds to the current loan
                      if (loanIdRef === sched.loanID) {
                         scheduleData.push(sched); // Add the payment schedule data
                         const schedIdRef = sched.loanID;
-
                         // Loop through the payment items in the schedule
                         paymentScheduleArray.forEach((paymentItem, index) => {
                            if (paymentItem.status === "incomplete") {
-                              remainingBalance += paymentItem.amount;
+                              if (paymentItem.due) {
+                                 dueData.push(paymentItem);
+                              }
+                              if (paymentItem.overdue) {
+                                 overdueData.push(paymentItem);
+                              }
+                           }
+                           if (paymentItem.status === "complete") {
+                              lastPaymentData.push(paymentItem);
+                              remainingBalance -= paymentItem.amount;
                            }
                            if (
                               index === paymentScheduleArray.length - 1 &&
@@ -92,9 +176,38 @@ function Home({ navigation, route }) {
                }
             });
 
+            // get the current date
+            const currentDate = new Date();
+            const nextMonth = addDays(currentDate, 1);
+            const dueDate = format(nextMonth, "MM/dd/yyyy");
+
+            const updatedSchedule = updatePaymentSchedule(
+               scheduleData,
+               dueDate
+            );
+
+            // Iterate through updatedSchedule
+            updatedSchedule.forEach(async (payment) => {
+               // Iterate through the paymentSchedule array for each payment
+               payment.paymentSchedule.forEach(async (paymentItem) => {
+                  if (paymentItem.status === "incomplete" && paymentItem.due) {
+                     // Update Firestore document
+                     const fieldRef = doc(scheduleRef, payment.scheduleID);
+                     await updateDoc(fieldRef, payment);
+                     console.log(
+                        "Due updated successfully for scheduleID: ",
+                        payment.scheduleID
+                     );
+                  }
+               });
+            });
+
             // save the data to usestate
             setCurrentLoan(loanData);
-            setCurrentSchedule(scheduleData);
+            setDuePayment(dueData);
+            setOverduePayment(overdueData);
+            setLastPayment(lastPaymentData);
+            setCurrentSchedule(updatedSchedule);
             setLoanBalance(remainingBalance.toFixed());
          }
       } catch (error) {
@@ -103,6 +216,7 @@ function Home({ navigation, route }) {
       setRefreshing(false);
    };
 
+   // fetch data from firestore database
    useEffect(() => {
       const fetchLoanData = async () => {
          if (userUid) {
@@ -112,10 +226,11 @@ function Home({ navigation, route }) {
 
             try {
                const borrowerSnapshot = await getDoc(borrowerRef);
-               let remainingBalance = 0;
 
                if (borrowerSnapshot.exists()) {
                   const loanRef = collection(borrowerRef, "loanRequests");
+                  let remainingBalance = 0;
+
                   const scheduleRef = collection(
                      borrowerRef,
                      "paymentSchedule"
@@ -125,6 +240,9 @@ function Home({ navigation, route }) {
 
                   const loanData = [];
                   const scheduleData = [];
+                  const dueData = [];
+                  const overdueData = [];
+                  const lastPaymentData = [];
 
                   // snapshot, Loop through the loan data
                   queryLoanSnapshot.forEach((loanDoc) => {
@@ -137,17 +255,26 @@ function Home({ navigation, route }) {
                         querySchedSnapshot.forEach((schedDoc) => {
                            const sched = schedDoc.data();
                            const paymentScheduleArray = sched.paymentSchedule;
+                           remainingBalance = loan.loanAmount;
 
                            // Check if the payment schedule corresponds to the current loan
                            if (loanIdRef === sched.loanID) {
                               scheduleData.push(sched); // Add the payment schedule data
                               const schedIdRef = sched.loanID;
-
                               // Loop through the payment items in the schedule
                               paymentScheduleArray.forEach(
                                  (paymentItem, index) => {
                                     if (paymentItem.status === "incomplete") {
-                                       remainingBalance += paymentItem.amount;
+                                       if (paymentItem.due) {
+                                          dueData.push(paymentItem);
+                                       }
+                                       if (paymentItem.overdue) {
+                                          overdueData.push(paymentItem);
+                                       }
+                                    }
+                                    if (paymentItem.status === "complete") {
+                                       lastPaymentData.push(paymentItem);
+                                       remainingBalance -= paymentItem.amount;
                                     }
                                     if (
                                        index ===
@@ -167,9 +294,44 @@ function Home({ navigation, route }) {
                      }
                   });
 
+                  // get the current date
+                  const currentDate = new Date();
+                  const nextMonth = addDays(currentDate, 1);
+                  const dueDate = format(nextMonth, "MM/dd/yyyy");
+
+                  const updatedSchedule = updatePaymentSchedule(
+                     scheduleData,
+                     dueDate
+                  );
+
+                  // Iterate through updatedSchedule
+                  updatedSchedule.forEach(async (payment) => {
+                     // Iterate through the paymentSchedule array for each payment
+                     payment.paymentSchedule.forEach(async (paymentItem) => {
+                        if (
+                           paymentItem.status === "incomplete" &&
+                           paymentItem.due
+                        ) {
+                           // Update Firestore document
+                           const fieldRef = doc(
+                              scheduleRef,
+                              payment.scheduleID
+                           );
+                           await updateDoc(fieldRef, payment);
+                           console.log(
+                              "Due updated successfully for scheduleID: ",
+                              payment.scheduleID
+                           );
+                        }
+                     });
+                  });
+
                   // save the data to usestate
                   setCurrentLoan(loanData);
-                  setCurrentSchedule(scheduleData);
+                  setDuePayment(dueData);
+                  setOverduePayment(overdueData);
+                  setLastPayment(lastPaymentData);
+                  setCurrentSchedule(updatedSchedule);
                   setLoanBalance(remainingBalance.toFixed());
                }
             } catch (error) {
@@ -216,7 +378,6 @@ function Home({ navigation, route }) {
                      <>
                         <View>
                            <Text style={styles.loanTitle}>Current Loan</Text>
-                           {currentLoan && currentLoan.loan}
                            <Text style={styles.loanBalance}>
                               ₱{currentLoan[0]?.loanAmount}
                            </Text>
@@ -273,7 +434,9 @@ function Home({ navigation, route }) {
                      borderColor: selectedTab == 0 ? "#08a391" : COLORS.gray2,
                   },
                ]}
-               onPress={() => setSelectedTab(0)}
+               onPress={() => {
+                  setSelectedTab(0), onRefresh();
+               }}
             >
                <Text
                   style={[
@@ -293,7 +456,9 @@ function Home({ navigation, route }) {
                      borderColor: selectedTab == 1 ? "#08a391" : COLORS.gray2,
                   },
                ]}
-               onPress={() => setSelectedTab(1)}
+               onPress={() => {
+                  setSelectedTab(1), onRefresh();
+               }}
             >
                <Text
                   style={[
@@ -309,79 +474,284 @@ function Home({ navigation, route }) {
          </View>
 
          {selectedTab == 0 ? (
-            <ScrollView>
-               <View style={styles.loanCardContainer}>
-                  <View style={styles.cardHeaderLabel}>
-                     <Text style={styles.cardLabelText}>Due now</Text>
-                     <Text style={{ fontFamily: "Poppins-Regular" }}>
-                        01/01/23
-                     </Text>
-                  </View>
-
-                  <View style={styles.loanCardItem}>
-                     <View style={styles.cardTextWrapper}>
-                        <Text style={[styles.cartTitle, { color: "red" }]}>
-                           ₱155
-                        </Text>
-                        <Text style={styles.cardText}>Advise to pay</Text>
+            <>
+               {loading ? (
+                  <ActivityIndicator
+                     size="large"
+                     color={COLORS.primary}
+                     style={{ marginVertical: 20 }}
+                  />
+               ) : currentLoan.length > 0 ? (
+                  <>
+                     {duePayment.length > 0 ||
+                     overduePayment.length > 0 ||
+                     lastPayment.length > 0 ? (
+                        <ScrollView
+                           refreshControl={
+                              <RefreshControl
+                                 refreshing={refreshing}
+                                 onRefresh={onRefresh}
+                              />
+                           }
+                        >
+                           <View style={styles.loanCardContainer}>
+                              {duePayment.slice(0, 1).map((duenow, index) => (
+                                 <View key={index}>
+                                    <View style={{ gap: 10 }}>
+                                       <View style={styles.cardHeaderLabel}>
+                                          <View
+                                             style={{
+                                                flexDirection: "row",
+                                                gap: 10,
+                                             }}
+                                          >
+                                             <View
+                                                style={{
+                                                   flexDirection: "row",
+                                                   gap: 10,
+                                                }}
+                                             >
+                                                <Text
+                                                   style={styles.cardLabelText}
+                                                >
+                                                   Due now
+                                                </Text>
+                                                <Text>
+                                                   (x{duePayment.length})
+                                                </Text>
+                                             </View>
+                                          </View>
+                                          <Text
+                                             style={{
+                                                fontFamily: "Poppins-Regular",
+                                             }}
+                                          >
+                                             {duenow.date}
+                                          </Text>
+                                       </View>
+                                       <View style={styles.loanCardItem}>
+                                          <View style={styles.cardTextWrapper}>
+                                             <Text
+                                                style={[
+                                                   styles.cartTitle,
+                                                   {
+                                                      color: COLORS.due,
+                                                   },
+                                                ]}
+                                             >
+                                                {duenow.amount}
+                                             </Text>
+                                             <Text style={styles.cardText}>
+                                                Advise to pay
+                                             </Text>
+                                          </View>
+                                          <View style={styles.cardLine}></View>
+                                          <View style={styles.cardTextWrapper}>
+                                             <Text style={styles.cardText}>
+                                                ID-{currentLoan[0]?.loanID}
+                                             </Text>
+                                             <TouchableOpacity
+                                                onPress={() =>
+                                                   setSelectedTab(1)
+                                                }
+                                             >
+                                                <Text
+                                                   style={
+                                                      styles.cardTextTouchable
+                                                   }
+                                                >
+                                                   View
+                                                </Text>
+                                             </TouchableOpacity>
+                                          </View>
+                                       </View>
+                                    </View>
+                                 </View>
+                              ))}
+                              {overduePayment
+                                 .slice(0, 1)
+                                 .map((overdue, index) => (
+                                    <View key={index}>
+                                       <View style={{ gap: 10 }}>
+                                          <View style={styles.cardHeaderLabel}>
+                                             <View
+                                                style={{
+                                                   flexDirection: "row",
+                                                   gap: 10,
+                                                }}
+                                             >
+                                                <Text
+                                                   style={styles.cardLabelText}
+                                                >
+                                                   Overdue
+                                                </Text>
+                                                <Text>
+                                                   (x{overduePayment.length})
+                                                </Text>
+                                             </View>
+                                             <Text
+                                                style={{
+                                                   fontFamily:
+                                                      "Poppins-Regular",
+                                                }}
+                                             >
+                                                {overdue.date}
+                                             </Text>
+                                          </View>
+                                          <View style={styles.loanCardItem}>
+                                             <View
+                                                style={styles.cardTextWrapper}
+                                             >
+                                                <Text
+                                                   style={[
+                                                      styles.cartTitle,
+                                                      {
+                                                         color: COLORS.overdue,
+                                                      },
+                                                   ]}
+                                                >
+                                                   {overdue.amount}
+                                                </Text>
+                                                <Text style={styles.cardText}>
+                                                   Overdue {overdue.overdueDays}{" "}
+                                                   days
+                                                </Text>
+                                             </View>
+                                             <View
+                                                style={styles.cardLine}
+                                             ></View>
+                                             <View
+                                                style={styles.cardTextWrapper}
+                                             >
+                                                <Text style={styles.cardText}>
+                                                   ID-{currentLoan[0]?.loanID}
+                                                </Text>
+                                                <TouchableOpacity
+                                                   onPress={() =>
+                                                      setSelectedTab(1)
+                                                   }
+                                                >
+                                                   <Text
+                                                      style={
+                                                         styles.cardTextTouchable
+                                                      }
+                                                   >
+                                                      View
+                                                   </Text>
+                                                </TouchableOpacity>
+                                             </View>
+                                          </View>
+                                       </View>
+                                    </View>
+                                 ))}
+                              {lastPayment.slice(0, 1).map((lastpay, index) => (
+                                 <View key={index}>
+                                    <View style={{ gap: 10 }}>
+                                       <View style={styles.cardHeaderLabel}>
+                                          <View
+                                             style={{
+                                                flexDirection: "row",
+                                                gap: 10,
+                                             }}
+                                          >
+                                             <Text style={styles.cardLabelText}>
+                                                Last Payment
+                                             </Text>
+                                             <Text>
+                                                (x{lastPayment.length})
+                                             </Text>
+                                          </View>
+                                          <Text
+                                             style={{
+                                                fontFamily: "Poppins-Regular",
+                                             }}
+                                          >
+                                             {lastpay.date}
+                                          </Text>
+                                       </View>
+                                       <View style={styles.loanCardItem}>
+                                          <View style={styles.cardTextWrapper}>
+                                             <Text
+                                                style={[
+                                                   styles.cartTitle,
+                                                   {
+                                                      color: COLORS.complete,
+                                                   },
+                                                ]}
+                                             >
+                                                {lastpay.amount}
+                                             </Text>
+                                             <Text style={styles.cardText}>
+                                                Paid
+                                             </Text>
+                                          </View>
+                                          <View style={styles.cardLine}></View>
+                                          <View style={styles.cardTextWrapper}>
+                                             <Text style={styles.cardText}>
+                                                ID-{currentLoan[0]?.loanID}
+                                             </Text>
+                                             <TouchableOpacity
+                                                onPress={() =>
+                                                   setSelectedTab(1)
+                                                }
+                                             >
+                                                <Text
+                                                   style={
+                                                      styles.cardTextTouchable
+                                                   }
+                                                >
+                                                   View
+                                                </Text>
+                                             </TouchableOpacity>
+                                          </View>
+                                       </View>
+                                    </View>
+                                 </View>
+                              ))}
+                           </View>
+                        </ScrollView>
+                     ) : (
+                        <View style={styles.loanCardContainer}>
+                           <View style={styles.cardHeaderLabel}>
+                              <ScrollView
+                                 refreshControl={
+                                    <RefreshControl
+                                       refreshing={refreshing}
+                                       onRefresh={onRefresh}
+                                    />
+                                 }
+                              >
+                                 <Text
+                                    style={[styles.cardText, { fontSize: 14 }]}
+                                 >
+                                    Your due, overdue and last payment will show
+                                    up here. Navigate to details for schedule of
+                                    your payments.
+                                 </Text>
+                              </ScrollView>
+                           </View>
+                        </View>
+                     )}
+                  </>
+               ) : (
+                  <View style={styles.loanCardContainer}>
+                     <View style={styles.cardHeaderLabel}>
+                        <ScrollView
+                           refreshControl={
+                              <RefreshControl
+                                 refreshing={refreshing}
+                                 onRefresh={onRefresh}
+                              />
+                           }
+                        >
+                           <Text style={styles.cardText}>
+                              Your loan will show up here.
+                           </Text>
+                        </ScrollView>
                      </View>
-
-                     <View style={styles.cardLine}></View>
-
-                     <View style={styles.cardTextWrapper}>
-                        <Text style={styles.cardText}>ID-0000000</Text>
-                        <TouchableOpacity onPress={() => setSelectedTab(1)}>
-                           <Text style={styles.cardTextTouchable}>View</Text>
-                        </TouchableOpacity>
-                     </View>
                   </View>
-                  <View style={styles.cardHeaderLabel}>
-                     <Text style={styles.cardLabelText}>Over due</Text>
-                     <Text style={{ fontFamily: "Poppins-Regular" }}>
-                        01/02/23
-                     </Text>
-                  </View>
-                  <View style={styles.loanCardItem}>
-                     <View style={styles.cardTextWrapper}>
-                        <Text style={[styles.cartTitle, { color: "orange" }]}>
-                           ₱155
-                        </Text>
-                        <Text style={styles.cardText}>Overdue 2 days</Text>
-                     </View>
-                     <View style={styles.cardLine}></View>
-
-                     <View style={styles.cardTextWrapper}>
-                        <Text style={styles.cardText}>ID-0000000</Text>
-
-                        <TouchableOpacity onPress={() => setSelectedTab(1)}>
-                           <Text style={styles.cardTextTouchable}>View</Text>
-                        </TouchableOpacity>
-                     </View>
-                  </View>
-                  <View style={styles.cardHeaderLabel}>
-                     <Text style={styles.cardLabelText}>Last payment</Text>
-                     <Text style={{ fontFamily: "Poppins-Regular" }}>
-                        01/03/23
-                     </Text>
-                  </View>
-                  <View style={styles.loanCardItem}>
-                     <View style={styles.cardTextWrapper}>
-                        <Text style={[styles.cartTitle, { color: "green" }]}>
-                           ₱155
-                        </Text>
-                        <Text style={styles.cardText}> Status Unpaid</Text>
-                     </View>
-                     <View style={styles.cardLine}></View>
-
-                     <View style={styles.cardTextWrapper}>
-                        <Text style={styles.cardText}>ID-0000000</Text>
-                        <TouchableOpacity onPress={() => setSelectedTab(1)}>
-                           <Text style={styles.cardTextTouchable}>View</Text>
-                        </TouchableOpacity>
-                     </View>
-                  </View>
-               </View>
-            </ScrollView>
+               )}
+            </>
          ) : (
             <>
                {currentLoan.length > 0 ? (
@@ -402,21 +772,18 @@ function Home({ navigation, route }) {
                            }
                         >
                            <Text style={styles.detailsTitle}>
-                              {currentLoan.length > 0 &&
-                              currentLoan[0].numberOfPayments
-                                 ? currentLoan[0].numberOfPayments
-                                 : "Term"}{" "}
-                              Schedule
+                              {currentLoan[0].numberOfPayments} Schedule
                            </Text>
                            <View style={styles.detailsHeaderLabel}>
                               <Text style={styles.detailsLabel}>
-                                 {currentLoan.length > 0 &&
-                                 currentLoan[0].numberOfPayments
-                                    ? "Count"
-                                    : "Term"}
+                                 {currentLoan[0].numberOfPayments && "Count"}
                               </Text>
-                              <Text style={styles.detailsLabel}>Date</Text>
-                              <Text style={styles.detailsLabel}>Amount</Text>
+                              <Text style={[styles.detailsLabel, { left: 5 }]}>
+                                 Date
+                              </Text>
+                              <Text style={[styles.detailsLabel, { left: 10 }]}>
+                                 Amount
+                              </Text>
                               <Text style={styles.detailsLabel}>Status</Text>
                            </View>
                            {currentSchedule.map((data, index) => (
@@ -425,21 +792,16 @@ function Home({ navigation, route }) {
                                     (paymentItem, itemIndex) => (
                                        <View key={itemIndex}>
                                           <View style={styles.detailsList}>
-                                             <Text style={styles.detailsItem}>
-                                                {paymentItem.day}
+                                             <Text style={[styles.detailsItem]}>
+                                                {paymentItem.count}
                                              </Text>
-                                             <Text
-                                                style={[
-                                                   styles.detailsItem,
-                                                   { right: 15 },
-                                                ]}
-                                             >
+                                             <Text style={[styles.detailsItem]}>
                                                 {paymentItem.date}
                                              </Text>
                                              <Text
                                                 style={[
                                                    styles.detailsItem,
-                                                   { right: 25 },
+                                                   { right: 10 },
                                                 ]}
                                              >
                                                 {paymentItem.amount}

@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
    Start,
    Login,
@@ -11,6 +9,8 @@ import {
    Apply,
    RequestCompleted,
 } from "../app/index";
+import React, { useEffect, useState } from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigation from "./TabNavigation";
 import COLORS from "../app/component/Colors";
 import { User, onAuthStateChanged } from "firebase/auth";
@@ -37,6 +37,7 @@ function StackNavigation() {
                // If the user data doesn't exist, create it with initial values
                const initialUserData = {
                   totalLoans: 0,
+                  loanCount: 0,
                };
                await setDoc(userDataRef, initialUserData);
             }
