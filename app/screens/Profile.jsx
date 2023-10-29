@@ -10,8 +10,15 @@ import React, { useState } from "react";
 import COLORS from "../component/Colors";
 import Modal from "react-native-modal";
 import Button from "../component/Button";
+import { ActivityIndicator } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
+import {
+   getAuth,
+   updatePassword,
+   signInWithEmailAndPassword,
+} from "firebase/auth";
 import { FIREBASE_AUTH } from "../../firebaseConfig";
+import { tr } from "date-fns/locale";
 
 // Modal Profile
 function MyProfile({ isVisible, onCancel }) {
@@ -51,6 +58,60 @@ function MyProfile({ isVisible, onCancel }) {
 
 // Modal Account
 function Account({ isVisible, onCancel }) {
+   const [currentPassword, setCurrentPassword] = useState("");
+   const [newPassword, setNewPassword] = useState("");
+   const [confirmPassword, setConfirmPassword] = useState("");
+   const [isNewPassPassShown, setNewPassShown] = useState(true);
+   const [isConfirmPassShown, setConfirmPassShown] = useState(true);
+   const [loading, setLoading] = useState(false);
+
+   const auth = getAuth();
+
+   const updatePasswordAsync = async (currentPassword, newPassword) => {
+      try {
+         const user = auth.currentUser;
+         // Sign in the user with their current password before updating the password
+         await signInWithEmailAndPassword(auth, user.email, currentPassword);
+         // Update the password
+         await updatePassword(user, newPassword);
+         return { success: true };
+      } catch (error) {
+         return { success: false, error };
+      }
+   };
+
+   const handlePasswordUpdate = async () => {
+      setLoading(true);
+
+      let alertMessage = null; // Store the alert message
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+         alertMessage = "Please fill in all the required fields.";
+      } else if (newPassword !== confirmPassword) {
+         alertMessage = "New passwords do not match.";
+      } else if (confirmPassword.length < 6 || newPassword.length < 6) {
+         alertMessage = "Password must be at least 6 characters long.";
+      } else if (
+         confirmPassword === currentPassword ||
+         newPassword === currentPassword
+      ) {
+         alertMessage = "Password already in use.";
+      } else {
+         const result = await updatePasswordAsync(currentPassword, newPassword);
+
+         if (result.success) {
+            // Password update was successful
+            alertMessage = "Password updated successfully.";
+         } else {
+            // Password update failed
+            alertMessage = "Current password does not match.";
+         }
+      }
+      alert(alertMessage); // Display the alert message
+
+      setLoading(false); // Set loading to false
+   };
+
    return (
       <Modal isVisible={isVisible} backdropOpacity={0.5}>
          <View style={[styles.modalContainer, { height: "200" }]}>
@@ -71,7 +132,8 @@ function Account({ isVisible, onCancel }) {
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
                         returnKeyType="next"
-                        // onChangeText={(text) => setLastName(text)}
+                        onChangeText={(text) => setCurrentPassword(text)}
+                        secureTextEntry
                      />
                   </View>
                </View>
@@ -83,24 +145,78 @@ function Account({ isVisible, onCancel }) {
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
                         returnKeyType="next"
-                        // onChangeText={(text) => setLastName(text)}
+                        onChangeText={(text) => setNewPassword(text)}
+                        secureTextEntry={isNewPassPassShown}
                      />
+                     <TouchableOpacity
+                        onPress={() => setNewPassShown(!isNewPassPassShown)}
+                        style={{
+                           position: "absolute",
+                           right: 20,
+                        }}
+                     >
+                        {isNewPassPassShown == true ? (
+                           <Ionicons
+                              name="eye-off"
+                              size={20}
+                              color={COLORS.primary}
+                           />
+                        ) : (
+                           <Ionicons
+                              name="eye"
+                              size={20}
+                              color={COLORS.primary}
+                           />
+                        )}
+                     </TouchableOpacity>
                   </View>
                </View>
                <View style={{ marginHorizontal: 15 }}>
                   <Text style={styles.sectionSubtext}>Confirm Password</Text>
                   <View style={styles.sectionInput}>
                      <TextInput
-                        placeholder="Enter your new password"
+                        placeholder="Confirm your new password"
                         placeholderTextColor={COLORS.gray}
                         style={styles.sectionInputText}
                         returnKeyType="next"
-                        // onChangeText={(text) => setLastName(text)}
+                        onChangeText={(text) => setConfirmPassword(text)}
+                        secureTextEntry={isConfirmPassShown}
                      />
+                     <TouchableOpacity
+                        onPress={() => setConfirmPassShown(!isConfirmPassShown)}
+                        style={{
+                           position: "absolute",
+                           right: 20,
+                        }}
+                     >
+                        {isConfirmPassShown == true ? (
+                           <Ionicons
+                              name="eye-off"
+                              size={20}
+                              color={COLORS.primary}
+                           />
+                        ) : (
+                           <Ionicons
+                              name="eye"
+                              size={20}
+                              color={COLORS.primary}
+                           />
+                        )}
+                     </TouchableOpacity>
                   </View>
                </View>
                <View style={{ marginHorizontal: 15, marginTop: 20 }}>
-                  <Button title="Update" filled />
+                  {loading ? (
+                     <ActivityIndicator size="large" color="#57708C" />
+                  ) : (
+                     <Button
+                        title="Update"
+                        filled
+                        onPress={() => {
+                           handlePasswordUpdate();
+                        }}
+                     />
+                  )}
                </View>
             </View>
          </View>
@@ -239,24 +355,24 @@ function Profile({ navigation }) {
                         </View>
                      </TouchableOpacity>
                   </View>
-               </View>
-               <View
-                  style={{
-                     flex: 1,
-                     justifyContent: "center",
-                     alignItems: "center",
-                  }}
-               >
-                  <TouchableOpacity onPress={() => handleSignOut()}>
-                     <View style={{ flexDirection: "row", gap: 10 }}>
-                        <Text style={styles.logout}>Logout </Text>
-                        <Ionicons
-                           name="log-out-outline"
-                           size={20}
-                           color="red"
-                        />
-                     </View>
-                  </TouchableOpacity>
+                  <View
+                     style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                     }}
+                  >
+                     <TouchableOpacity onPress={() => handleSignOut()}>
+                        <View style={{ flexDirection: "row", gap: 10 }}>
+                           <Text style={styles.logout}>Logout </Text>
+                           <Ionicons
+                              name="log-out-outline"
+                              size={20}
+                              color="red"
+                           />
+                        </View>
+                     </TouchableOpacity>
+                  </View>
                </View>
             </View>
          </View>
