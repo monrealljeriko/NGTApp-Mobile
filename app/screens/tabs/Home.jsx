@@ -22,7 +22,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { FAB } from "react-native-paper";
 import { RefreshControl } from "react-native";
 import { FIREBASE_DB } from "../../../firebaseConfig";
-import { format, addMonths, addWeeks, addDays } from "date-fns";
+import { format, addMonths, addWeeks, addDays, set } from "date-fns";
 
 function Home({ navigation, route }) {
    const [selectedTab, setSelectedTab] = useState(0);
@@ -39,7 +39,7 @@ function Home({ navigation, route }) {
    const [showDate, setShowDate] = useState(new Date());
    const { userUid } = route.params; // Access the userUid parameter from the route
 
-   // runs the component of first
+   // runs the component of first mount
    useEffect(() => {
       fetchLoanData();
    }, []);
@@ -81,7 +81,7 @@ function Home({ navigation, route }) {
                      querySchedSnapshot.forEach((schedDoc) => {
                         const sched = schedDoc.data();
                         const paymentScheduleArray = sched.paymentSchedule;
-                        remainingBalance = loan.loanAmount;
+                        // remainingBalance = loan.loanAmount;
 
                         // Check if the payment schedule corresponds to the current loan
                         if (loanIdRef === sched.loanID) {
@@ -91,6 +91,7 @@ function Home({ navigation, route }) {
                            paymentScheduleArray.forEach(
                               (paymentItem, index) => {
                                  if (paymentItem.status === "incomplete") {
+                                    remainingBalance += paymentItem.amount;
                                     if (paymentItem.due) {
                                        dueData.push(paymentItem);
                                     }
@@ -100,7 +101,7 @@ function Home({ navigation, route }) {
                                  }
                                  if (paymentItem.status === "complete") {
                                     lastPaymentData.push(paymentItem);
-                                    remainingBalance -= paymentItem.amount;
+                                    // remainingBalance -= lastPayment.amount;
                                  }
                                  if (
                                     index === paymentScheduleArray.length - 1 &&
@@ -150,7 +151,7 @@ function Home({ navigation, route }) {
                         // Update Firestore document
                         const fieldRef = doc(scheduleRef, payment.scheduleID);
                         await updateDoc(fieldRef, payment);
-                        console.log("Due updated successfully");
+                        // console.log("Due updated successfully");
                      }
                   });
                });
@@ -194,16 +195,14 @@ function Home({ navigation, route }) {
                const newDateCounter = loan.dateCounter + 1;
 
                await updateDoc(fieldRef, { dateCounter: newDateCounter });
-               onRefresh();
             });
          } catch (error) {
             console.error("Error updating status from Firestore:", error);
          }
       } else {
-         alert(
-            `Please use dedicated button for for ${tempPaymentType} payment.`
-         );
+         alert(`Please use button for for ${tempPaymentType} payment.`);
       }
+      onRefresh();
    };
 
    // mark as paid the daily payment schedule for testing purposes
@@ -234,9 +233,7 @@ function Home({ navigation, route }) {
                      await updateDoc(schedIdRef, {
                         paymentSchedule: paymentScheduleArray,
                      });
-                     console.log(`${i + 1} payment paid`); // Assuming you want to log the payment number
-
-                     onRefresh();
+                     // console.log(`${i + 1} payment paid`);
                      break;
                   }
                }
@@ -245,6 +242,7 @@ function Home({ navigation, route }) {
       } catch (error) {
          console.error("Error updating status from Firestore:", error);
       }
+      onRefresh();
    };
 
    // split the current date and payment date
@@ -257,6 +255,7 @@ function Home({ navigation, route }) {
       return splitedDate;
    };
 
+   // update scheule of the payment
    const updatePaymentSchedule = (scheduleData, dueDate) => {
       setShowDate(dueDate);
       const updatedSchedule = scheduleData.map((payment) => {
@@ -276,7 +275,7 @@ function Home({ navigation, route }) {
                   daysDifference === 0 &&
                   paymentItem.status === "incomplete"
                ) {
-                  console.log("Schedule", paymentItem.count, "due");
+                  // console.log("Schedule", paymentItem.count, "due");
 
                   return {
                      ...paymentItem,
@@ -288,7 +287,7 @@ function Home({ navigation, route }) {
                   daysDifference > 0 &&
                   paymentItem.status === "incomplete"
                ) {
-                  console.log("Schedule", paymentItem.count, "overdue");
+                  // console.log("Schedule", paymentItem.count, "overdue");
                   return {
                      ...paymentItem,
                      due: false,
@@ -357,10 +356,18 @@ function Home({ navigation, route }) {
                            }}
                         >
                            <Text style={styles.payableLoan}>
-                              Payable in {currentLoan[0]?.payableIN}
+                              Payable in{" "}
+                              {currentLoan[0]?.payableCount -
+                                 lastPayment.length}
+                              {"/"}
+                              {currentLoan[0].payableLabel}
                            </Text>
                            <Text style={styles.payableLoan}>
-                              ₱{loanBalance} Remaining
+                              ₱
+                              {loanBalance > currentLoan[0]?.loanAmount
+                                 ? currentLoan[0].loanAmount
+                                 : loanBalance}{" "}
+                              Remaining
                            </Text>
                         </View>
                      </>
@@ -486,7 +493,9 @@ function Home({ navigation, route }) {
                                           },
                                        ]}
                                     >
-                                       For testing only
+                                       For testing the payment due dates by
+                                       adding day, week and month to current
+                                       date, double refresh to see the changes
                                     </Text>
                                  </View>
 
@@ -513,7 +522,10 @@ function Home({ navigation, route }) {
                                        >
                                           <TouchableOpacity
                                              onPress={() => {
-                                                handleChangeDate("Daily");
+                                                {
+                                                   handleChangeDate("Daily"),
+                                                      fetchLoanData();
+                                                }
                                              }}
                                           >
                                              <View
@@ -911,7 +923,9 @@ function Home({ navigation, route }) {
                                        },
                                     ]}
                                  >
-                                    For testing only
+                                    For testing the payment due dates by adding
+                                    day, week and month to current date, double
+                                    refresh to see the changes
                                  </Text>
                               </View>
 
@@ -1178,7 +1192,7 @@ function Home({ navigation, route }) {
                                        },
                                     ]}
                                  >
-                                    For testing only
+                                    For testing payments and balances
                                  </Text>
                               </View>
 

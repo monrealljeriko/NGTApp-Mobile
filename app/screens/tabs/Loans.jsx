@@ -5,11 +5,6 @@ import {
    TouchableOpacity,
    ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import styles from "./styles";
-import COLORS from "../../component/Colors";
-import { Ionicons } from "@expo/vector-icons";
-import { RefreshControl } from "react-native";
 import {
    getDoc,
    getDocs,
@@ -17,6 +12,11 @@ import {
    doc,
    updateDoc,
 } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import styles from "./styles";
+import COLORS from "../../component/Colors";
+import { Ionicons } from "@expo/vector-icons";
+import { RefreshControl } from "react-native";
 import { FIREBASE_DB } from "../../../firebaseConfig";
 
 function Loans({ navigation, route }) {
@@ -30,7 +30,7 @@ function Loans({ navigation, route }) {
    const [refreshing, setRefreshing] = useState(false);
    const { userUid } = route.params; // Access the userUid parameter from the route
 
-   // runs the component of first
+   // runs the component of first mount
    useEffect(() => {
       fetchLoanData();
    }, []);
@@ -108,7 +108,7 @@ function Loans({ navigation, route }) {
             ) {
                if (loan.status !== "Completed") {
                   await updateDoc(fieldRef, { status: changeValue });
-                  console.log("Status updated to", changeValue);
+                  // console.log("Status updated to", changeValue);
                   onRefresh();
                }
             }
@@ -399,6 +399,14 @@ function Loans({ navigation, route }) {
                               <View style={styles.cardHeaderLabel}>
                                  <Text style={styles.cardLabelText}>
                                     {loan.status}
+                                 </Text>
+                                 <Text
+                                    style={[
+                                       styles.cardLabelText,
+                                       { fontFamily: "Poppins-Regular" },
+                                    ]}
+                                 >
+                                    {loan.purposeOfLoan}
                                  </Text>
                               </View>
 

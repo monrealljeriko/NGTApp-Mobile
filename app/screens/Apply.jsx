@@ -101,6 +101,7 @@ function Apply({ navigation, route }) {
    const [totalPayment, setTotalPayment] = useState(0);
    const [loanRequestID, setLoanRequestID] = useState(0);
    const [schedulePaymentID, setSchedulePaymentID] = useState(0);
+   const [payableLabelCount, setPayableLabelCount] = useState(0);
 
    const [loading, setLoading] = useState(false);
    const [pendingLoan, setPendingLoan] = useState([]);
@@ -217,14 +218,14 @@ function Apply({ navigation, route }) {
 
       if (term === 30) {
          switch (numberOfPayments) {
-            case "Daily":
+            case "Daily": // with interest of 1.25%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.0125).toFixed(1))
                );
                setInterestRateLabel("1.25%");
                setTotalPayment(parseFloat((loanAmount / 30).toFixed(1)));
-               setPayableLabel("30/days");
-
+               setPayableLabel("days");
+               setPayableLabelCount(30);
                // setSchedule Payments
                for (let day = 1; day <= 30; day++) {
                   const nextDay = addDays(currentDate, day);
@@ -239,13 +240,14 @@ function Apply({ navigation, route }) {
                   });
                }
                break;
-            case "Weekly":
+            case "Weekly": // with interest of 2%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.02).toFixed(1))
                );
                setInterestRateLabel("2%");
-               setTotalPayment(parseFloat((loanAmount / 4.29).toFixed(1)));
-               setPayableLabel("4/wks");
+               setTotalPayment(parseFloat((loanAmount / 4).toFixed(1)));
+               setPayableLabel("wks");
+               setPayableLabelCount(4);
 
                // setSchedule Payments
                for (let week = 1; week <= 4; week++) {
@@ -253,7 +255,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 4.29).toFixed(1)),
+                     amount: parseFloat((loanAmount / 4).toFixed(1)),
                      status,
                      due,
                      overdue,
@@ -261,13 +263,14 @@ function Apply({ navigation, route }) {
                   });
                }
                break;
-            case "Monthly":
+            case "Monthly": // with interest of 2.5%%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.025).toFixed(1))
                );
                setInterestRateLabel("2.5%");
                setTotalPayment(parseFloat((loanAmount / 1).toFixed(1)));
-               setPayableLabel("1/mos");
+               setPayableLabel("mos");
+               setPayableLabelCount(1);
 
                // setSchedule Payments
                const nextMonth = addMonths(currentDate, 1);
@@ -288,13 +291,14 @@ function Apply({ navigation, route }) {
       }
       if (term === 60) {
          switch (numberOfPayments) {
-            case "Daily":
+            case "Daily": // with interest of 3.25%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.0325).toFixed(1))
                );
                setInterestRateLabel("3.25%");
                setTotalPayment(parseFloat((loanAmount / 60).toFixed(1)));
-               setPayableLabel("60/days");
+               setPayableLabel("days");
+               setPayableLabelCount(60);
 
                for (let day = 1; day <= 60; day++) {
                   const nextDay = addDays(currentDate, day);
@@ -309,13 +313,14 @@ function Apply({ navigation, route }) {
                   });
                }
                break;
-            case "Weekly":
+            case "Weekly": // with interest of 4%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.04).toFixed(1))
                );
                setInterestRateLabel("4%");
-               setTotalPayment(parseFloat((loanAmount / 8.57).toFixed(1)));
-               setPayableLabel("8/wks");
+               setTotalPayment(parseFloat((loanAmount / 8).toFixed(1)));
+               setPayableLabel("wks");
+               setPayableLabelCount(8);
 
                for (let week = 1; week <= 8; week++) {
                   const nextWeek = addWeeks(currentDate, week);
@@ -330,13 +335,14 @@ function Apply({ navigation, route }) {
                   });
                }
                break;
-            case "Monthly":
+            case "Monthly": // with interest of 5%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.05).toFixed(1))
                );
                setInterestRateLabel("5%");
                setTotalPayment(parseFloat((loanAmount / 2).toFixed(1)));
-               setPayableLabel("2/mos");
+               setPayableLabel("mos");
+               setPayableLabelCount(0);
 
                for (let mos = 1; mos <= 2; mos++) {
                   const nextMonth = addMonths(currentDate, mos);
@@ -362,14 +368,14 @@ function Apply({ navigation, route }) {
       }
       if (term === 100) {
          switch (numberOfPayments) {
-            case "Daily":
+            case "Daily": // with interest of 5.5%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.055).toFixed(1))
                );
                setInterestRateLabel("5.5%");
                setTotalPayment(parseFloat((loanAmount / 100).toFixed(1)));
-               setPayableLabel("30/days");
-               setPayableLabel("100/days");
+               setPayableLabel("days");
+               setPayableLabelCount(100);
 
                for (let day = 1; day <= 100; day++) {
                   const nextDay = addDays(currentDate, day);
@@ -389,13 +395,14 @@ function Apply({ navigation, route }) {
                   });
                }
                break;
-            case "Weekly":
+            case "Weekly": // with interest of 7%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.07).toFixed(1))
                );
                setInterestRateLabel("7%");
                setTotalPayment(parseFloat((loanAmount / 14).toFixed(1)));
-               setPayableLabel("14/wks");
+               setPayableLabel("wks");
+               setPayableLabelCount(14);
 
                for (let week = 1; week <= 14; week++) {
                   const nextWeek = addWeeks(currentDate, week);
@@ -410,13 +417,14 @@ function Apply({ navigation, route }) {
                   });
                }
                break;
-            case "Monthly":
+            case "Monthly": // with interest of 8%
                setTotalFinanceCharge(
                   parseFloat((loanAmount * 0.08).toFixed(1))
                );
                setInterestRateLabel("8%");
                setTotalPayment(parseFloat((loanAmount / 3).toFixed(1)));
-               setPayableLabel("3/mos");
+               setPayableLabel("mos");
+               setPayableLabelCount(3);
 
                for (let mos = 1; mos <= 3; mos++) {
                   const nextMonth = addMonths(currentDate, mos);
@@ -490,7 +498,8 @@ function Apply({ navigation, route }) {
          purposeOfLoan: purposeOfLoan,
          terms: selectedTerms,
          numberOfPayments: numberOfPayments,
-         payableIN: payableLabel,
+         payableLabel: payableLabel,
+         payableCount: payableLabelCount,
          interestRate: interestRateLabel,
          serviceHandlingCharge: serviceHandlingCharge,
          financeCharge: totalFinanceCharge,
