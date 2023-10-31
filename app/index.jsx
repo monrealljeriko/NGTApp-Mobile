@@ -7,6 +7,7 @@ import Credit from "./screens/tabs/Credit";
 import Profile from "./screens/Profile";
 import Notification from "./screens/Notification";
 import Apply from "./screens/Apply";
+import AnswerSurvey, { FeedbackCompleted } from "./screens/AnswerSurvey";
 import SectionHandler from "./screens/RegisterSections/SectionHandler";
 import { RegisterCompleted } from "./screens/RegisterSections/SectionHandler";
 import { RequestCompleted } from "./screens/Apply";
@@ -21,7 +22,9 @@ export {
    Profile,
    Notification,
    Apply,
+   AnswerSurvey,
    SectionHandler,
    RegisterCompleted,
    RequestCompleted,
+   FeedbackCompleted,
 };

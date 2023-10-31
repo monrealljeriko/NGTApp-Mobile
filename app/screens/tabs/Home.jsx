@@ -11,12 +11,12 @@ import {
    getDoc,
    doc,
    getDocs,
-   setDoc,
    updateDoc,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import styles from "./styles";
 import Apply from "../Apply";
+import AnswerSurvey from "../AnswerSurvey";
 import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { FAB } from "react-native-paper";
@@ -207,7 +207,7 @@ function Home({ navigation, route }) {
 
    // mark as paid the daily payment schedule for testing purposes
    const updateToPaid = async () => {
-      const borrowerUid = userUid; // Assuming userUid is defined somewhere
+      const borrowerUid = userUid;
       const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
       const scheduleRef = collection(borrowerRef, "paymentSchedule");
 
@@ -1338,8 +1338,9 @@ function Home({ navigation, route }) {
                   label: "Answer Survey",
                   labelStyle: { fontFamily: "Poppins-Regular" },
                   onPress: () => {
-                     alert("Under construction");
                      // Handle Edit action
+                     navigation.navigate(AnswerSurvey);
+
                      setIsFabOpen(false); // Close the FAB group
                   },
                   style: { borderRadius: 100 },

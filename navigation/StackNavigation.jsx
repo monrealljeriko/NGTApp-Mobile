@@ -7,7 +7,9 @@ import {
    Profile,
    Notification,
    Apply,
+   AnswerSurvey,
    RequestCompleted,
+   FeedbackCompleted,
 } from "../app/index";
 import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -81,10 +83,20 @@ function StackNavigation() {
                <Stack.Screen
                   name="Apply"
                   component={Apply}
-                  initialParams={{ userUid: user ? user.uid : null }}
+                  initialParams={{ userUid: user.uid }}
                   options={{
                      headerShown: true,
                      title: "Apply Loan",
+                     headerTintColor: COLORS.primary,
+                  }}
+               />
+               <Stack.Screen
+                  name="AnswerSurvey"
+                  component={AnswerSurvey}
+                  initialParams={{ userUid: user.uid }}
+                  options={{
+                     headerShown: true,
+                     title: "Customer Feedback",
                      headerTintColor: COLORS.primary,
                   }}
                />
@@ -92,6 +104,10 @@ function StackNavigation() {
                <Stack.Screen
                   name="RequestCompleted"
                   component={RequestCompleted}
+               />
+               <Stack.Screen
+                  name="FeedbackCompleted"
+                  component={FeedbackCompleted}
                />
             </>
          ) : (
