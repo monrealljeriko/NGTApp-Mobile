@@ -8,6 +8,7 @@ import Profile from "./screens/Profile";
 import Notification from "./screens/Notification";
 import Apply from "./screens/Apply";
 import AnswerSurvey, { FeedbackCompleted } from "./screens/AnswerSurvey";
+import AboutCredit from "./screens/AboutCredit";
 import SectionHandler from "./screens/RegisterSections/SectionHandler";
 import { RegisterCompleted } from "./screens/RegisterSections/SectionHandler";
 import { RequestCompleted } from "./screens/Apply";
@@ -23,6 +24,7 @@ export {
    Notification,
    Apply,
    AnswerSurvey,
+   AboutCredit,
    SectionHandler,
    RegisterCompleted,
    RequestCompleted,

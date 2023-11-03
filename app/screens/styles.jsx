@@ -1,3 +1,7 @@
+// import React, { useEffect, useState } from "react";
+// import GoogleLogin from "react-google-login";
+// import { gapi } from "gapi-script";
+
 import { StyleSheet } from "react-native";
 import COLORS from "../component/Colors";
 

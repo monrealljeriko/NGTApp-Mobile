@@ -8,6 +8,7 @@ import {
    Notification,
    Apply,
    AnswerSurvey,
+   AboutCredit,
    RequestCompleted,
    FeedbackCompleted,
 } from "../app/index";
@@ -40,6 +41,10 @@ function StackNavigation() {
                const initialUserData = {
                   totalLoans: 0,
                   loanCount: 0,
+                  shareCapital: 0,
+                  creditScore: 500,
+                  shareCapitalHistory: [],
+                  creditScoreHistory: [],
                };
                await setDoc(userDataRef, initialUserData);
             }
@@ -97,6 +102,15 @@ function StackNavigation() {
                   options={{
                      headerShown: true,
                      title: "Customer Feedback",
+                     headerTintColor: COLORS.primary,
+                  }}
+               />
+               <Stack.Screen
+                  name="AboutCredit"
+                  component={AboutCredit}
+                  options={{
+                     headerShown: true,
+                     title: "Performance",
                      headerTintColor: COLORS.primary,
                   }}
                />

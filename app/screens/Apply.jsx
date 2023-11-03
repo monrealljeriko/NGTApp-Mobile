@@ -23,6 +23,7 @@ import { Picker } from "@react-native-picker/picker";
 import { ActivityIndicator } from "react-native-paper";
 import { FIREBASE_DB } from "../../firebaseConfig";
 import { addMonths, addWeeks, addDays, format } from "date-fns";
+
 // success screen page
 export function RequestCompleted({ navigation }) {
    return (
@@ -138,7 +139,7 @@ function Apply({ navigation, route }) {
 
       // Function to generate uid for loan request
       const generateRequestId = (idx) => {
-         // Generate 6 random numbers (0-9)
+         // Generate random numbers (0-9)
          const numChars = "0123456789";
          let numId = "";
          for (let i = 0; i < idx; i++) {
@@ -215,15 +216,16 @@ function Apply({ navigation, route }) {
       // get the current date
       const currentDate = new Date();
       const currentDay = currentDate.getDate();
+      setServiceHandlingCharge(parseFloat((loanAmount * 0.03).toFixed()));
 
       if (term === 30) {
          switch (numberOfPayments) {
             case "Daily": // with interest of 1.25%
                setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.0125).toFixed(1))
+                  parseFloat((loanAmount * 0.0125).toFixed())
                );
                setInterestRateLabel("1.25%");
-               setTotalPayment(parseFloat((loanAmount / 30).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 30).toFixed()));
                setPayableLabel("days");
                setPayableLabelCount(30);
                // setSchedule Payments
@@ -232,7 +234,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: day < 10 ? `0${day}` : `${day}`,
                      date: format(nextDay, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 30).toFixed(1)),
+                     amount: parseFloat((loanAmount / 30).toFixed()),
                      status,
                      due,
                      overdue,
@@ -241,11 +243,9 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Weekly": // with interest of 2%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.02).toFixed(1))
-               );
+               setTotalFinanceCharge(parseFloat((loanAmount * 0.02).toFixed()));
                setInterestRateLabel("2%");
-               setTotalPayment(parseFloat((loanAmount / 4).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 4).toFixed()));
                setPayableLabel("wks");
                setPayableLabelCount(4);
 
@@ -255,7 +255,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 4).toFixed(1)),
+                     amount: parseFloat((loanAmount / 4).toFixed()),
                      status,
                      due,
                      overdue,
@@ -265,10 +265,10 @@ function Apply({ navigation, route }) {
                break;
             case "Monthly": // with interest of 2.5%%
                setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.025).toFixed(1))
+                  parseFloat((loanAmount * 0.025).toFixed())
                );
                setInterestRateLabel("2.5%");
-               setTotalPayment(parseFloat((loanAmount / 1).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 1).toFixed()));
                setPayableLabel("mos");
                setPayableLabelCount(1);
 
@@ -278,7 +278,7 @@ function Apply({ navigation, route }) {
                nextPaymentDate.push({
                   count: "01",
                   date: format(nextMonth, "MM/dd/yyyy"),
-                  amount: parseFloat((loanAmount / 1).toFixed(1)),
+                  amount: parseFloat((loanAmount / 1).toFixed()),
                   status,
                   due,
                   overdue,
@@ -293,10 +293,10 @@ function Apply({ navigation, route }) {
          switch (numberOfPayments) {
             case "Daily": // with interest of 3.25%
                setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.0325).toFixed(1))
+                  parseFloat((loanAmount * 0.0325).toFixed())
                );
                setInterestRateLabel("3.25%");
-               setTotalPayment(parseFloat((loanAmount / 60).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 60).toFixed()));
                setPayableLabel("days");
                setPayableLabelCount(60);
 
@@ -305,7 +305,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: day < 10 ? `0${day}` : `${day}`,
                      date: format(nextDay, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 60).toFixed(1)),
+                     amount: parseFloat((loanAmount / 60).toFixed()),
                      status,
                      due,
                      overdue,
@@ -314,11 +314,9 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Weekly": // with interest of 4%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.04).toFixed(1))
-               );
+               setTotalFinanceCharge(parseFloat((loanAmount * 0.04).toFixed()));
                setInterestRateLabel("4%");
-               setTotalPayment(parseFloat((loanAmount / 8).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 8).toFixed()));
                setPayableLabel("wks");
                setPayableLabelCount(8);
 
@@ -327,7 +325,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 8).toFixed(1)),
+                     amount: parseFloat((loanAmount / 8).toFixed()),
                      status,
                      due,
                      overdue,
@@ -336,13 +334,11 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Monthly": // with interest of 5%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.05).toFixed(1))
-               );
+               setTotalFinanceCharge(parseFloat((loanAmount * 0.05).toFixed()));
                setInterestRateLabel("5%");
-               setTotalPayment(parseFloat((loanAmount / 2).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 2).toFixed()));
                setPayableLabel("mos");
-               setPayableLabelCount(0);
+               setPayableLabelCount(2);
 
                for (let mos = 1; mos <= 2; mos++) {
                   const nextMonth = addMonths(currentDate, mos);
@@ -354,7 +350,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: mos < 10 ? `0${mos}` : `${mos}`,
                      date: format(nextDate, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 2).toFixed(1)),
+                     amount: parseFloat((loanAmount / 2).toFixed()),
                      status,
                      due,
                      overdue,
@@ -370,10 +366,10 @@ function Apply({ navigation, route }) {
          switch (numberOfPayments) {
             case "Daily": // with interest of 5.5%
                setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.055).toFixed(1))
+                  parseFloat((loanAmount * 0.055).toFixed())
                );
                setInterestRateLabel("5.5%");
-               setTotalPayment(parseFloat((loanAmount / 100).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 100).toFixed()));
                setPayableLabel("days");
                setPayableLabelCount(100);
 
@@ -387,7 +383,7 @@ function Apply({ navigation, route }) {
                            ? `0${day}`
                            : `${day}`,
                      date: format(nextDay, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 100).toFixed(1)),
+                     amount: parseFloat((loanAmount / 100).toFixed()),
                      status,
                      due,
                      overdue,
@@ -396,11 +392,9 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Weekly": // with interest of 7%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.07).toFixed(1))
-               );
+               setTotalFinanceCharge(parseFloat((loanAmount * 0.07).toFixed()));
                setInterestRateLabel("7%");
-               setTotalPayment(parseFloat((loanAmount / 14).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 14).toFixed()));
                setPayableLabel("wks");
                setPayableLabelCount(14);
 
@@ -409,7 +403,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 14).toFixed(1)),
+                     amount: parseFloat((loanAmount / 14).toFixed()),
                      status,
                      due,
                      overdue,
@@ -418,11 +412,9 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Monthly": // with interest of 8%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.08).toFixed(1))
-               );
+               setTotalFinanceCharge(parseFloat((loanAmount * 0.08).toFixed()));
                setInterestRateLabel("8%");
-               setTotalPayment(parseFloat((loanAmount / 3).toFixed(1)));
+               setTotalPayment(parseFloat((loanAmount / 3).toFixed()));
                setPayableLabel("mos");
                setPayableLabelCount(3);
 
@@ -436,7 +428,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      count: mos < 10 ? `0${mos}` : `${mos}`,
                      date: format(nextDate, "MM/dd/yyyy"),
-                     amount: parseFloat((loanAmount / 3).toFixed(1)),
+                     amount: parseFloat((loanAmount / 3).toFixed()),
                      status,
                      due,
                      overdue,
@@ -450,18 +442,17 @@ function Apply({ navigation, route }) {
       }
       setPaymentSchedule(nextPaymentDate);
       setTotalNonFinanceCharges(100);
-      setServiceHandlingCharge(parseFloat((loanAmount * 0.02).toFixed(1)));
       setTotalDeductionCharge(
          parseFloat(
             (
                totalFinanceCharge +
                totalNonFinanceCharges +
                serviceHandlingCharge
-            ).toFixed(1)
+            ).toFixed()
          )
       );
       setNetProceedsFromLoan(
-         parseFloat((loanAmount - totalDeductionCharge).toFixed(1))
+         parseFloat((loanAmount - totalDeductionCharge).toFixed())
       );
    };
 
@@ -683,7 +674,7 @@ function Apply({ navigation, route }) {
                            <View style={styles.cardItem}>
                               <View style={styles.contentWrapper}>
                                  <Text style={styles.cardText}>
-                                    Service Handling Charge (2%)
+                                    Service Handling Charge (3%)
                                  </Text>
                                  <Text style={styles.cardTextBold}>
                                     ₱
@@ -799,7 +790,9 @@ function Apply({ navigation, route }) {
                                        { fontSize: 22 },
                                     ]}
                                  >
-                                    {payableLabel == "" ? "/" : payableLabel}
+                                    {payableLabel == ""
+                                       ? "/"
+                                       : payableLabelCount + "/" + payableLabel}
                                  </Text>
                               </View>
                            </View>
