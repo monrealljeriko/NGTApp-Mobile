@@ -197,7 +197,9 @@ function SectionHandler({ navigation }) {
          ...section2Obj,
          ...section3Obj,
          ...section4Obj,
+         fullName: section1Obj.firstName + " " + section1Obj.lastName,
          registerID,
+         status: "Pending",
       };
 
       try {

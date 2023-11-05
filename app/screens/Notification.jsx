@@ -6,7 +6,7 @@ function Notification() {
    return (
       <View style={styles.container}>
          <View style={styles.cardHeaderLabel}>
-            <Text style={styles.cardLabelText}>Today</Text>
+            {/* <Text style={styles.cardLabelText}>Today</Text> */}
          </View>
 
          <View style={styles.cardItem}>
@@ -15,7 +15,7 @@ function Notification() {
                   You have paid your daily payment 155 for you loan ID-00000.
                </Text>
                <Text style={[styles.cardText, { alignSelf: "flex-end" }]}>
-                  9:20
+                  10/05/23 - 9:20
                </Text>
             </View>
          </View>
@@ -25,12 +25,12 @@ function Notification() {
                   Congratulations! Your loan ammount 5000 have been approved.
                </Text>
                <Text style={[styles.cardText, { alignSelf: "flex-end" }]}>
-                  9:20
+                  10/03/23 - 9:20
                </Text>
             </View>
          </View>
          <View style={styles.cardHeaderLabel}>
-            <Text style={styles.cardLabelText}>Yesterday</Text>
+            {/* <Text style={styles.cardLabelText}>Yesterday</Text> */}
          </View>
          <View style={styles.cardItem}>
             <View style={styles.contentWrapper}>
@@ -39,7 +39,7 @@ function Notification() {
                   notified soon.
                </Text>
                <Text style={[styles.cardText, { alignSelf: "flex-end" }]}>
-                  9:20
+                  10/02/23 - 9:20
                </Text>
             </View>
          </View>

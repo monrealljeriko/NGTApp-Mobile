@@ -38,6 +38,7 @@ function Home({ navigation, route }) {
    const [lastPayment, setLastPayment] = useState([]);
    const [nextDateType, setNextDateType] = useState(new Date());
    const [showDate, setShowDate] = useState(new Date());
+   const [memberData, setMemberData] = useState([]);
    const { userUid } = route.params; // Access the userUid parameter from the route
 
    // runs the component of first mount
@@ -47,13 +48,28 @@ function Home({ navigation, route }) {
 
    // Fetch totalLoans data from firestore database
    const fetchLoanData = async () => {
+      console.log("type", typeof userUid);
       if (userUid) {
          // Fetch the totalLoans data from Firestore
          const borrowerUid = userUid;
          const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+         const memberRegisterCollection = collection(
+            FIREBASE_DB,
+            "memberRegister"
+         );
 
          try {
             const borrowerSnapshot = await getDoc(borrowerRef);
+            const querySnapshot = await getDocs(memberRegisterCollection);
+            const data = [];
+
+            querySnapshot.forEach((doc) => {
+               const member = doc.data();
+               if (userUid === member.accountID) {
+                  data.push(member);
+               }
+            });
+            setMemberData(data);
 
             if (borrowerSnapshot.exists()) {
                const borrowerData = borrowerSnapshot.data();
@@ -366,7 +382,9 @@ function Home({ navigation, route }) {
                      source={require("../../../assets/icons/icon-profile.png")}
                      style={styles.headerImage}
                   />
-                  <Text style={styles.headerName}>John Doe</Text>
+                  <Text style={styles.headerName}>
+                     {memberData[0]?.fullName}
+                  </Text>
                </View>
             </TouchableOpacity>
             <TouchableOpacity

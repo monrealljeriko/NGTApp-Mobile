@@ -103,10 +103,12 @@ function Apply({ navigation, route }) {
    const [loanRequestID, setLoanRequestID] = useState(0);
    const [schedulePaymentID, setSchedulePaymentID] = useState(0);
    const [payableLabelCount, setPayableLabelCount] = useState(0);
+   const [shareCapitalShare, setShareCapitalShare] = useState(0);
 
    const [loading, setLoading] = useState(false);
    const [pendingLoan, setPendingLoan] = useState([]);
    const [activeLoan, setActiveLoan] = useState([]);
+   const [memberName, setMemberName] = useState("");
    const { userUid } = route.params; // Access the userUid parameter from the route
 
    // runs the component of first mount
@@ -170,28 +172,46 @@ function Apply({ navigation, route }) {
       if (userUid) {
          const borrowerUid = userUid;
          const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+         const memberRegisterCollection = collection(
+            FIREBASE_DB,
+            "memberRegister"
+         );
 
          try {
             const borrowerSnapshot = await getDoc(borrowerRef);
+            let data = "";
+            const pendingLoanData = [];
+            const activeLoanData = [];
+
             if (borrowerSnapshot.exists()) {
+               const memberSnapshot = await getDocs(memberRegisterCollection);
                const loanRef = collection(borrowerRef, "loanRequests");
                const querySnapshot = await getDocs(loanRef);
 
-               const pendingLoanData = [];
-               const activeLoanData = [];
+               memberSnapshot.forEach(async (doc) => {
+                  const member = doc.data();
 
-               // snapshot the loan data
-               querySnapshot.forEach((loanDoc) => {
-                  const loan = loanDoc.data();
-                  if (loan.status === "Pending") {
-                     pendingLoanData.push(loan);
-                  }
-                  if (loan.status === "Active") {
-                     activeLoanData.push(loan);
+                  if (borrowerUid === member.accountID) {
+                     data = member.firstName + member.lastName;
+
+                     // snapshot the loan data
+                     querySnapshot.forEach((loanDoc) => {
+                        const loan = loanDoc.data();
+                        if (loan.status === "Pending") {
+                           pendingLoanData.push(loan);
+                        }
+                        if (loan.status === "Active") {
+                           activeLoanData.push(loan);
+                        }
+                     });
                   }
                });
 
+               console.log(data);
+               console.log(pendingLoanData);
+               console.log(activeLoanData);
                // save the data to usestate
+               setMemberName(data);
                setPendingLoan(pendingLoanData);
                setActiveLoan(activeLoanData);
             }
@@ -209,21 +229,30 @@ function Apply({ navigation, route }) {
       const loanAmount = parseInt(selectedLoans);
       const status = "incomplete";
       const due = false;
+      const scheduleID = schedulePaymentID;
+      const name = memberName;
+      const loanID = loanRequestID;
       const overdue = false;
       const overdueDays = 0;
       const nextPaymentDate = [];
-
       // get the current date
       const currentDate = new Date();
       const currentDay = currentDate.getDate();
       setServiceHandlingCharge(parseFloat((loanAmount * 0.03).toFixed()));
+      let financeCharge = 0;
+      let shareCapitalBuild = 0;
+      const nationalFee = 100;
+      if (loanAmount >= 3200) {
+         shareCapitalBuild = parseFloat((loanAmount * 0.01).toFixed());
+      }
+      if (loanAmount < 3200) {
+         shareCapitalBuild = parseFloat((loanAmount * 0.02).toFixed());
+      }
 
       if (term === 30) {
          switch (numberOfPayments) {
             case "Daily": // with interest of 1.25%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.0125).toFixed())
-               );
+               financeCharge = parseFloat((loanAmount * 0.0125).toFixed());
                setInterestRateLabel("1.25%");
                setTotalPayment(parseFloat((loanAmount / 30).toFixed()));
                setPayableLabel("days");
@@ -232,6 +261,9 @@ function Apply({ navigation, route }) {
                for (let day = 1; day <= 30; day++) {
                   const nextDay = addDays(currentDate, day);
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count: day < 10 ? `0${day}` : `${day}`,
                      date: format(nextDay, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 30).toFixed()),
@@ -243,7 +275,7 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Weekly": // with interest of 2%
-               setTotalFinanceCharge(parseFloat((loanAmount * 0.02).toFixed()));
+               financeCharge = parseFloat((loanAmount * 0.02).toFixed());
                setInterestRateLabel("2%");
                setTotalPayment(parseFloat((loanAmount / 4).toFixed()));
                setPayableLabel("wks");
@@ -253,6 +285,9 @@ function Apply({ navigation, route }) {
                for (let week = 1; week <= 4; week++) {
                   const nextWeek = addWeeks(currentDate, week);
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 4).toFixed()),
@@ -264,9 +299,8 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Monthly": // with interest of 2.5%%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.025).toFixed())
-               );
+               financeCharge = parseFloat((loanAmount * 0.025).toFixed());
+
                setInterestRateLabel("2.5%");
                setTotalPayment(parseFloat((loanAmount / 1).toFixed()));
                setPayableLabel("mos");
@@ -276,6 +310,9 @@ function Apply({ navigation, route }) {
                const nextMonth = addMonths(currentDate, 1);
 
                nextPaymentDate.push({
+                  loanID,
+                  scheduleID,
+                  name,
                   count: "01",
                   date: format(nextMonth, "MM/dd/yyyy"),
                   amount: parseFloat((loanAmount / 1).toFixed()),
@@ -292,9 +329,7 @@ function Apply({ navigation, route }) {
       if (term === 60) {
          switch (numberOfPayments) {
             case "Daily": // with interest of 3.25%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.0325).toFixed())
-               );
+               financeCharge = parseFloat((loanAmount * 0.0325).toFixed());
                setInterestRateLabel("3.25%");
                setTotalPayment(parseFloat((loanAmount / 60).toFixed()));
                setPayableLabel("days");
@@ -303,6 +338,9 @@ function Apply({ navigation, route }) {
                for (let day = 1; day <= 60; day++) {
                   const nextDay = addDays(currentDate, day);
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count: day < 10 ? `0${day}` : `${day}`,
                      date: format(nextDay, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 60).toFixed()),
@@ -314,7 +352,7 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Weekly": // with interest of 4%
-               setTotalFinanceCharge(parseFloat((loanAmount * 0.04).toFixed()));
+               financeCharge = parseFloat((loanAmount * 0.04).toFixed());
                setInterestRateLabel("4%");
                setTotalPayment(parseFloat((loanAmount / 8).toFixed()));
                setPayableLabel("wks");
@@ -323,6 +361,9 @@ function Apply({ navigation, route }) {
                for (let week = 1; week <= 8; week++) {
                   const nextWeek = addWeeks(currentDate, week);
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 8).toFixed()),
@@ -334,7 +375,7 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Monthly": // with interest of 5%
-               setTotalFinanceCharge(parseFloat((loanAmount * 0.05).toFixed()));
+               financeCharge = parseFloat((loanAmount * 0.05).toFixed());
                setInterestRateLabel("5%");
                setTotalPayment(parseFloat((loanAmount / 2).toFixed()));
                setPayableLabel("mos");
@@ -348,6 +389,9 @@ function Apply({ navigation, route }) {
                      currentDay
                   );
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count: mos < 10 ? `0${mos}` : `${mos}`,
                      date: format(nextDate, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 2).toFixed()),
@@ -365,9 +409,7 @@ function Apply({ navigation, route }) {
       if (term === 100) {
          switch (numberOfPayments) {
             case "Daily": // with interest of 5.5%
-               setTotalFinanceCharge(
-                  parseFloat((loanAmount * 0.055).toFixed())
-               );
+               financeCharge = parseFloat((loanAmount * 0.055).toFixed());
                setInterestRateLabel("5.5%");
                setTotalPayment(parseFloat((loanAmount / 100).toFixed()));
                setPayableLabel("days");
@@ -376,6 +418,9 @@ function Apply({ navigation, route }) {
                for (let day = 1; day <= 100; day++) {
                   const nextDay = addDays(currentDate, day);
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count:
                         day < 10
                            ? `00${day}`
@@ -392,7 +437,7 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Weekly": // with interest of 7%
-               setTotalFinanceCharge(parseFloat((loanAmount * 0.07).toFixed()));
+               financeCharge = parseFloat((loanAmount * 0.07).toFixed());
                setInterestRateLabel("7%");
                setTotalPayment(parseFloat((loanAmount / 14).toFixed()));
                setPayableLabel("wks");
@@ -401,6 +446,9 @@ function Apply({ navigation, route }) {
                for (let week = 1; week <= 14; week++) {
                   const nextWeek = addWeeks(currentDate, week);
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 14).toFixed()),
@@ -412,7 +460,7 @@ function Apply({ navigation, route }) {
                }
                break;
             case "Monthly": // with interest of 8%
-               setTotalFinanceCharge(parseFloat((loanAmount * 0.08).toFixed()));
+               financeCharge = parseFloat((loanAmount * 0.08).toFixed());
                setInterestRateLabel("8%");
                setTotalPayment(parseFloat((loanAmount / 3).toFixed()));
                setPayableLabel("mos");
@@ -426,6 +474,9 @@ function Apply({ navigation, route }) {
                      currentDay
                   );
                   nextPaymentDate.push({
+                     loanID,
+                     scheduleID,
+                     name,
                      count: mos < 10 ? `0${mos}` : `${mos}`,
                      date: format(nextDate, "MM/dd/yyyy"),
                      amount: parseFloat((loanAmount / 3).toFixed()),
@@ -440,12 +491,13 @@ function Apply({ navigation, route }) {
                break;
          }
       }
+      setShareCapitalShare(shareCapitalBuild);
       setPaymentSchedule(nextPaymentDate);
-      setTotalNonFinanceCharges(100);
+      setTotalNonFinanceCharges(nationalFee + shareCapitalBuild);
       setTotalDeductionCharge(
          parseFloat(
             (
-               totalFinanceCharge +
+               financeCharge +
                totalNonFinanceCharges +
                serviceHandlingCharge
             ).toFixed()
@@ -454,6 +506,11 @@ function Apply({ navigation, route }) {
       setNetProceedsFromLoan(
          parseFloat((loanAmount - totalDeductionCharge).toFixed())
       );
+      setTotalFinanceCharge(financeCharge);
+      console.log(totalDeductionCharge);
+      console.log(totalFinanceCharge);
+      console.log(serviceHandlingCharge);
+      console.log(totalNonFinanceCharges);
    };
 
    // fuction to check loan is pendin or active
@@ -479,11 +536,13 @@ function Apply({ navigation, route }) {
       const borrowerSnapshot = await getDoc(userDocRef);
       const borrowerData = borrowerSnapshot.data();
       const borrowerLoanCount = borrowerData.loanCount;
+      // const borrowerShareCapital = borrowerData.shareCapital;
       const newLoanCount = borrowerLoanCount + 1;
       await updateDoc(userDocRef, { loanCount: newLoanCount });
 
       // set of loan datas fields
       const loanReqDataToAdd = {
+         accountID: userUID,
          loanID: loanRequestID,
          loanAmount: parseInt(selectedLoans),
          purposeOfLoan: purposeOfLoan,
@@ -503,10 +562,14 @@ function Apply({ navigation, route }) {
          status: "Pending",
          loanCount: newLoanCount,
          dateCounter: 0,
+         name: memberName,
+         totalDeductionCharge: totalDeductionCharge,
+         shareCapitalAmount: shareCapitalShare,
       };
 
       // set of loan data fields for schedule
       const schedulePaymentDataToAdd = {
+         // name: memberName,
          scheduleID: schedulePaymentID,
          paymentSchedule: paymentSchedule,
          loanID: loanRequestID,

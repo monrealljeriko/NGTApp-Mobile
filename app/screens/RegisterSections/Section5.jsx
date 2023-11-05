@@ -98,6 +98,16 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                         </Text>
                      </View>
                      <View style={styles.sectionContainer}>
+                        <Text style={styles.customSubtext}>
+                           Date of birth :
+                        </Text>
+                        <Text style={styles.customSubtextData}>
+                           {section1Obj.dateOfBirth == ""
+                              ? "n/a"
+                              : section1Obj.dateOfBirth}
+                        </Text>
+                     </View>
+                     <View style={styles.sectionContainer}>
                         <Text style={styles.customSubtext}>Height :</Text>
                         <Text style={styles.customSubtextData}>
                            {section1Obj.height == ""

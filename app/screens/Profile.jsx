@@ -6,7 +6,7 @@ import {
    TouchableOpacity,
    TextInput,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import COLORS from "../component/Colors";
 import Modal from "react-native-modal";
 import Button from "../component/Button";
@@ -17,11 +17,12 @@ import {
    updatePassword,
    signInWithEmailAndPassword,
 } from "firebase/auth";
-import { FIREBASE_AUTH } from "../../firebaseConfig";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
 import { tr } from "date-fns/locale";
+import { collection, getDocs } from "firebase/firestore";
 
 // Modal Profile
-function MyProfile({ isVisible, onCancel }) {
+function MyProfile({ isVisible, onCancel, data }) {
    return (
       <Modal isVisible={isVisible} backdropOpacity={0.5}>
          <View style={styles.modalContainer}>
@@ -36,19 +37,21 @@ function MyProfile({ isVisible, onCancel }) {
                <Text style={styles.modalHeader}>My Profile</Text>
                <Text style={styles.sectionSubtext}>Full name</Text>
                <View style={styles.cardItem}>
-                  <Text style={styles.cardText}>John Doe</Text>
+                  <Text style={styles.cardText}>
+                     {data[0]?.firstName + " " + data[0]?.lastName}
+                  </Text>
                </View>
                <Text style={styles.sectionSubtext}>Address</Text>
                <View style={styles.cardItem}>
-                  <Text style={styles.cardText}>Your address here</Text>
+                  <Text style={styles.cardText}>{data[0]?.presentAddress}</Text>
                </View>
                <Text style={styles.sectionSubtext}>Email address</Text>
                <View style={styles.cardItem}>
-                  <Text style={styles.cardText}>gmail@gmail.com</Text>
+                  <Text style={styles.cardText}>{data[0]?.emailAddress}</Text>
                </View>
                <Text style={styles.sectionSubtext}>Number</Text>
                <View style={styles.cardItem}>
-                  <Text style={styles.cardText}>091233455678</Text>
+                  <Text style={styles.cardText}>{data[0]?.contactNumber}</Text>
                </View>
             </View>
          </View>
@@ -250,10 +253,36 @@ function AboutUs({ isVisible, onCancel }) {
    );
 }
 
-function Profile({ navigation }) {
+function Profile({ navigation, route }) {
    const [isMyProfileVisible, setMyProfileVisible] = useState(false);
    const [isAccountVisible, setAccountVisible] = useState(false);
    const [isAboutVisible, setAboutVisible] = useState(false);
+   const [memberData, setMemberData] = useState([]);
+   const { userUid } = route.params; // Access the userUid parameter from the route
+
+   useEffect(() => {
+      fetchFirestoreData();
+   }, []);
+
+   const fetchFirestoreData = async () => {
+      const memberRegisterCollection = collection(
+         FIREBASE_DB,
+         "memberRegister"
+      );
+      try {
+         const querySnapshot = await getDocs(memberRegisterCollection);
+         const data = [];
+         querySnapshot.forEach((doc) => {
+            const member = doc.data();
+            if (userUid === member.accountID) {
+               data.push(member);
+            }
+         });
+         setMemberData(data);
+      } catch (error) {
+         console.error("Error querying the memberRegister collection: ", error);
+      }
+   };
 
    // Function to handle the sign-out and navigate to the "Login" screen
    const handleSignOut = async () => {
@@ -280,8 +309,12 @@ function Profile({ navigation }) {
                   source={require("../../assets/icons/icon-profile.png")}
                   style={styles.headerImage}
                />
-               <Text style={styles.headerName}>JOHN DOE</Text>
-               <Text style={styles.headerText}>Member Since</Text>
+               <Text style={styles.headerName}>
+                  {memberData[0]?.firstName + " " + memberData[0]?.lastName}
+               </Text>
+               <Text style={styles.headerText}>
+                  Member Since {memberData[0]?.memberSince}
+               </Text>
             </View>
             <View style={styles.whiteContainer}>
                <View style={styles.contentContainer}>
@@ -376,7 +409,11 @@ function Profile({ navigation }) {
                </View>
             </View>
          </View>
-         <MyProfile isVisible={isMyProfileVisible} onCancel={handleClose} />
+         <MyProfile
+            isVisible={isMyProfileVisible}
+            onCancel={handleClose}
+            data={memberData}
+         />
          <Account isVisible={isAccountVisible} onCancel={handleClose} />
          <AboutUs isVisible={isAboutVisible} onCancel={handleClose} />
       </View>

@@ -69,6 +69,7 @@ function StackNavigation() {
                <Stack.Screen
                   name="Profile"
                   component={Profile}
+                  initialParams={{ userUid: user.uid }}
                   options={{
                      headerShown: true,
                      headerTransparent: true,
