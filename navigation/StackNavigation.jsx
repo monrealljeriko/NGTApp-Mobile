@@ -20,6 +20,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import { FIREBASE_DB } from "../firebaseConfig";
+import { StatusBar } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -57,113 +58,119 @@ function StackNavigation() {
    }, []);
 
    return (
-      <Stack.Navigator
-         initialRouteName="Start"
-         screenOptions={{ headerShown: false }}
-      >
-         {user ? (
-            <>
-               <Stack.Screen name="TabNavigation">
-                  {() => <TabNavigation userUid={user.uid} />}
-               </Stack.Screen>
-               <Stack.Screen
-                  name="Profile"
-                  component={Profile}
-                  initialParams={{ userUid: user.uid }}
-                  options={{
-                     headerShown: true,
-                     headerTransparent: true,
-                     title: null,
-                     headerTintColor: "white",
-                  }}
-               />
-               <Stack.Screen
-                  name="Notification"
-                  component={Notification}
-                  options={{
-                     headerShown: true,
-                     title: "Notification",
-                     headerTintColor: COLORS.primary,
-                  }}
-               />
-               <Stack.Screen
-                  name="Apply"
-                  component={Apply}
-                  initialParams={{ userUid: user.uid }}
-                  options={{
-                     headerShown: true,
-                     title: "Apply Loan",
-                     headerTintColor: COLORS.primary,
-                  }}
-               />
-               <Stack.Screen
-                  name="AnswerSurvey"
-                  component={AnswerSurvey}
-                  initialParams={{ userUid: user.uid }}
-                  options={{
-                     headerShown: true,
-                     title: "Customer Feedback",
-                     headerTintColor: COLORS.primary,
-                  }}
-               />
-               <Stack.Screen
-                  name="AboutCredit"
-                  component={AboutCredit}
-                  options={{
-                     headerShown: true,
-                     title: "Performance",
-                     headerTintColor: COLORS.primary,
-                  }}
-               />
+      <>
+         <StatusBar
+            barStyle="light-content" // Choose 'dark-content' for a dark status bar
+            backgroundColor={COLORS.primary} // Set your desired background color
+         />
+         <Stack.Navigator
+            initialRouteName="Start"
+            screenOptions={{ headerShown: false }}
+         >
+            {user ? (
+               <>
+                  <Stack.Screen name="TabNavigation">
+                     {() => <TabNavigation userUid={user.uid} />}
+                  </Stack.Screen>
+                  <Stack.Screen
+                     name="Profile"
+                     component={Profile}
+                     initialParams={{ userUid: user.uid }}
+                     options={{
+                        headerShown: true,
+                        headerTransparent: true,
+                        title: null,
+                        headerTintColor: "white",
+                     }}
+                  />
+                  <Stack.Screen
+                     name="Notification"
+                     component={Notification}
+                     options={{
+                        headerShown: true,
+                        title: "Notification",
+                        headerTintColor: COLORS.primary,
+                     }}
+                  />
+                  <Stack.Screen
+                     name="Apply"
+                     component={Apply}
+                     initialParams={{ userUid: user.uid }}
+                     options={{
+                        headerShown: true,
+                        title: "Apply Loan",
+                        headerTintColor: COLORS.primary,
+                     }}
+                  />
+                  <Stack.Screen
+                     name="AnswerSurvey"
+                     component={AnswerSurvey}
+                     initialParams={{ userUid: user.uid }}
+                     options={{
+                        headerShown: true,
+                        title: "Customer Feedback",
+                        headerTintColor: COLORS.primary,
+                     }}
+                  />
+                  <Stack.Screen
+                     name="AboutCredit"
+                     component={AboutCredit}
+                     options={{
+                        headerShown: true,
+                        title: "Performance",
+                        headerTintColor: COLORS.primary,
+                     }}
+                  />
 
-               <Stack.Screen
-                  name="RequestCompleted"
-                  component={RequestCompleted}
-               />
-               <Stack.Screen
-                  name="FeedbackCompleted"
-                  component={FeedbackCompleted}
-               />
-            </>
-         ) : (
-            <>
-               <Stack.Screen name="Start" component={Start} />
-               <Stack.Screen
-                  name="Login"
-                  component={Login}
-                  options={{
-                     headerShown: true,
-                     headerTransparent: true,
-                     title: null,
-                     headerTintColor: "white",
-                  }}
-               />
-               <Stack.Screen
-                  name="Register"
-                  component={Register}
-                  options={{
-                     headerShown: true,
-                     headerTransparent: true,
-                     title: null,
-                     headerTintColor: "white",
-                  }}
-               />
-               <Stack.Screen
-                  name="SectionHandler"
-                  component={SectionHandler}
-                  options={{
-                     headerShown: true,
-                     title: "Membership form",
-                     headerTintColor: "#57708C",
-                  }}
-               />
-               <Stack.Screen
-                  name="RegisterCompleted"
-                  component={RegisterCompleted}
-               />
-            </>
-         )}
-      </Stack.Navigator>
+                  <Stack.Screen
+                     name="RequestCompleted"
+                     component={RequestCompleted}
+                  />
+                  <Stack.Screen
+                     name="FeedbackCompleted"
+                     component={FeedbackCompleted}
+                  />
+               </>
+            ) : (
+               <>
+                  <Stack.Screen name="Start" component={Start} />
+                  <Stack.Screen
+                     name="Login"
+                     component={Login}
+                     options={{
+                        headerShown: true,
+                        headerTransparent: true,
+                        title: null,
+                        headerTintColor: "white",
+                     }}
+                  />
+                  <Stack.Screen
+                     name="Register"
+                     component={Register}
+                     options={{
+                        headerShown: true,
+                        headerTransparent: true,
+                        title: null,
+                        headerTintColor: "white",
+                     }}
+                  />
+                  <Stack.Screen
+                     name="SectionHandler"
+                     component={SectionHandler}
+                     options={{
+                        headerShown: true,
+                        title: "Membership form",
+                        headerTintColor: "#57708C",
+                     }}
+                  />
+                  <Stack.Screen
+                     name="RegisterCompleted"
+                     component={RegisterCompleted}
+                  />
+               </>
+            )}
+         </Stack.Navigator>
+      </>
    );
 }
 export default StackNavigation;

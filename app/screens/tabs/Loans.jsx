@@ -88,35 +88,35 @@ function Loans({ navigation, route }) {
    };
 
    //function to change the status of schedule
-   const handleChangeStatus = async (status) => {
-      const changeValue = status;
-      const borrowerUid = userUid;
-      const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
-      const loanRef = collection(borrowerRef, "loanRequests");
+   // const handleChangeStatus = async (status) => {
+   //    const changeValue = status;
+   //    const borrowerUid = userUid;
+   //    const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+   //    const loanRef = collection(borrowerRef, "loanRequests");
 
-      try {
-         const queryLoanSnapshot = await getDocs(loanRef);
+   //    try {
+   //       const queryLoanSnapshot = await getDocs(loanRef);
 
-         queryLoanSnapshot.forEach(async (loanDoc) => {
-            const loan = loanDoc.data();
-            const fieldRef = doc(loanRef, loan.loanID);
+   //       queryLoanSnapshot.forEach(async (loanDoc) => {
+   //          const loan = loanDoc.data();
+   //          const fieldRef = doc(loanRef, loan.loanID);
 
-            if (
-               changeValue === "Pending" ||
-               changeValue === "Active" ||
-               changeValue === "Completed"
-            ) {
-               if (loan.status !== "Completed") {
-                  await updateDoc(fieldRef, { status: changeValue });
-                  // console.log("Status updated to", changeValue);
-                  onRefresh();
-               }
-            }
-         });
-      } catch (error) {
-         console.error("Error updating status from Firestore:", error);
-      }
-   };
+   //          if (
+   //             changeValue === "Pending" ||
+   //             changeValue === "Active" ||
+   //             changeValue === "Completed"
+   //          ) {
+   //             if (loan.status !== "Completed") {
+   //                await updateDoc(fieldRef, { status: changeValue });
+   //                // console.log("Status updated to", changeValue);
+   //                onRefresh();
+   //             }
+   //          }
+   //       });
+   //    } catch (error) {
+   //       console.error("Error updating status from Firestore:", error);
+   //    }
+   // };
 
    // update date on refresh
    const onRefresh = async () => {
@@ -250,7 +250,7 @@ function Loans({ navigation, route }) {
                      }
                   >
                      <>
-                        <View
+                        {/* <View
                            style={[
                               styles.loanCardContainer,
                               { paddingBottom: pendingLoan ? 0 : 20 },
@@ -387,7 +387,7 @@ function Loans({ navigation, route }) {
                                  </TouchableOpacity>
                               </View>
                            </View>
-                        </View>
+                        </View> */}
                         {pendingLoan.slice(0, 1).map((loan, index) => (
                            <View
                               key={index}

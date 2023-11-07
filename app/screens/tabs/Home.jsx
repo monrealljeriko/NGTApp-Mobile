@@ -48,7 +48,6 @@ function Home({ navigation, route }) {
 
    // Fetch totalLoans data from firestore database
    const fetchLoanData = async () => {
-      console.log("type", typeof userUid);
       if (userUid) {
          // Fetch the totalLoans data from Firestore
          const borrowerUid = userUid;
@@ -170,11 +169,6 @@ function Home({ navigation, route }) {
                         await updateDoc(fieldRef, payment);
                         // console.log("Due updated successfully");
                      }
-                     /*  if (
-                        paymentItem.status === "complete" &&
-                        paymentItem.overdue
-                     ) {
-                     } */
                   });
                });
 
@@ -228,85 +222,84 @@ function Home({ navigation, route }) {
    };
 
    // mark as paid the daily payment schedule for testing purposes
-   const updateToPaid = async () => {
-      if (userUid) {
-         const borrowerUid = userUid;
-         const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
-         const scheduleRef = collection(borrowerRef, "paymentSchedule");
+   // const updateToPaid = async () => {
+   //    if (userUid) {
+   //       const borrowerUid = userUid;
+   //       const borrowerRef = doc(FIREBASE_DB, "borrowers", borrowerUid);
+   //       const scheduleRef = collection(borrowerRef, "paymentSchedule");
 
-         try {
-            const borrowerSnapshot = await getDoc(borrowerRef);
-            const querySchedSnapshot = await getDocs(scheduleRef);
+   //       try {
+   //          const borrowerSnapshot = await getDoc(borrowerRef);
+   //          const querySchedSnapshot = await getDocs(scheduleRef);
 
-            if (borrowerSnapshot.exists()) {
-               const loanRef = collection(borrowerRef, "loanRequests");
-               const queryLoanSnapshot = await getDocs(loanRef);
-               const borrowCreditScore = borrowerSnapshot.data();
-               let updateCreditScore = borrowCreditScore.creditScore;
+   //          if (borrowerSnapshot.exists()) {
+   //             const loanRef = collection(borrowerRef, "loanRequests");
+   //             const queryLoanSnapshot = await getDocs(loanRef);
+   //             const borrowCreditScore = borrowerSnapshot.data();
+   //             let updateCreditScore = borrowCreditScore.creditScore;
 
-               queryLoanSnapshot.forEach((loanDoc) => {
-                  const loan = loanDoc.data();
+   //             queryLoanSnapshot.forEach((loanDoc) => {
+   //                const loan = loanDoc.data();
 
-                  if (loan.status === "Active") {
-                     if (updateCreditScore < 5000) {
-                        switch (loan.numberOfPayments) {
-                           case "Daily":
-                              updateCreditScore += 1;
-                              break;
-                           case "Weekly":
-                              updateCreditScore += 3;
-                              break;
-                           case "Monthly":
-                              updateCreditScore += 5;
-                              break;
-                        }
-                     }
-                  }
+   //                if (loan.status === "Active") {
+   //                   if (updateCreditScore < 5000) {
+   //                      switch (loan.numberOfPayments) {
+   //                         case "Daily":
+   //                            updateCreditScore += 1;
+   //                            break;
+   //                         case "Weekly":
+   //                            updateCreditScore += 3;
+   //                            break;
+   //                         case "Monthly":
+   //                            updateCreditScore += 5;
+   //                            break;
+   //                      }
+   //                   }
+   //                }
 
-                  querySchedSnapshot.forEach(async (schedDoc) => {
-                     const sched = schedDoc.data();
-                     const schedIdRef = doc(scheduleRef, schedDoc.id); // Use schedDoc.id to get the document ID
-                     const paymentScheduleArray = sched.paymentSchedule;
+   //                querySchedSnapshot.forEach(async (schedDoc) => {
+   //                   const sched = schedDoc.data();
+   //                   const schedIdRef = doc(scheduleRef, schedDoc.id); // Use schedDoc.id to get the document ID
+   //                   const paymentScheduleArray = sched.paymentSchedule;
 
-                     // Check if paymentScheduleArray is defined and is an array
-                     if (Array.isArray(paymentScheduleArray)) {
-                        for (let i = 0; i < paymentScheduleArray.length; i++) {
-                           const paymentItem = paymentScheduleArray[i];
-                           if (paymentItem.status === "incomplete") {
-                              // Update the payment item within the array
-                              paymentScheduleArray[i] = {
-                                 ...paymentItem,
-                                 status: "complete",
-                              };
-                              // Update the entire payment schedule document with the modified array
-                              await updateDoc(schedIdRef, {
-                                 paymentSchedule: paymentScheduleArray,
-                              });
-                              await updateDoc(borrowerRef, {
-                                 creditScore: updateCreditScore,
-                              });
-                              // console.log(`${i + 1} payment paid`);
-                              break;
-                           }
-                        }
-                     }
-                  });
-               });
-            }
-            /* const dateToday = new Date();
-            const dateCreditHistory = format(dateToday, "MM/dd/yyyy");
-            const addCreditHistory = {
-               status: "increase",
-               date: dateCreditHistory,
-               summary: borrowerSnapshot.creditHistory + 1,
-            };
+   //                   // Check if paymentScheduleArray is defined and is an array
+   //                   if (Array.isArray(paymentScheduleArray)) {
+   //                      for (let i = 0; i < paymentScheduleArray.length; i++) {
+   //                         const paymentItem = paymentScheduleArray[i];
+   //                         if (paymentItem.status === "incomplete") {
+   //                            // Update the payment item within the array
+   //                            paymentScheduleArray[i] = {
+   //                               ...paymentItem,
+   //                               status: "complete",
+   //                            };
+   //                            // Update the entire payment schedule document with the modified array
+   //                            await updateDoc(schedIdRef, {
+   //                               paymentSchedule: paymentScheduleArray,
+   //                            });
+   //                            await updateDoc(borrowerRef, {
+   //                               creditScore: updateCreditScore,
+   //                            });
+   //                            break;
+   //                         }
+   //                      }
+   //                   }
+   //                });
+   //             });
+   //          }
+   //          /* const dateToday = new Date();
+   //          const dateCreditHistory = format(dateToday, "MM/dd/yyyy");
+   //          const addCreditHistory = {
+   //             status: "increase",
+   //             date: dateCreditHistory,
+   //             summary: borrowerSnapshot.creditHistory + 1,
+   //          };
 
-            await addDoc(borrowerRef,{ creditScoreHistory: addCreditHistory}); */
-         } catch (error) {
-            console.error("Error updating status from Firestore:", error);
-         }
-      }
-   };
+   //          await addDoc(borrowerRef,{ creditScoreHistory: addCreditHistory}); */
+   //       } catch (error) {
+   //          console.error("Error updating status from Firestore:", error);
+   //       }
+   //    }
+   // };
 
    // split the current date and payment date
    const dateParts = (handleDate) => {
@@ -338,8 +331,6 @@ function Home({ navigation, route }) {
                   daysDifference === 0 &&
                   paymentItem.status === "incomplete"
                ) {
-                  // console.log("Schedule", paymentItem.count, "due");
-
                   return {
                      ...paymentItem,
                      due: true,
@@ -350,7 +341,6 @@ function Home({ navigation, route }) {
                   daysDifference > 0 &&
                   paymentItem.status === "incomplete"
                ) {
-                  // console.log("Schedule", paymentItem.count, "overdue");
                   return {
                      ...paymentItem,
                      due: false,
@@ -1246,7 +1236,7 @@ function Home({ navigation, route }) {
                               />
                            }
                         >
-                           <View style={[styles.loanCardContainer]}>
+                           {/* <View style={[styles.loanCardContainer]}>
                               <View
                                  style={[
                                     styles.cardHeaderLabel,
@@ -1306,7 +1296,7 @@ function Home({ navigation, route }) {
                                     </View>
                                  </TouchableOpacity>
                               </View>
-                           </View>
+                           </View> */}
                            <Text style={styles.detailsTitle}>
                               {currentLoan[0].numberOfPayments} Schedule
                            </Text>

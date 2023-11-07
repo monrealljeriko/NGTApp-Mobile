@@ -207,9 +207,6 @@ function Apply({ navigation, route }) {
                   }
                });
 
-               console.log(data);
-               console.log(pendingLoanData);
-               console.log(activeLoanData);
                // save the data to usestate
                setMemberName(data);
                setPendingLoan(pendingLoanData);
@@ -235,6 +232,8 @@ function Apply({ navigation, route }) {
       const overdue = false;
       const overdueDays = 0;
       const nextPaymentDate = [];
+      const accountID = userUid;
+
       // get the current date
       const currentDate = new Date();
       const currentDay = currentDate.getDate();
@@ -263,6 +262,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count: day < 10 ? `0${day}` : `${day}`,
                      date: format(nextDay, "MM/dd/yyyy"),
@@ -287,6 +287,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
@@ -312,6 +313,7 @@ function Apply({ navigation, route }) {
                nextPaymentDate.push({
                   loanID,
                   scheduleID,
+                  accountID,
                   name,
                   count: "01",
                   date: format(nextMonth, "MM/dd/yyyy"),
@@ -340,6 +342,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count: day < 10 ? `0${day}` : `${day}`,
                      date: format(nextDay, "MM/dd/yyyy"),
@@ -363,6 +366,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
@@ -391,6 +395,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count: mos < 10 ? `0${mos}` : `${mos}`,
                      date: format(nextDate, "MM/dd/yyyy"),
@@ -420,6 +425,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count:
                         day < 10
@@ -448,6 +454,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count: week < 10 ? `0${week}` : `${week}`,
                      date: format(nextWeek, "MM/dd/yyyy"),
@@ -476,6 +483,7 @@ function Apply({ navigation, route }) {
                   nextPaymentDate.push({
                      loanID,
                      scheduleID,
+                     accountID,
                      name,
                      count: mos < 10 ? `0${mos}` : `${mos}`,
                      date: format(nextDate, "MM/dd/yyyy"),
@@ -507,10 +515,6 @@ function Apply({ navigation, route }) {
          parseFloat((loanAmount - totalDeductionCharge).toFixed())
       );
       setTotalFinanceCharge(financeCharge);
-      console.log(totalDeductionCharge);
-      console.log(totalFinanceCharge);
-      console.log(serviceHandlingCharge);
-      console.log(totalNonFinanceCharges);
    };
 
    // fuction to check loan is pendin or active

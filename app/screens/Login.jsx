@@ -5,6 +5,7 @@ import {
    Pressable,
    TextInput,
    TouchableOpacity,
+   ScrollView,
 } from "react-native";
 import {
    sendPasswordResetEmail,
@@ -203,124 +204,128 @@ function Login({ navigation }) {
    }, []);
 
    return (
-      <View style={styles.container}>
-         <Image
-            source={require("../../assets/images/bg-login.png")}
-            style={{ width: "100%" }}
-         />
-         <View style={styles.contentContainer}>
-            <View style={{ marginVertical: 30 }}>
-               <Text style={styles.customText}>Hello,</Text>
-               <Text style={styles.customSubtitle}>Welcome Back ! 👋</Text>
-            </View>
-
-            <>
-               <View style={{ marginBottom: 15 }}>
-                  <View style={styles.customInput}>
-                     <Icon name="mail" style={styles.customIcon}></Icon>
-                     <TextInput
-                        placeholder="Email or username"
-                        value={email}
-                        style={{
-                           width: "100%",
-                           fontFamily: "Poppins-Regular",
-                        }}
-                        onChangeText={(text) => setEmail(text)}
-                     />
-                  </View>
+      <ScrollView>
+         <View style={styles.container}>
+            <Image
+               source={require("../../assets/images/bg-login.png")}
+               style={{ width: "100%" }}
+            />
+            <View style={styles.contentContainer}>
+               <View style={{ marginVertical: 30 }}>
+                  <Text style={styles.customText}>Hello,</Text>
+                  <Text style={styles.customSubtitle}>Welcome Back ! 👋</Text>
                </View>
-               <View style={{ marginBottom: 15 }}>
-                  <View style={styles.customInput}>
-                     <Icon name="lock" style={styles.customIcon}></Icon>
-                     <TextInput
-                        placeholder="Password"
-                        value={password}
-                        secureTextEntry={isPasswordShown}
-                        style={{
-                           width: "100%",
-                           fontFamily: "Poppins-Regular",
-                        }}
-                        onChangeText={(text) => setPassword(text)}
+
+               <>
+                  <View style={{ marginBottom: 15 }}>
+                     <View style={styles.customInput}>
+                        <Icon name="mail" style={styles.customIcon}></Icon>
+                        <TextInput
+                           placeholder="Email or username"
+                           value={email}
+                           style={{
+                              width: "100%",
+                              fontFamily: "Poppins-Regular",
+                           }}
+                           onChangeText={(text) => setEmail(text)}
+                        />
+                     </View>
+                  </View>
+                  <View style={{ marginBottom: 15 }}>
+                     <View style={styles.customInput}>
+                        <Icon name="lock" style={styles.customIcon}></Icon>
+                        <TextInput
+                           placeholder="Password"
+                           value={password}
+                           secureTextEntry={isPasswordShown}
+                           style={{
+                              width: "100%",
+                              fontFamily: "Poppins-Regular",
+                           }}
+                           onChangeText={(text) => setPassword(text)}
+                        />
+
+                        <TouchableOpacity
+                           onPress={() => setIsPasswordShown(!isPasswordShown)}
+                           style={{
+                              position: "absolute",
+                              right: 12,
+                           }}
+                        >
+                           {isPasswordShown == true ? (
+                              <Ionicons
+                                 name="eye-off"
+                                 size={20}
+                                 color={COLORS.primary}
+                              />
+                           ) : (
+                              <Ionicons
+                                 name="eye"
+                                 size={20}
+                                 color={COLORS.primary}
+                              />
+                           )}
+                        </TouchableOpacity>
+                     </View>
+                  </View>
+               </>
+               <View style={[styles.options, { marginVertical: 10 }]}>
+                  <View style={{ flexDirection: "row" }}>
+                     <Checkbox
+                        style={styles.checkBoxRemember}
+                        value={isChecked}
+                        onValueChange={setIsChecked}
+                        color={isChecked ? COLORS.primary : undefined}
                      />
 
-                     <TouchableOpacity
-                        onPress={() => setIsPasswordShown(!isPasswordShown)}
-                        style={{
-                           position: "absolute",
-                           right: 12,
-                        }}
-                     >
-                        {isPasswordShown == true ? (
-                           <Ionicons
-                              name="eye-off"
-                              size={20}
-                              color={COLORS.primary}
-                           />
-                        ) : (
-                           <Ionicons
-                              name="eye"
-                              size={20}
-                              color={COLORS.primary}
-                           />
-                        )}
-                     </TouchableOpacity>
+                     <Pressable onPress={() => setIsChecked(!isChecked)}>
+                        <Text
+                           style={{ fontFamily: "Poppins-Regular", left: 10 }}
+                        >
+                           Remember Me
+                        </Text>
+                     </Pressable>
                   </View>
+                  <TouchableOpacity
+                     onPress={() => {
+                        setForgetPasswordVisible(true);
+                     }}
+                  >
+                     <Text style={styles.pressableText}>Forget password</Text>
+                  </TouchableOpacity>
                </View>
-            </>
-            <View style={[styles.options, { marginVertical: 10 }]}>
-               <View style={{ flexDirection: "row" }}>
-                  <Checkbox
-                     style={styles.checkBoxRemember}
-                     value={isChecked}
-                     onValueChange={setIsChecked}
-                     color={isChecked ? COLORS.primary : undefined}
+               {loading ? (
+                  <ActivityIndicator
+                     size="large"
+                     color="#57708C"
+                     style={{ marginVertical: 20 }}
                   />
+               ) : (
+                  <Button
+                     title="Login"
+                     filled
+                     onPress={signIn}
+                     style={{ marginVertical: 20 }}
+                  />
+               )}
 
-                  <Pressable onPress={() => setIsChecked(!isChecked)}>
-                     <Text style={{ fontFamily: "Poppins-Regular", left: 10 }}>
-                        Remember Me
-                     </Text>
-                  </Pressable>
+               <View style={[styles.options, { justifyContent: "center" }]}>
+                  <Text style={styles.customSubtext}>Become a member ?</Text>
+                  <TouchableOpacity
+                     onPress={() => navigation.navigate("Register")}
+                  >
+                     <Text style={styles.pressableText}>Click here</Text>
+                  </TouchableOpacity>
                </View>
-               <TouchableOpacity
-                  onPress={() => {
-                     setForgetPasswordVisible(true);
-                  }}
-               >
-                  <Text style={styles.pressableText}>Forget password</Text>
-               </TouchableOpacity>
+               {/*   <Button title="Clear Async Data" onPress={clearData} /> */}
             </View>
-            {loading ? (
-               <ActivityIndicator
-                  size="large"
-                  color="#57708C"
-                  style={{ marginVertical: 20 }}
-               />
-            ) : (
-               <Button
-                  title="Login"
-                  filled
-                  onPress={signIn}
-                  style={{ marginVertical: 20 }}
-               />
-            )}
-
-            <View style={[styles.options, { justifyContent: "center" }]}>
-               <Text style={styles.customSubtext}>Become a member ?</Text>
-               <TouchableOpacity
-                  onPress={() => navigation.navigate("Register")}
-               >
-                  <Text style={styles.pressableText}>Click here</Text>
-               </TouchableOpacity>
-            </View>
-            {/*   <Button title="Clear Async Data" onPress={clearData} /> */}
+            <ForgetPassword
+               email={email}
+               isVisible={isforgetPasswordVisible}
+               onCancel={handleClose}
+            />
          </View>
-         <ForgetPassword
-            email={email}
-            isVisible={isforgetPasswordVisible}
-            onCancel={handleClose}
-         />
-      </View>
+      </ScrollView>
    );
 }
 

@@ -223,11 +223,19 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                </TouchableOpacity>
                {showAddress && (
                   <View>
-                     <View style={styles.sectionContainer}>
-                        <Text style={styles.customSubtext}>
+                     <View>
+                        <Text
+                           style={[styles.customSubtext, { textAlign: "left" }]}
+                        >
                            Present address :
                         </Text>
-                        <Text style={styles.customSubtextData}>
+                        <Text
+                           style={[
+                              styles.customSubtextData,
+                              { textAlign: "left" },
+                           ]}
+                        >
+                           {"     "}
                            {section1Obj.presentAddress == ""
                               ? "n/a"
                               : section1Obj.presentAddress}
@@ -247,21 +255,38 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                         )}
                      </View>
 
-                     <View style={styles.sectionContainer}>
-                        <Text style={styles.customSubtext}>
+                     <View>
+                        <Text
+                           style={[styles.customSubtext, { textAlign: "left" }]}
+                        >
                            Length of time at present address :
                         </Text>
-                        <Text style={styles.customSubtextData}>
+                        <Text
+                           style={[
+                              styles.customSubtextData,
+                              { textAlign: "left" },
+                           ]}
+                        >
+                           {"    "}
                            {section1Obj.lengthOfTime == ""
                               ? "n/a"
                               : section1Obj.lengthOfTime}
                         </Text>
                      </View>
-                     <View style={styles.sectionContainer}>
-                        <Text style={styles.customSubtext}>
+                     <View>
+                        <Text
+                           style={[styles.customSubtext, { textAlign: "left" }]}
+                        >
                            Email address :
                         </Text>
-                        <Text style={styles.customSubtextData}>
+                        <Text
+                           style={[
+                              styles.customSubtextData,
+                              { textAlign: "left" },
+                           ]}
+                        >
+                           {"    "}
+
                            {section1Obj.emailAddress == ""
                               ? "n/a"
                               : section1Obj.emailAddress}
@@ -532,21 +557,37 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                            Work
                         </Text>
                      </View>
-                     <View style={styles.sectionContainer}>
-                        <Text style={styles.customSubtext}>
+                     <View>
+                        <Text
+                           style={[styles.customSubtext, { textAlign: "left" }]}
+                        >
                            Employer or Business :
                         </Text>
-                        <Text style={styles.customSubtextData}>
+                        <Text
+                           style={[
+                              styles.customSubtextData,
+                              { textAlign: "left" },
+                           ]}
+                        >
+                           {"     "}
                            {section3Obj.spouseBusiness == ""
                               ? "n/a"
                               : section3Obj.spouseBusiness}
                         </Text>
                      </View>
-                     <View style={styles.sectionContainer}>
-                        <Text style={styles.customSubtext}>
+                     <View>
+                        <Text
+                           style={[styles.customSubtext, { textAlign: "left" }]}
+                        >
                            Business or Employer's Address :
                         </Text>
-                        <Text style={styles.customSubtextData}>
+                        <Text
+                           style={[
+                              styles.customSubtextData,
+                              { textAlign: "left" },
+                           ]}
+                        >
+                           {"     "}
                            {section3Obj.spouseBusinessAddress == ""
                               ? "n/a"
                               : section3Obj.spouseBusinessAddress}
@@ -563,11 +604,19 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                               : section3Obj.spouseMonthlyIncome}
                         </Text>
                      </View>
-                     <View style={styles.sectionContainer}>
-                        <Text style={styles.customSubtext}>
+                     <View>
+                        <Text
+                           style={[styles.customSubtext, { textAlign: "left" }]}
+                        >
                            Employment Status :
                         </Text>
-                        <Text style={styles.customSubtextData}>
+                        <Text
+                           style={[
+                              styles.customSubtextData,
+                              { textAlign: "left" },
+                           ]}
+                        >
+                           {"     "}
                            {section3Obj.spouseEmploymentStatus == ""
                               ? "n/a"
                               : section3Obj.spouseEmploymentStatus}
@@ -712,11 +761,11 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                            {section4Obj.heardFrom == "others" &&
                               section4Obj.others}
                         </Text>
-                        <Text style={[styles.customSubtextData]}>
-                           {section4Obj.heardFrom == "referred" &&
-                              section4Obj.referredBy}
-                        </Text>
                      </View>
+                     <Text style={[styles.customSubtextData]}>
+                        {section4Obj.heardFrom == "referred" &&
+                           section4Obj.referredBy}
+                     </Text>
                   </View>
                )}
             </View>

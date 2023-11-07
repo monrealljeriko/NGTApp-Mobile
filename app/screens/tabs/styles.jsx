@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: 40,
-      paddingTop: 40,
+      paddingTop: 20,
       height: 120,
    },
    headerProfile: { flexDirection: "row", alignItems: "center", gap: 10 },
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: 40,
-      paddingTop: 40,
+      paddingTop: 20,
       height: 120,
    },
    headerTitleCredit: {
