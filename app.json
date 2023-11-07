@@ -2,7 +2,7 @@
    "expo": {
       "name": "NeGrowTio",
       "slug": "ngt-app-mobile",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "orientation": "portrait",
       "icon": "./assets/icon-ngt.png",
       "userInterfaceStyle": "light",
@@ -20,7 +20,8 @@
             "foregroundImage": "./assets/icon-ngt.png",
             "backgroundColor": "#ffffff"
          },
-         "package": "com.jerikoem.ngtappmobile"
+         "package": "com.pmvcccsanjose.negrowtio",
+         "googleServicesFile": "./google-services.json"
       },
       "web": {
          "favicon": "./assets/favicon.png"

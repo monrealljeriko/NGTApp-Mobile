@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "748550728809",
+    "project_id": "ngt-mobileapp",
+    "storage_bucket": "ngt-mobileapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748550728809:android:b70d8da647d5d6308d06f8",
+        "android_client_info": {
+          "package_name": "com.pmvcccsanjose.negrowtio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrlF9U2pIkv9yYQFXG6vyg0dx5dp56ZGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
