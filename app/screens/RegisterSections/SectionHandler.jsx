@@ -12,6 +12,7 @@ import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { doc, setDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../../firebaseConfig";
+import  usePushNotification  from "../../../useNotification"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -72,6 +73,8 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
 
 // Section handler for multiple pages
 function SectionHandler({ navigation }) {
+  usePushNotification();
+
    const [currentPage, setCurrentPage] = useState(1);
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
    const [registerID, setRegisterID] = useState(0);
@@ -206,6 +209,7 @@ function SectionHandler({ navigation }) {
    };
 
    const handleConfirmSubmit = async () => {
+      const tokenID = pushToken;
       const userData = {
          ...section1Obj,
          ...section2Obj,
@@ -214,7 +218,7 @@ function SectionHandler({ navigation }) {
          fullName: section1Obj.firstName + " " + section1Obj.lastName,
          registerID,
          status: "Pending",
-         tokenID: pushToken
+         tokenID: tokenID,
       };
 
       try {
