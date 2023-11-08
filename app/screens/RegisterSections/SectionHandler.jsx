@@ -79,7 +79,6 @@ function SectionHandler({ navigation }) {
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
    const [registerID, setRegisterID] = useState(0);
    const [pushToken, setPushToken] = useState();
-
    
    function getToken() {
       AsyncStorage.getItem("PushToken")
@@ -209,7 +208,6 @@ function SectionHandler({ navigation }) {
    };
 
    const handleConfirmSubmit = async () => {
-      const tokenID = pushToken;
       const userData = {
          ...section1Obj,
          ...section2Obj,
@@ -218,7 +216,7 @@ function SectionHandler({ navigation }) {
          fullName: section1Obj.firstName + " " + section1Obj.lastName,
          registerID,
          status: "Pending",
-         tokenID: tokenID,
+         tokenID: pushToken,
       };
 
       try {

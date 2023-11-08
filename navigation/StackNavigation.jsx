@@ -11,6 +11,7 @@ import {
    AboutCredit,
    RequestCompleted,
    FeedbackCompleted,
+   Announcement
 } from "../app/index";
 import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -166,6 +167,15 @@ function StackNavigation() {
                   <Stack.Screen
                      name="RegisterCompleted"
                      component={RegisterCompleted}
+                  />
+                  <Stack.Screen
+                     name="Announcement"
+                     component={Announcement}
+                     options={{
+                        headerShown: true,
+                        title: "Announcement",
+                        headerTintColor: COLORS.primary,
+                     }}
                   />
                </>
             )}

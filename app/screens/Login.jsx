@@ -18,6 +18,7 @@ import COLORS from "../component/Colors";
 import Icon from "react-native-vector-icons/Feather";
 import styles from "./styles";
 import Modal from "react-native-modal";
+import Announcement from "./Announcement";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native-paper";
@@ -27,6 +28,22 @@ function ForgetPassword({ isVisible, onCancel, email }) {
    const [emailuser, setEmailUser] = useState("");
    const auth = FIREBASE_AUTH;
 
+
+   usePushNotification();
+   
+  useEffect(() => {
+   function getToken() {
+      AsyncStorage.getItem("PushToken")
+        .then((savedToken) => {
+          if (savedToken) {
+            setPushToken(savedToken);
+          }
+        })
+        .catch((error) => {});
+    }
+    getToken();
+ }, []);
+ 
    useEffect(() => {
       const checkEmail = () => {
          if (email && !email.includes("@")) {

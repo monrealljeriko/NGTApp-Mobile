@@ -12,7 +12,7 @@ import AboutCredit from "./screens/AboutCredit";
 import SectionHandler from "./screens/RegisterSections/SectionHandler";
 import { RegisterCompleted } from "./screens/RegisterSections/SectionHandler";
 import { RequestCompleted } from "./screens/Apply";
-
+import Announcement from "./screens/Announcement";
 export {
    Start,
    Login,
@@ -29,4 +29,5 @@ export {
    RegisterCompleted,
    RequestCompleted,
    FeedbackCompleted,
+   Announcement
 };

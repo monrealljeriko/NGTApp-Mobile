@@ -1,8 +1,25 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useEffect } from "react";
 import styles from "./styles";
 import Button from "../component/Button";
+import  usePushNotification  from "../../useNotification"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Start({ navigation }) {
+  usePushNotification();
+  function getToken() {
+   AsyncStorage.getItem("PushToken")
+     .then((savedToken) => {
+       if (savedToken) {
+         setPushToken(savedToken);
+       }
+     })
+     .catch((error) => {});
+ }
+ useEffect(() => {
+   getToken();
+}, []);
+
    return (
       <View style={styles.container}>
          <Image
@@ -44,8 +61,8 @@ function Start({ navigation }) {
                   justifyContent: "center",
                }}
             >
-               <Text style={styles.customSubtext}>Know more about us?</Text>
-               <TouchableOpacity onPress={() => alert("Underconstruction")}>
+               <Text style={styles.customSubtext}>Announcement</Text>
+               <TouchableOpacity onPress={() => navigation.navigate("Announcement")}>
                   <Text style={styles.pressableText}>Click here</Text>
                </TouchableOpacity>
             </View>
