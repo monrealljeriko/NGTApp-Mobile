@@ -12,6 +12,8 @@ import COLORS from "../../component/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { doc, setDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../../firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export function RegisterCompleted({ navigation }) {
    return (
@@ -73,7 +75,19 @@ function SectionHandler({ navigation }) {
    const [currentPage, setCurrentPage] = useState(1);
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
    const [registerID, setRegisterID] = useState(0);
+   const [pushToken, setPushToken] = useState();
 
+   
+   function getToken() {
+      AsyncStorage.getItem("PushToken")
+        .then((savedToken) => {
+          if (savedToken) {
+            setPushToken(savedToken);
+          }
+        })
+        .catch((error) => {});
+    }
+    
    useEffect(() => {
       function generateUniqueId() {
          // Generate 8 random numbers (0-9)
@@ -94,7 +108,7 @@ function SectionHandler({ navigation }) {
 
          return uniqueId;
       }
-
+      getToken();
       setRegisterID(generateUniqueId());
    }, []);
 
@@ -200,6 +214,7 @@ function SectionHandler({ navigation }) {
          fullName: section1Obj.firstName + " " + section1Obj.lastName,
          registerID,
          status: "Pending",
+         tokenID: pushToken
       };
 
       try {

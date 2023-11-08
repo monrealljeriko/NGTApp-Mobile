@@ -309,13 +309,16 @@ function Profile({ navigation, route }) {
                   source={require("../../assets/icons/icon-profile.png")}
                   style={styles.headerImage}
                />
-               <Text style={styles.headerName}>
+              
+            </View>
+              <View style={{bottom: 20}}>
+              <Text style={styles.headerName}>
                   {memberData[0]?.firstName + " " + memberData[0]?.lastName}
                </Text>
                <Text style={styles.headerText}>
                   Member Since {memberData[0]?.memberSince}
                </Text>
-            </View>
+              </View>
             <View style={styles.whiteContainer}>
                <View style={styles.contentContainer}>
                   <Text style={styles.cardLabelText}>Settings </Text>
@@ -437,8 +440,8 @@ const styles = StyleSheet.create({
    },
    headerProfile: {
       justifyContent: "center",
-      height: "45%",
-      top: 50,
+      height: "35%",
+      top: 35,
    },
    headerImage: {
       width: 150,

@@ -15,6 +15,7 @@ import {
    getDocs,
    updateDoc,
 } from "firebase/firestore";
+import  usePushNotification  from "../../useNotification"
 import React, { useState, useEffect } from "react";
 import Button from "../component/Button";
 import Modal from "react-native-modal";
@@ -23,6 +24,7 @@ import { Picker } from "@react-native-picker/picker";
 import { ActivityIndicator } from "react-native-paper";
 import { FIREBASE_DB } from "../../firebaseConfig";
 import { addMonths, addWeeks, addDays, format } from "date-fns";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // success screen page
 export function RequestCompleted({ navigation }) {
@@ -80,6 +82,8 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel }) {
 }
 
 function Apply({ navigation, route }) {
+  usePushNotification();
+
    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
    const [showEMICalculation, setShowEMICalculation] = useState(false);
    // for calculations
@@ -110,17 +114,32 @@ function Apply({ navigation, route }) {
    const [activeLoan, setActiveLoan] = useState([]);
    const [memberName, setMemberName] = useState("");
    const { userUid } = route.params; // Access the userUid parameter from the route
+   const [pushToken, setPushToken] = useState();
+
 
    // runs the component of first mount
 
+   function getToken() {
+      AsyncStorage.getItem("PushToken")
+        .then((savedToken) => {
+          if (savedToken) {
+            setPushToken(savedToken);
+          }
+        })
+        .catch((error) => {});
+    }
+    
    useEffect(() => {
       fetchLoanData();
+      getToken();
+      
    }, []);
 
    useEffect(() => {
       calculateTotals();
    }, [selectedTerms, numberOfPayments, selectedLoans, purposeOfLoan]);
 
+   
    // useffect for generating date and uid
    useEffect(() => {
       // Function to get the current date
@@ -233,7 +252,7 @@ function Apply({ navigation, route }) {
       const overdueDays = 0;
       const nextPaymentDate = [];
       const accountID = userUid;
-
+      const tokenID = pushToken;
       // get the current date
       const currentDate = new Date();
       const currentDay = currentDate.getDate();
@@ -260,6 +279,7 @@ function Apply({ navigation, route }) {
                for (let day = 1; day <= 30; day++) {
                   const nextDay = addDays(currentDate, day);
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -285,6 +305,7 @@ function Apply({ navigation, route }) {
                for (let week = 1; week <= 4; week++) {
                   const nextWeek = addWeeks(currentDate, week);
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -311,6 +332,7 @@ function Apply({ navigation, route }) {
                const nextMonth = addMonths(currentDate, 1);
 
                nextPaymentDate.push({
+                  tokenID,
                   loanID,
                   scheduleID,
                   accountID,
@@ -340,6 +362,7 @@ function Apply({ navigation, route }) {
                for (let day = 1; day <= 60; day++) {
                   const nextDay = addDays(currentDate, day);
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -364,6 +387,7 @@ function Apply({ navigation, route }) {
                for (let week = 1; week <= 8; week++) {
                   const nextWeek = addWeeks(currentDate, week);
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -393,6 +417,7 @@ function Apply({ navigation, route }) {
                      currentDay
                   );
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -423,6 +448,7 @@ function Apply({ navigation, route }) {
                for (let day = 1; day <= 100; day++) {
                   const nextDay = addDays(currentDate, day);
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -452,6 +478,7 @@ function Apply({ navigation, route }) {
                for (let week = 1; week <= 14; week++) {
                   const nextWeek = addWeeks(currentDate, week);
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -481,6 +508,7 @@ function Apply({ navigation, route }) {
                      currentDay
                   );
                   nextPaymentDate.push({
+                     tokenID,
                      loanID,
                      scheduleID,
                      accountID,
@@ -534,6 +562,8 @@ function Apply({ navigation, route }) {
 
    // function for sending data to firstore database
    const handleConfirmSubmit = async () => {
+      const reqTokenID = pushToken;
+
       // Get the user's UID
       const userUID = userUid;
       const userDocRef = doc(FIREBASE_DB, "borrowers", userUID);
@@ -546,6 +576,7 @@ function Apply({ navigation, route }) {
 
       // set of loan datas fields
       const loanReqDataToAdd = {
+         tokenID: reqTokenID,
          accountID: userUID,
          loanID: loanRequestID,
          loanAmount: parseInt(selectedLoans),
