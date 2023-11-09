@@ -1,86 +1,53 @@
-import { View, Text, StyleSheet } from "react-native";
-import React from "react";
-import COLORS from "../component/Colors";
+import { View, Text, ScrollView } from "react-native";
+import React, { useState } from "react";
+import styles from "./styles";
 
-function Announcement() {
-   return (
-      <View style={styles.container}>
-         <View style={styles.cardHeaderLabel}>
-            {/* <Text style={styles.cardLabelText}>Today</Text> */}
-         </View>
-
-         <View style={styles.cardItem}>
-            <View style={styles.contentWrapper}>
-               <Text style={styles.cardText}>
-                  You have paid your daily payment 155 for you loan ID-00000.
-               </Text>
-               <Text style={[styles.cardText, { alignSelf: "flex-end" }]}>
-                  10/05/23 - 9:20
-               </Text>
+function AboutCredit() {
+  return (
+    <View style={styles.container}>
+      <ScrollView>
+        <View style={[styles.contentContainer, { marginTop: 0 }]}>
+          <View style={{ width: "100%" }}>
+            <View>
+              <View style={{ marginVertical: 20, gap: 10 }}>
+                <Text style={styles.customSubtextTC}>Seminar Announcement</Text>
+                <Text style={styles.customSubtextSmall}>
+                  Join us for an informative seminar on responsible borrowing
+                  and financial literacy, organized by San Jose Cooperative
+                  Lending. This seminar will provide valuable insights on
+                  managing your finances, making informed borrowing decisions,
+                  and understanding the cooperative lending process. Don't miss
+                  this opportunity to enhance your financial knowledge. Mark
+                  your calendar!
+                </Text>
+                <Text style={styles.customSubtextTC}>
+                  Interview Announcement
+                </Text>
+                <Text style={styles.customSubtextSmall}>
+                  San Jose Cooperative Lending is conducting interviews for
+                  potential borrowers. If you're interested in obtaining a loan
+                  and want to learn more about our lending options, our
+                  administrators are here to help. Schedule an interview to
+                  discuss your financial needs and find the right lending
+                  solution tailored to you.
+                </Text>
+                <Text style={styles.customSubtextTC}>Event Description</Text>
+                <Text style={styles.customSubtextSmall}>
+                  San Jose Cooperative Lending invites you to our Borrower's Day
+                  event! Join us for a day of financial empowerment, where you
+                  can meet with our experienced administrators to discuss your
+                  borrowing options, learn about our cooperative lending
+                  process, and explore the various financial resources we offer.
+                  It's a great opportunity to take a step closer to achieving
+                  your financial goals. Don't miss out on this event!
+                </Text>
+              </View>
             </View>
-         </View>
-         <View style={styles.cardItem}>
-            <View style={styles.contentWrapper}>
-               <Text style={styles.cardText}>
-                  Congratulations! Your loan ammount 5000 have been approved.
-               </Text>
-               <Text style={[styles.cardText, { alignSelf: "flex-end" }]}>
-                  10/03/23 - 9:20
-               </Text>
-            </View>
-         </View>
-         <View style={styles.cardHeaderLabel}>
-            {/* <Text style={styles.cardLabelText}>Yesterday</Text> */}
-         </View>
-         <View style={styles.cardItem}>
-            <View style={styles.contentWrapper}>
-               <Text style={styles.cardText}>
-                  Your request has been submitted successfully. You will
-                  notified soon.
-               </Text>
-               <Text style={[styles.cardText, { alignSelf: "flex-end" }]}>
-                  10/02/23 - 9:20
-               </Text>
-            </View>
-         </View>
-      </View>
-   );
+          </View>
+        </View>
+      </ScrollView>
+    </View>
+  );
 }
 
-export default Announcement;
-
-const styles = StyleSheet.create({
-   container: {
-      flex: 1,
-      backgroundColor: COLORS.white,
-      marginHorizontal: 20,
-      marginVertical: 20,
-   },
-   cardItem: {
-      width: "100%",
-      borderRadius: 15,
-      height: 90,
-      padding: 15,
-      marginBottom: 10,
-      backgroundColor: "white",
-      elevation: 5,
-   },
-
-   cardLabelText: {
-      fontSize: 14,
-      fontFamily: "Poppins-SemiBold",
-      marginBottom: 10,
-   },
-   cardText: {
-      fontFamily: "Poppins-Regular",
-      fontSize: 14,
-   },
-   contentWrapper: {
-      marginHorizontal: 10,
-   },
-   cardHeaderLabel: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      marginHorizontal: 10,
-   },
-});
+export default AboutCredit;
