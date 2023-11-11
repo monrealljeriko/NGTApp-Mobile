@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+
 import {
   collection,
   doc,
@@ -15,6 +16,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
+import Slider from "@react-native-community/slider";
 import usePushNotification from "../../useNotification";
 import React, { useState, useEffect } from "react";
 import Button from "../component/Button";
@@ -116,6 +118,8 @@ function Apply({ navigation, route }) {
   const { userUid } = route.params; // Access the userUid parameter from the route
   const [pushToken, setPushToken] = useState();
 
+  const [creditScore, setCreditScore] = useState(0);
+  const [shreCapital, setShareCapital] = useState(0);
   // runs the component of first mount
 
   function getToken() {
@@ -132,7 +136,9 @@ function Apply({ navigation, route }) {
     fetchLoanData();
     getToken();
   }, []);
-
+  useEffect(() => {
+    calculateTotals();
+  }, [selectedTerms, numberOfPayments, selectedLoans, purposeOfLoan]);
   useEffect(() => {
     calculateTotals();
   }, [selectedTerms]);
@@ -204,15 +210,19 @@ function Apply({ navigation, route }) {
 
       try {
         const borrowerSnapshot = await getDoc(borrowerRef);
+
         let data = "";
         const pendingLoanData = [];
         const activeLoanData = [];
 
         if (borrowerSnapshot.exists()) {
+          const borrowData = borrowerSnapshot.data();
           const memberSnapshot = await getDocs(memberRegisterCollection);
           const loanRef = collection(borrowerRef, "loanRequests");
           const querySnapshot = await getDocs(loanRef);
 
+          setCreditScore(borrowData.creditScore);
+          setShareCapital(borrowData.shareCapital);
           memberSnapshot.forEach(async (doc) => {
             const member = doc.data();
 
@@ -542,7 +552,12 @@ function Apply({ navigation, route }) {
       )
     );
     setNetProceedsFromLoan(
-      parseFloat((loanAmount - totalDeductionCharge).toFixed())
+      parseFloat(
+        (
+          loanAmount -
+          (financeCharge + totalNonFinanceCharges + serviceHandlingCharge)
+        ).toFixed()
+      )
     );
     setTotalFinanceCharge(financeCharge);
   };
@@ -557,6 +572,8 @@ function Apply({ navigation, route }) {
       alert(
         "You have an active loan. Please wait until your current loan is completed before applying for a new one."
       );
+    } else if (creditScore < 350) {
+      alert("Your credit score is too low");
     } else {
       setConfirmationVisible(true);
     }
@@ -652,6 +669,37 @@ function Apply({ navigation, route }) {
           <View style={{ paddingHorizontal: 40 }}>
             <View style={{ marginBottom: 12 }}>
               <Text style={styles.sectionSubText}>Loan Amount</Text>
+
+              <Text style={[styles.cardTextBold, { textAlign: "center" }]}>
+                ₱{selectedLoans}
+              </Text>
+
+              <Slider
+                minimumValue={0}
+                maximumValue={shreCapital * 2}
+                value={selectedLoans}
+                step={1}
+                minimumTrackTintColor={COLORS.primary} // Set the stroke color
+                maximumTrackTintColor={COLORS.complete} // Set the slider background color
+                thumbTintColor={COLORS.primary}
+                onValueChange={(value) => setSelectedLoans(value)}
+              />
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={[styles.sectionSubText, { marginLeft: 15 }]}>
+                  ₱0
+                </Text>
+                <Text style={[styles.sectionSubText, { marginRight: 15 }]}>
+                  ₱{shreCapital * 2}
+                </Text>
+              </View>
+            </View>
+            {/* <View style={{ marginBottom: 12 }}>
+              <Text style={styles.sectionSubText}>Loan Amount</Text>
               <View style={styles.sectionInput}>
                 <TextInput
                   placeholder="₱"
@@ -670,7 +718,7 @@ function Apply({ navigation, route }) {
                   onChangeText={(text) => setSelectedLoans(text)}
                 />
               </View>
-            </View>
+            </View> */}
             <View style={{ marginBottom: 12 }}>
               <Text style={styles.sectionSubText}>Purpose</Text>
               <View style={styles.sectionInput}>
