@@ -120,6 +120,8 @@ function Apply({ navigation, route }) {
 
   const [creditScore, setCreditScore] = useState(0);
   const [shreCapital, setShareCapital] = useState(0);
+  const [maxLoan, setMaxLoan] = useState(0);
+
   // runs the component of first mount
 
   function getToken() {
@@ -223,6 +225,13 @@ function Apply({ navigation, route }) {
 
           setCreditScore(borrowData.creditScore);
           setShareCapital(borrowData.shareCapital);
+          if (borrowData.shareCapital === 1000) {
+            setMaxLoan(borrowData.shareCapital * 5);
+          } else if (borrowData.shareCapital >= 32000) {
+            setMaxLoan(95000);
+          } else {
+            setMaxLoan(borrowData.shareCapital * 2);
+          }
           memberSnapshot.forEach(async (doc) => {
             const member = doc.data();
 
@@ -574,7 +583,16 @@ function Apply({ navigation, route }) {
       );
     } else if (creditScore < 350) {
       alert("Your credit score is too low");
-    } else {
+    }
+    // else if (
+    //   !selectedLoans ||
+    //   !purposeOfLoan ||
+    //   !numberOfPayments ||
+    //   selectedTerms
+    // ) {
+    //   alert("Please fill in or select all required fields.");
+    // }
+    else {
       setConfirmationVisible(true);
     }
   };
@@ -670,15 +688,37 @@ function Apply({ navigation, route }) {
             <View style={{ marginBottom: 12 }}>
               <Text style={styles.sectionSubText}>Loan Amount</Text>
 
-              <Text style={[styles.cardTextBold, { textAlign: "center" }]}>
+              {/* <Text style={[styles.cardTextBold, { textAlign: "center" }]}>
                 ₱{selectedLoans}
-              </Text>
+              </Text> */}
+              {/* <TextInput
+                placeholder="₱"
+                editable={false}
+                placeholderTextColor={COLORS.gray}
+                keyboardType="numeric"
+                style={{ bottom: 3 }}
+              /> */}
 
+              <TextInput
+                placeholder="0.0"
+                placeholderTextColor={COLORS.gray}
+                keyboardType="numeric"
+                style={[styles.cardTextBold, { textAlign: "center" }]}
+                value={selectedLoans.toString()}
+                onChangeText={(text) => {
+                  const numericValue = parseFloat(text);
+                  if (!isNaN(numericValue) && numericValue <= maxLoan) {
+                    setSelectedLoans(numericValue);
+                  } else {
+                    setSelectedLoans(""); // Clear the value when input is invalid
+                  }
+                }}
+              />
               <Slider
                 minimumValue={0}
-                maximumValue={shreCapital * 2}
+                maximumValue={maxLoan}
                 value={selectedLoans}
-                step={1}
+                step={500}
                 minimumTrackTintColor={COLORS.primary} // Set the stroke color
                 maximumTrackTintColor={COLORS.complete} // Set the slider background color
                 thumbTintColor={COLORS.primary}
@@ -694,7 +734,7 @@ function Apply({ navigation, route }) {
                   ₱0
                 </Text>
                 <Text style={[styles.sectionSubText, { marginRight: 15 }]}>
-                  ₱{shreCapital * 2}
+                  ₱{maxLoan}
                 </Text>
               </View>
             </View>

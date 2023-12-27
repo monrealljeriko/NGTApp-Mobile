@@ -81,14 +81,25 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                     : section1Obj.middleName}
                 </Text>
               </View>
-              <View style={styles.sectionContainer}>
+              <View>
+                <Text style={[styles.customSubtext, { textAlign: "left" }]}>
+                  Place of birth :
+                </Text>
+                <Text style={[styles.customSubtextData, { textAlign: "left" }]}>
+                  {"     "}
+                  {section1Obj.placeOfBirth == ""
+                    ? "n/a"
+                    : section1Obj.placeOfBirth}
+                </Text>
+              </View>
+              {/* <View style={styles.sectionContainer}>
                 <Text style={styles.customSubtext}>Place of birth :</Text>
                 <Text style={styles.customSubtextData}>
                   {section1Obj.placeOfBirth == ""
                     ? "n/a"
                     : section1Obj.placeOfBirth}
                 </Text>
-              </View>
+              </View> */}
               <View style={styles.sectionContainer}>
                 <Text style={styles.customSubtext}>Date of birth :</Text>
                 <Text style={styles.customSubtextData}>
@@ -565,14 +576,25 @@ function Section5({ section1Obj, section2Obj, section3Obj, section4Obj }) {
                     : section4Obj.referenceNameP1}
                 </Text>
               </View>
-              <View style={styles.sectionContainer}>
+              <View>
+                <Text style={[styles.customSubtext, { textAlign: "left" }]}>
+                  Address :
+                </Text>
+                <Text style={[styles.customSubtextData, { textAlign: "left" }]}>
+                  {"     "}
+                  {section4Obj.referenceAddressP1 == ""
+                    ? "n/a"
+                    : section4Obj.referenceAddressP1}
+                </Text>
+              </View>
+              {/* <View style={styles.sectionContainer}>
                 <Text style={styles.customSubtext}>Address :</Text>
                 <Text style={styles.customSubtextData}>
                   {section4Obj.referenceAddressP1 == ""
                     ? "n/a"
                     : section4Obj.referenceAddressP1}
                 </Text>
-              </View>
+              </View> */}
               <View style={styles.sectionContainer}>
                 <Text style={styles.customSubtext}>Relation :</Text>
                 <Text style={styles.customSubtextData}>

@@ -180,7 +180,7 @@ function SectionHandler({ navigation }) {
     addOtherPerson: "",
     referenceNameP2: "",
     referenceAddressP2: "",
-    referenceReLlationP2: "",
+    referenceRelationP2: "",
     referenceContactNumberP2: "",
     businessContactNumberP2: "",
     heardFrom: "",
@@ -190,7 +190,126 @@ function SectionHandler({ navigation }) {
 
   const handleNextPage = () => {
     if (currentPage < 5) {
-      setCurrentPage(currentPage + 1);
+      if (currentPage === 1) {
+        if (
+          !section1Obj.lastName ||
+          !section1Obj.firstName ||
+          !section1Obj.middleName ||
+          !section1Obj.placeOfBirth ||
+          !section1Obj.dateOfBirth ||
+          !section1Obj.height ||
+          !section1Obj.weight ||
+          !section1Obj.completedEducation ||
+          !section1Obj.taxIDnumber ||
+          !section1Obj.sssIDnumber ||
+          !section1Obj.dependenciesCount ||
+          !section1Obj.dependenciesAges ||
+          !section1Obj.presentAddress ||
+          !section1Obj.addressType ||
+          !section1Obj.provincialAddress ||
+          !section1Obj.lengthOfTime ||
+          !section1Obj.emailAddress ||
+          !section1Obj.contactNumber ||
+          !section1Obj.vehicleSelect
+        ) {
+          alert(
+            "Please fill in or select all required fields. Leave N/A if not applicable."
+          );
+        } else if (section1Obj.addOtherID === "otherID") {
+          if (!section1Obj.otherIDname || !section1Obj.otherIDnumber) {
+            alert(
+              "Please fill in or select all required fields. Leave N/A if not applicable."
+            );
+          } else {
+            setCurrentPage(currentPage + 1);
+          }
+        } else if (section1Obj.addressType === "Others") {
+          if (!section1Obj.addressOtherType) {
+            alert(
+              "Please fill in or select all required fields. Leave N/A if not applicable."
+            );
+          } else {
+            setCurrentPage(currentPage + 1);
+          }
+        } else if (section1Obj.vehicleSelect === "Yes") {
+          if (!section1Obj.vehicleType || !section1Obj.vehiclePlateNumber) {
+            alert(
+              "Please fill in or select all required fields. Leave N/A if not applicable."
+            );
+          } else {
+            setCurrentPage(currentPage + 1);
+          }
+        } else {
+          setCurrentPage(currentPage + 1);
+        }
+      }
+      if (currentPage === 2) {
+        if (
+          // Check if all required fields in section2Obj are filled
+          !section2Obj.occupation ||
+          !section2Obj.lengthOfService ||
+          !section2Obj.businessAddress ||
+          !section2Obj.bussinessName ||
+          !section2Obj.businessContactNumber ||
+          !section2Obj.monthltIncome ||
+          !section2Obj.employmentStatus
+        ) {
+          alert(
+            "Please fill in or select all required fields. Leave N/A if not applicable."
+          );
+        } else {
+          setCurrentPage(currentPage + 1);
+        }
+      }
+      if (currentPage === 3) {
+        if (
+          !section3Obj.spouseLastName ||
+          !section3Obj.spouseFirstName ||
+          !section3Obj.spouseMiddleName ||
+          !section3Obj.spouseDateOfBirth ||
+          !section3Obj.spouseContactNumber ||
+          !section3Obj.spouseOccupation ||
+          !section3Obj.spouseBusiness ||
+          !section3Obj.spouseBusinessAddress ||
+          !section3Obj.spouseMonthlyIncome ||
+          !section3Obj.spouseEmploymentStatus ||
+          !section3Obj.spouseLenghtService
+        ) {
+          alert(
+            "Please fill in or select all required fields. Leave N/A if not applicable."
+          );
+        } else {
+          setCurrentPage(currentPage + 1);
+        }
+      }
+    }
+    if (currentPage === 4) {
+      if (
+        !section4Obj.referenceNameP1 ||
+        !section4Obj.referenceAddressP1 ||
+        !section4Obj.referenceRelationP1 ||
+        !section4Obj.referenceContactNumberP1 ||
+        !section4Obj.heardFrom
+      ) {
+        alert(
+          "Please fill in or select all required fields. Leave N/A if not applicable."
+        );
+      } else if (section1Obj.addOtherPerson === "personAdd") {
+        if (
+          !section4Obj.referenceNameP2 ||
+          !section4Obj.referenceAddressP2 ||
+          !section4Obj.referenceRelationP2 ||
+          !section4Obj.referenceContactNumberP2
+        ) {
+          alert(
+            "Please fill in or select all required fields. Leave N/A if not applicable."
+          );
+        } else {
+          setCurrentPage(currentPage + 1);
+        }
+      } else {
+        setCurrentPage(currentPage + 1);
+      }
     }
     if (currentPage == 5) {
       setConfirmationVisible(true);
